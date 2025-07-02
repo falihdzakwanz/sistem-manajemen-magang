@@ -1,4 +1,7 @@
-import { useForm } from '@inertiajs/react';
+import { router, useForm, usePage } from '@inertiajs/react';
+import { useEffect } from 'react';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 type Mahasiswa = {
     id: number;
@@ -20,8 +23,10 @@ interface IndexProps {
     mahasiswas: Mahasiswa[];
 }
 
+import React from 'react';
+
 export default function Index({ mahasiswas }: IndexProps) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, reset, errors } = useForm({
         nama: '',
         nim: '',
         universitas: '',
@@ -38,34 +43,59 @@ export default function Index({ mahasiswas }: IndexProps) {
         motivasi: '',
     });
 
+    const { flash } = usePage().props as { flash?: { success?: string } };
+    const [processing, setProcessing] = React.useState(false);
+
+    useEffect(() => {
+        if (flash?.success) {
+            toast.success(flash.success);
+        }
+    }, [flash]);
+
     const submit = (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
+        e.preventDefault();
+        setProcessing(true);
 
-  const formData = new FormData();
-  formData.append('nama', data.nama);
-  formData.append('nim', data.nim);
-  formData.append('universitas', data.universitas);
-  formData.append('jurusan', data.jurusan);
-  formData.append('email', data.email);
-  formData.append('telepon', data.telepon);
-  formData.append('tanggal_daftar', data.tanggal_daftar || new Date().toISOString().slice(0, 10));
-  formData.append('tanggal_mulai', data.tanggal_mulai);
-  formData.append('tanggal_selesai', data.tanggal_selesai);
-  formData.append('bidang_id', data.bidang_id);
-  formData.append('linkedin', data.linkedin);
-  formData.append('motivasi', data.motivasi);
+        const formData = new FormData();
+        formData.append('nama', data.nama);
+        formData.append('nim', data.nim);
+        formData.append('universitas', data.universitas);
+        formData.append('jurusan', data.jurusan);
+        formData.append('email', data.email);
+        formData.append('telepon', data.telepon);
+        formData.append('tanggal_daftar', data.tanggal_daftar || new Date().toISOString().slice(0, 10));
+        formData.append('tanggal_mulai', data.tanggal_mulai);
+        formData.append('tanggal_selesai', data.tanggal_selesai);
+        formData.append('bidang_id', data.bidang_id);
+        formData.append('linkedin', data.linkedin);
+        formData.append('motivasi', data.motivasi);
 
-  if (data.surat_pengantar) formData.append('surat_pengantar', data.surat_pengantar);
-  if (data.cv) formData.append('cv', data.cv);
+        if (data.surat_pengantar) {
+            formData.append('surat_pengantar', data.surat_pengantar);
+        }
 
-  // Gunakan Inertia post dengan FormData
-  post('/mahasiswa', {
-    data: formData,
-    forceFormData: true,
-    onSuccess: () => reset(),
-  });
-};
+        if (data.cv) {
+            formData.append('cv', data.cv);
+        }
 
+        router.post('/mahasiswa', formData, {
+            forceFormData: true,
+            onSuccess: () => {
+                setProcessing(false);
+                toast.success('Pendaftaran magang berhasil disubmit! Kami akan menghubungi Anda segera.');
+                reset();
+            },
+            onError: (errors) => {
+                setProcessing(false);
+                // Tampilkan error pertama yang ditemukan
+                const firstError = Object.values(errors)[0];
+                toast.error(firstError ? String(firstError) : 'Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
+            },
+            onFinish: () => {
+                setProcessing(false);
+            },
+        });
+    };
 
     return (
         <div className="min-h-screen bg-gray-50">
@@ -182,9 +212,7 @@ export default function Index({ mahasiswas }: IndexProps) {
                             <Select
                                 label="Bidang yang Diminati *"
                                 value={data.bidang_id}
-                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) =>
-                                    setData('bidang_id', e.target.value)
-                                }
+                                onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setData('bidang_id', e.target.value)}
                                 error={errors.bidang_id}
                                 options={[
                                     { value: '', label: 'Pilih bidang yang diminati' },
@@ -304,6 +332,8 @@ export default function Index({ mahasiswas }: IndexProps) {
                     </div>
                 </div>
             </footer>
+            {/* Notifikasi */}
+            <ToastContainer position="top-right" autoClose={4000} hideProgressBar />
         </div>
     );
 }
