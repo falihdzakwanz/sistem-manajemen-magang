@@ -15,6 +15,14 @@ use App\Http\Controllers\PendaftarController;
 Route::get('/pendaftar', [PendaftarController::class, 'index'])->name('pendaftar.index');
 Route::get('/pendaftar/{id}', [PendaftarController::class, 'show'])->name('pendaftar.show');
 
+use App\Http\Controllers\MahasiswaController;
+
+Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->name('mahasiswa.index');
+Route::post('/mahasiswa', [MahasiswaController::class, 'store'])->name('mahasiswa.store');
+Route::delete('/mahasiswa/{mahasiswa}', [MahasiswaController::class, 'destroy'])->name('mahasiswa.destroy');
+
+
+
 Route::get('/', function () {
     return Inertia::render('welcome');
 })->name('home');
