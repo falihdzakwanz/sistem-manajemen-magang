@@ -60,7 +60,7 @@ export default function Login({ status }: LoginProps) {
                                 placeholder="Masukkan username"
                                 className="border-gray-300 focus:ring-2 focus:ring-blue-500"
                             />
-                            <InputError message={errors.email} />
+                            <InputError message={errors.username} />
                         </div>
                         <div>
                             <Label htmlFor="password" className="mb-1 block text-sm font-bold text-black">
