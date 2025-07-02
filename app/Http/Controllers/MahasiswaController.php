@@ -20,7 +20,7 @@ class MahasiswaController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        $validated = $request->validate([
             'nama'             => 'required|string|max:255',
             'nim'              => 'required|string|unique:mahasiswas,nim',
             'universitas'      => 'required|string|max:255',
@@ -37,45 +37,30 @@ class MahasiswaController extends Controller
             'motivasi'         => 'required|string|max:1000',
         ]);
 
-        $suratPengantarPath = null;
-        $cvPath = null;
-
+        // Simpan file surat pengantar
         if ($request->hasFile('surat_pengantar')) {
-            $suratFile = $request->file('surat_pengantar');
-            $filename = pathinfo($suratFile->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $suratFile->getClientOriginalExtension();
-            $suratPengantarPath = $suratFile->storeAs('surat-pengantar', $filename, 'public');
+            $file = $request->file('surat_pengantar');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $validated['surat_pengantar'] = $file->storeAs('surat-pengantar', $filename, 'public');
         }
 
+        // Simpan file CV jika ada
         if ($request->hasFile('cv')) {
-            $cvFile = $request->file('cv');
-            $filename = pathinfo($cvFile->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $cvFile->getClientOriginalExtension();
-            $cvPath = $cvFile->storeAs('cv', $filename, 'public');
+            $cv = $request->file('cv');
+            $cvname = pathinfo($cv->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $cv->getClientOriginalExtension();
+            $validated['cv'] = $cv->storeAs('cv', $cvname, 'public');
         }
 
-        Mahasiswa::create([
-            'nama'             => $request->nama,
-            'nim'              => $request->nim,
-            'universitas'      => $request->universitas,
-            'jurusan'          => $request->jurusan,
-            'email'            => $request->email,
-            'telepon'          => $request->telepon,
-            'tanggal_daftar'   => $request->tanggal_daftar,
-            'tanggal_mulai'    => $request->tanggal_mulai,
-            'tanggal_selesai'  => $request->tanggal_selesai,
-            'status'           => 'pending',
-            'bidang_id'        => $request->bidang_id,
-            'surat_pengantar'  => $suratPengantarPath,
-            'cv'               => $cvPath,
-            'linkedin'         => $request->linkedin,
-            'motivasi'         => $request->motivasi,
-        ]);
+        // Tambahkan status default
+        $validated['status'] = 'pending';
 
-        return redirect()->route('mahasiswa.index')->with('success', 'Pendaftaran magang berhasil disubmit');
+        Mahasiswa::create($validated);
+
+        return redirect()->route('mahasiswa.index')->with('success', 'Pendaftaran magang berhasil disubmit!');
     }
 
     public function destroy(Mahasiswa $mahasiswa)
     {
-        // Hapus file dari storage jika ada
         if ($mahasiswa->surat_pengantar) {
             Storage::disk('public')->delete($mahasiswa->surat_pengantar);
         }
