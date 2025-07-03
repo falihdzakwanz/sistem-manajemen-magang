@@ -24,6 +24,7 @@ interface IndexProps {
 }
 
 import React from 'react';
+import Footer from '@/components/Footer';
 
 export default function Index({ mahasiswas }: IndexProps) {
     const { data, setData, reset, errors } = useForm({
@@ -350,29 +351,7 @@ export default function Index({ mahasiswas }: IndexProps) {
             </div>
 
             {/* Footer */}
-            <footer className="bg-gray-800 py-8 text-white">
-                <div className="container mx-auto px-4">
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-                        <div>
-                            <h4 className="mb-4 text-lg font-semibold">KOMDIGI Kota Bandar Lampung</h4>
-                            <p className="text-sm text-gray-300">Jl. R.A.Kartini No.3 Bandar Lampung, Kota Bandar Lampung</p>
-                        </div>
-                        <div>
-                            <h4 className="mb-4 text-lg font-semibold">Kontak</h4>
-                            <p className="text-sm text-gray-300">(0721) 481301</p>
-                            <p className="text-sm text-gray-300">diskominfokd@bandarlampungkota.go.id</p>
-                        </div>
-                        <div>
-                            <h4 className="mb-4 text-lg font-semibold">Jam Kerja</h4>
-                            <p className="text-sm text-gray-300">Senin - Jumat: 08.00 - 16.00 WIB</p>
-                            <p className="text-sm text-gray-300">Sabtu - Minggu: Tutup</p>
-                        </div>
-                    </div>
-                    <div className="mt-8 border-t border-gray-700 pt-4 text-center">
-                        <p className="text-sm text-gray-400">© 2025 KOMDIGI Kota Bandar Lampung. All rights reserved.</p>
-                    </div>
-                </div>
-            </footer>
+            <Footer/>
             {/* Notifikasi */}
             <ToastContainer position="top-right" autoClose={4000} hideProgressBar />
         </div>

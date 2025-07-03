@@ -1,6 +1,6 @@
 const Footer = () => {
     return (
-        <footer className="relative overflow-hidden bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 py-16 text-white">
+        <footer className="relative overflow-hidden bg-gradient-to-r from-gray-900 via-blue-900 to-indigo-900 py-10 text-white">
             <div className="absolute inset-0">
                 <div className="absolute top-0 left-0 h-full w-full bg-gradient-to-br from-blue-900/50 to-purple-900/50"></div>
                 <div className="absolute top-10 right-10 h-64 w-64 rounded-full bg-blue-500/10 blur-3xl"></div>
@@ -83,7 +83,7 @@ const Footer = () => {
                         </div>
                     </div>
                 </div>
-                <div className="mt-12 border-t border-gray-700 pt-8 text-center">
+                <div className="pt-15 text-center">
                     <p className="text-gray-400">© 2025 KOMDIGI Kota Bandar Lampung. All rights reserved.</p>
                 </div>
             </div>
