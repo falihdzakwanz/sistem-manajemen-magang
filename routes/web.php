@@ -12,6 +12,14 @@ Route::get('/', function () {
     return Inertia::render('Beranda');
 })->name('home');
 
+Route::get('/status-pendaftaran', function () {
+    return Inertia::render('StatusPendaftaran');
+})->name('status-pendaftaran');
+
+Route::get('/data-mahasiswa', function () {
+    return Inertia::render('DataMahasiswa');
+})->name('data-mahasiswa');
+
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
