@@ -12,7 +12,7 @@ const NavBar = ({ currentPage }: NavBarProps) => {
                             <span className="text-xl font-bold text-blue-600">K</span>
                         </div>
                         <div>
-                            <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">KOMDIGI</h1>
+                            <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">Dinas Kominfo</h1>
                             <p className="text-sm font-medium opacity-90">Kota Bandar Lampung</p>
                         </div>
                     </div>

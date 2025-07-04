@@ -1,54 +1,10 @@
+import NavBar from '@/components/NavBar';
+
 const Beranda = () => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
             {/* Header */}
-            <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white shadow-2xl backdrop-blur-lg">
-                <div className="container mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <div className="flex h-14 w-14 transform items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg transition-all duration-300 hover:scale-105 hover:rotate-6">
-                                <span className="text-xl font-bold text-blue-600">K</span>
-                            </div>
-                            <div>
-                                <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">KOMDIGI</h1>
-                                <p className="text-sm font-medium opacity-90">Kota Bandar Lampung</p>
-                            </div>
-                        </div>
-                        <nav className="hidden space-x-2 md:flex">
-                            <a
-                                href="/"
-                                className="rounded-xl border border-white/10 bg-white/20 px-6 py-3 font-medium shadow-lg backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30 hover:shadow-xl"
-                            >
-                                Beranda
-                            </a>
-                            <a
-                                href="/mahasiswa"
-                                className="rounded-xl border border-transparent px-6 py-3 font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/10 hover:bg-white/20 hover:shadow-lg"
-                            >
-                                Daftar Magang
-                            </a>
-                            <a
-                                href="/status-pendaftaran"
-                                className="rounded-xl border border-transparent px-6 py-3 font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/10 hover:bg-white/20 hover:shadow-lg"
-                            >
-                                Cek Status
-                            </a>
-                            <a
-                                href="/data-mahasiswa"
-                                className="rounded-xl border border-transparent px-6 py-3 font-medium backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:border-white/10 hover:bg-white/20 hover:shadow-lg"
-                            >
-                                Data Mahasiswa
-                            </a>
-                        </nav>
-                        {/* Mobile menu button */}
-                        <button className="rounded-lg bg-white/20 p-2 transition-all hover:bg-white/30 md:hidden">
-                            <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-                            </svg>
-                        </button>
-                    </div>
-                </div>
-            </header>
+            <NavBar currentPage="beranda" />
 
             {/* Hero Section */}
             <section className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 py-16 text-white">
@@ -58,12 +14,12 @@ const Beranda = () => {
                             <h2 className="mb-6 text-4xl leading-tight font-bold md:text-5xl">
                                 Selamat Datang di Website
                                 <br />
-                                Kementerian Komunikasi dan
+                                Dinas Komunikasi dan
                                 <br />
                                 Digital Kota Bandar Lampung
                             </h2>
                             <p className="mb-8 text-lg leading-relaxed opacity-90">
-                                Kementerian Komunikasi dan Digital Kota Bandar Lampung berkomitmen untuk memberikan pelayanan terbaik dalam bidang
+                                Dinas Komunikasi dan Digital Kota Bandar Lampung berkomitmen untuk memberikan pelayanan terbaik dalam bidang
                                 komunikasi dan teknologi informasi.
                             </p>
                             <a
@@ -74,7 +30,11 @@ const Beranda = () => {
                             </a>
                         </div>
                         <div className="flex justify-center">
-                            <img src="/asset/gedung-kominfo-balam.png" alt="Gedung KOMDIGI" className="h-auto max-w-full rounded-lg shadow-2xl" />
+                            <img
+                                src="/asset/gedung-kominfo-balam.png"
+                                alt="Gedung Dinas Kominfo"
+                                className="h-auto max-w-full rounded-lg shadow-2xl"
+                            />
                         </div>
                     </div>
                 </div>
@@ -146,10 +106,10 @@ const Beranda = () => {
                 </div>
             </section>
 
-            {/* Bidang-bidang di KOMDIGI */}
+            {/* Bidang-bidang di Dinas Kominfo */}
             <section className="bg-gray-50 py-16">
                 <div className="container mx-auto px-6">
-                    <h3 className="mb-12 text-center text-3xl font-bold text-gray-800">Bidang-bidang di KOMDIGI Kota Bandar Lampung</h3>
+                    <h3 className="mb-12 text-center text-3xl font-bold text-gray-800">Bidang-bidang di Dinas Kominfo Kota Bandar Lampung</h3>
 
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                         {/* Bidang 1 */}
@@ -253,7 +213,7 @@ const Beranda = () => {
                 <div className="container mx-auto px-6">
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
                         <div>
-                            <h3 className="mb-4 text-xl font-bold text-blue-300">KOMDIGI Kota Bandar Lampung</h3>
+                            <h3 className="mb-4 text-xl font-bold text-blue-300">Dinas Kominfo Kota Bandar Lampung</h3>
                             <p className="text-sm leading-relaxed opacity-90">Jl. Dr. Susilo No.2 Bandar Lampung, Kota Bandar Lampung</p>
                         </div>
                         <div>
@@ -268,7 +228,7 @@ const Beranda = () => {
                         </div>
                     </div>
                     <div className="mt-8 border-t border-blue-700 pt-6 text-center">
-                        <p className="text-sm opacity-80">© 2025 KOMDIGI Kota Bandar Lampung. All rights reserved.</p>
+                        <p className="text-sm opacity-80">© 2025 Dinas Kominfo Kota Bandar Lampung. All rights reserved.</p>
                     </div>
                 </div>
             </footer>

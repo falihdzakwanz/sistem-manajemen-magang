@@ -23,8 +23,8 @@ interface IndexProps {
     mahasiswas: Mahasiswa[];
 }
 
-import React from 'react';
 import Footer from '@/components/Footer';
+import React from 'react';
 
 export default function Index({ mahasiswas }: IndexProps) {
     const { data, setData, reset, errors } = useForm({
@@ -109,7 +109,9 @@ export default function Index({ mahasiswas }: IndexProps) {
                                 <span className="text-xl font-bold text-blue-600">K</span>
                             </div>
                             <div>
-                                <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">KOMDIGI</h1>
+                                <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">
+                                    Dinas Kominfo
+                                </h1>
                                 <p className="text-sm font-medium opacity-90">Kota Bandar Lampung</p>
                             </div>
                         </div>
@@ -170,7 +172,7 @@ export default function Index({ mahasiswas }: IndexProps) {
                             </span>
                         </h2>
                         <p className="mx-auto max-w-2xl text-xl leading-relaxed opacity-90">
-                            Bergabunglah dengan program magang di KOMDIGI Kota Bandar Lampung dan kembangkan karir Anda di bidang teknologi
+                            Bergabunglah dengan program magang di Dinas Kominfo Kota Bandar Lampung dan kembangkan karir Anda di bidang teknologi
                         </p>
                     </div>
                 </div>
@@ -334,7 +336,7 @@ export default function Index({ mahasiswas }: IndexProps) {
                                 value={data.motivasi}
                                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('motivasi', e.target.value)}
                                 error={errors.motivasi}
-                                placeholder="Ceritakan motivasi Anda mengikuti program magang di KOMDIGI Kota Bandar Lampung."
+                                placeholder="Ceritakan motivasi Anda mengikuti program magang di Dinas Kominfo Kota Bandar Lampung."
                                 rows={4}
                             />
 
@@ -351,7 +353,7 @@ export default function Index({ mahasiswas }: IndexProps) {
             </div>
 
             {/* Footer */}
-            <Footer/>
+            <Footer />
             {/* Notifikasi */}
             <ToastContainer position="top-right" autoClose={4000} hideProgressBar />
         </div>

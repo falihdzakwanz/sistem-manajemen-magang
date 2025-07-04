@@ -77,7 +77,9 @@ const StatusPendaftaran = () => {
                                 <span className="text-xl font-bold text-blue-600">K</span>
                             </div>
                             <div>
-                                <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">KOMDIGI</h1>
+                                <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">
+                                    Dinas Kominfo
+                                </h1>
                                 <p className="text-sm font-medium opacity-90">Kota Bandar Lampung</p>
                             </div>
                         </div>
@@ -178,7 +180,7 @@ const StatusPendaftaran = () => {
                             <div className="md:w-64">
                                 <label className="mb-2 block text-sm font-medium text-gray-700">Filter Status</label>
                                 <select
-                                    className="w-full rounded-xl border border-gray-300 px-4 py-3 transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500 text-gray-700"
+                                    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-700 transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                                     value={statusFilter}
                                     onChange={(e) => setStatusFilter(e.target.value)}
                                 >

@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\MahasiswaController;
+use App\Http\Controllers\AdminController;
 
 Route::get('/mahasiswa', [MahasiswaController::class, 'index'])->name('mahasiswa.index');
 Route::post('/mahasiswa', [MahasiswaController::class, 'store'])->name('mahasiswa.store');
@@ -24,6 +25,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('dashboard', function () {
         return Inertia::render('dashboard');
     })->name('dashboard');
+    
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin');
+    Route::patch('/admin/mahasiswa/{id}/status', [AdminController::class, 'updateStatus'])->name('admin.updateStatus');
 });
 
 require __DIR__.'/settings.php';

@@ -22,8 +22,8 @@ public function up(): void
         $table->date('tanggal_daftar');
         $table->date('tanggal_mulai');
         $table->date('tanggal_selesai');
-        $table->enum('status', ['pending', 'diterima', 'ditolak', 'aktif', 'selesai'])->default('pending');
-        $table->enum('bidang_id', ['1', '2', '3', '4', '5']);
+        $table->enum('status', ['Sedang Diproses', 'Diterima', 'Ditolak', 'Sedang Magang', 'Selesai Magang'])->default('Sedang Diproses');
+        $table->unsignedBigInteger('bidang_id');
         $table->string('surat_pengantar')->nullable(); // path to file
         $table->string('cv')->nullable(); // path to file
         $table->string('linkedin')->nullable();
