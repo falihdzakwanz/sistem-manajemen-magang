@@ -31,7 +31,7 @@ interface AdminProps {
     };
 }
 
-export default function Admin({ mahasiswas = [], auth }: AdminProps) {
+export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(null);
@@ -200,13 +200,13 @@ export default function Admin({ mahasiswas = [], auth }: AdminProps) {
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg">
-                                <span className="text-xl font-bold text-blue-600">K</span>
+                                <img src="/asset/Logo-Kominfo.png" alt="Logo Kominfo" className="h-10 w-10 object-contain" />
                             </div>
                             <div>
                                 <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">
                                     Admin Dashboard
                                 </h1>
-                                <p className="text-sm font-medium opacity-90">Dinas Kominfo Kota Bandar Lampung</p>
+                                <p className="text-sm font-medium opacity-90">Sistem Manajemen Magang - Kominfo</p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-4">
@@ -274,14 +274,14 @@ export default function Admin({ mahasiswas = [], auth }: AdminProps) {
                             <input
                                 type="text"
                                 placeholder="Cari berdasarkan nama, NIM, atau universitas..."
-                                className="text-black w-full rounded-xl border border-black-300 px-4 py-3 transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                className="border-black-300 w-full rounded-xl border px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                                 value={searchTerm}
                                 onChange={(e) => setSearchTerm(e.target.value)}
                             />
                         </div>
                         <div className="md:w-64">
                             <select
-                                className="text-black w-full rounded-xl border border-black-300 px-4 py-3 transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                className="border-black-300 w-full rounded-xl border px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
                                 value={statusFilter}
                                 onChange={(e) => setStatusFilter(e.target.value)}
                             >

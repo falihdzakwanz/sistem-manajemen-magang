@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import Footer from './Footer';
-import NavBar from './NavBar';
+import Navbar from './Navbar';
 
 interface LayoutProps {
     children: ReactNode;
@@ -10,7 +10,7 @@ interface LayoutProps {
 const Layout = ({ children, currentPage }: LayoutProps) => {
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
-            <NavBar currentPage={currentPage} />
+            <Navbar currentPage={currentPage} />
             <main>{children}</main>
             <Footer />
         </div>

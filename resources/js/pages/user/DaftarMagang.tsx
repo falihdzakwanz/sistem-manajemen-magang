@@ -1,31 +1,16 @@
+import FileInput, { FileInputHandle } from '@/components/FileInput';
+import Layout from '@/components/Layout';
 import { router, useForm, usePage } from '@inertiajs/react';
 import React, { useEffect, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import Layout from '@/components/Layout';
-import FileInput, { FileInputHandle } from '@/components/FileInput';
 
-type Mahasiswa = {
-    id: number;
-    nama: string;
-    nim: string;
-    universitas: string;
-    jurusan: string;
-    email: string;
-    telepon: string;
-    tanggal_daftar: string;
-    tanggal_mulai: string;
-    tanggal_selesai: string;
-    status: string;
-    bidang_id: number;
-    surat_pengantar: string;
-};
 
-interface IndexProps {
-    mahasiswas: Mahasiswa[];
-}
+// interface IndexProps {
+//     mahasiswas: Mahasiswa[];
+// }
 
-export default function Index({ mahasiswas }: IndexProps) {
+export default function DaftarMagang() {
     const { data, setData, reset, errors } = useForm({
         nama: '',
         nim: '',
@@ -121,7 +106,7 @@ export default function Index({ mahasiswas }: IndexProps) {
                         </div>
                         <h2 className="mb-4 text-4xl leading-tight font-bold md:text-5xl">
                             <span className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-                                Pendaftaran Magang
+                                Daftar Magang
                             </span>
                         </h2>
                         <p className="mx-auto max-w-2xl text-xl leading-relaxed opacity-90">
