@@ -11,6 +11,10 @@ import 'react-toastify/dist/ReactToastify.css';
 // }
 
 export default function DaftarMagang() {
+import Layout from '@/components/Layout';
+import FileInput, { FileInputHandle } from '@/components/FileInput';
+
+export default function Index() {
     const { data, setData, reset, errors } = useForm({
         nama: '',
         nim: '',

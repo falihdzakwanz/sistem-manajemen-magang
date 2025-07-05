@@ -1,56 +1,135 @@
 <?php
 
-// app/Http/Controllers/PostController.php
 namespace App\Http\Controllers;
 
-use App\Models\Post;
 use App\Models\Pendaftar;
 use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class PendaftarController extends Controller
 {
-    public function index()
+    public function dashboardAdmin()
     {
-        $posts = Pendaftar::all();  // Mengambil semua data dari tabel pendaftar
-        return view('daftar.magang', compact('posts'));
+        $pesertaMagangs = Pendaftar::where('status', 'Diterima')->paginate(10);
+
+        return Inertia::render('Admin', [
+            'pesertaMagangs' => $pesertaMagangs,
+        ]);
     }
 
-    public function show($id)
+    public function cekStatus()
     {
-        $post = Pendaftar::find($id);  // Mengambil satu data berdasarkan ID
-        return view('daftar.show', compact('post'));
+        $cekStatus = Pendaftar::where('status', 'Sedang Diproses')->paginate(10);
+
+        return Inertia::render('Pendaftar/CekStatus', [
+            'cekStatus' => $cekStatus,
+        ]);
     }
 
-    public function create()
+    public function updateStatus(Request $request, Pendaftar $pendaftars)
     {
-        return view('daftar.create');  // Menampilkan form untuk membuat pendaftar baru
+        try {
+             // Validasi input status
+            $request->validate([
+                'status' => 'required|in:Diterima,Ditolak,Sedang Magang,Selesai Magang',
+            ]);
+
+            // Update status pendaftar
+            $pendaftars->status = $request->status;
+            $pendaftars->save();
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('pendaftar.dashboardAdmin')->with('success', 'Statusberhasil diubah');
+        } catch (\Exception $e) {
+            // Tangani kesalahan jika terjadi
+            return redirect()->route('pendaftar.dashboardAdmin')->with('error', 'Terjadi kesalahan saat mengubah status: ' . $e->getMessage());
+        }
     }
+
+    // Menampilkan detail peserta magang dalam modal
+    public function showDetail(Pendaftar $pendaftars)
+    {
+        // Menampilkan data detail pendaftar
+        return Inertia::render('Admin/DetailPesertaMagang', [
+            'detailPeserta' => $pendaftars
+        ]);
+    }
+
     public function store(Request $request)
     {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'nim' => 'required|string|max:20',
-            'universitas' => 'required|string|max:255',
-            'jurusan' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:pendaftar',
-            'telepon' => 'required|string|max:20',
-            'tanggal_mulai' => 'required|date', // Tambahkan validasi tanggal_mulai
-            'tanggal_selesai' => 'required|date', // Tambahkan validasi tanggal_selesai
+        $validated = $request->validate([
+            'nama'             => 'required|string|max:255',
+            'nim'              => 'required|string|unique:mahasiswas,nim',
+            'universitas'      => 'required|string|max:255',
+            'jurusan'          => 'required|string|max:255',
+            'email'            => 'required|email|unique:mahasiswas,email',
+            'telepon'          => 'required|string|max:20',
+            'tanggal_daftar'   => 'required|date',
+            'tanggal_mulai'    => 'required|date',
+            'tanggal_selesai'  => 'required|date|after_or_equal:tanggal_mulai',
+            'bidang_id'        => 'required|string',
+            'surat_pengantar'  => 'required|file|mimes:pdf,doc,docx|max:5120',
+            'cv'               => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+            'linkedin'         => 'nullable|url|max:255',
+            'motivasi'         => 'required|string|max:1000',
         ]);
 
-        $post = new Pendaftar([
-            'nama' => $request->input('nama'),
-            'nim' => $request->input('nim'),
-            'universitas' => $request->input('universitas'),
-            'jurusan' => $request->input('jurusan'),
-            'email' => $request->input('email'),
-            'telepon' => $request->input('telepon'),
-            'tanggal_mulai' => $request->input('tanggal_mulai'),
-            'tanggal_selesai' => $request->input('tanggal_selesai'),
-        ]);
+        // Simpan file surat pengantar
+        if ($request->hasFile('surat_pengantar')) {
+            $file = $request->file('surat_pengantar');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $validated['surat_pengantar'] = $file->storeAs('surat-pengantar', $filename, 'public');
+        }
 
-        $post->save();
+        // Simpan file CV jika ada
+        if ($request->hasFile('cv')) {
+            $cv = $request->file('cv');
+            $cvname = pathinfo($cv->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $cv->getClientOriginalExtension();
+            $validated['cv'] = $cv->storeAs('cv', $cvname, 'public');
+        }
 
-        return redirect()->route('pendaftar.index')->with('success', 'Pendaftar berhasil ditambahkan.');
+        // Tambahkan status default
+        $validated['status'] = 'Sedang Diproses';
+
+        Pendaftar::create($validated);
+
+        return redirect()->route('pendaftar.index')->with('success', 'Pendaftaran magang berhasil disubmit!');
+    }
+
+    public function destroy(Pendaftar $pendaftars)
+    {
+        try {
+            // Pastikan data ditemukan (jika tidak ada, akan melemparkan ModelNotFoundException)
+            if (!$pendaftars) {
+                throw new ModelNotFoundException("Pendaftar not found");
+            }
+
+            // Cek dan hapus surat pengantar jika ada
+            if ($pendaftars->surat_pengantar) {
+                Storage::disk('public')->delete($pendaftars->surat_pengantar);
+            }
+
+            // Cek dan hapus CV jika ada
+            if ($pendaftars->cv) {
+                Storage::disk('public')->delete($pendaftars->cv);
+            }
+
+            // Menghapus data pendaftar
+            $pendaftars->delete();
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('pendaftar.index')
+                ->with('success', 'Data pendaftar berhasil dihapus');
+        } catch (ModelNotFoundException $e) {
+            // Menangani kasus ketika data tidak ditemukan
+            return redirect()->route('pendaftar.index')
+                ->with('error', 'Pendaftar tidak ditemukan.');
+        } catch (\Exception $e) {
+            // Menangani kesalahan lainnya (misalnya file yang tidak bisa dihapus)
+            return redirect()->route('pendaftar.index')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 }
