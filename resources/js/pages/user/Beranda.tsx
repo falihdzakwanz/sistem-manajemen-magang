@@ -20,7 +20,7 @@ const Beranda = () => {
                                 komunikasi dan teknologi informasi.
                             </p>
                             <a
-                                href="/mahasiswa"
+                                href="/daftar-magang"
                                 className="inline-block transform rounded-full bg-orange-500 px-8 py-3 font-semibold text-white transition-colors hover:scale-105 hover:bg-orange-600"
                             >
                                 Daftar Magang Sekarang

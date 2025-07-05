@@ -9,14 +9,12 @@ const Navbar = ({ currentPage }: NavbarProps) => {
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <div className="flex h-14 w-14 transform items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg transition-all duration-300 hover:scale-105 hover:rotate-6">
-                            <img 
-                                src="/asset/Logo-Kominfo.png" 
-                                alt="Logo Kominfo" 
-                                className="h-10 w-10 object-contain"
-                            />
+                            <img src="/asset/Logo-Kominfo.png" alt="Logo Kominfo" className="h-10 w-10 object-contain" />
                         </div>
                         <div>
-                            <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">Dinas Kominfo</h1>
+                            <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">
+                                Dinas Kominfo
+                            </h1>
                             <p className="text-sm font-medium opacity-90">Kota Bandar Lampung</p>
                         </div>
                     </div>
@@ -32,7 +30,7 @@ const Navbar = ({ currentPage }: NavbarProps) => {
                             Beranda
                         </a>
                         <a
-                            href="/mahasiswa"
+                            href="/daftar-magang"
                             className={`rounded-xl border px-6 py-3 font-medium transition-all duration-300 hover:scale-105 ${
                                 currentPage === 'daftar-magang'
                                     ? 'border-white/10 bg-white/20 shadow-lg backdrop-blur-sm hover:bg-white/30 hover:shadow-xl'

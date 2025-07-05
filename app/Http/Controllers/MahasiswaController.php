@@ -13,7 +13,7 @@ class MahasiswaController extends Controller
     {
         $mahasiswas = Mahasiswa::all();
 
-        return Inertia::render('Mahasiswa/Index', [
+        return Inertia::render('user/DaftarMagang', [
             'mahasiswas' => $mahasiswas,
         ]);
     }

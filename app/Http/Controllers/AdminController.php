@@ -33,7 +33,7 @@ class AdminController extends Controller
             ];
         });
 
-        return Inertia::render('admin', [
+        return Inertia::render('admin/DashboardAdmin', [
             'mahasiswas' => $mahasiswas
         ]);
     }

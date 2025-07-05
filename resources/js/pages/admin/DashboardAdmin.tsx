@@ -31,7 +31,7 @@ interface AdminProps {
     };
 }
 
-export default function Admin({ mahasiswas = [], auth }: AdminProps) {
+export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(null);
