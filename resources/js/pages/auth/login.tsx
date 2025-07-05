@@ -39,9 +39,10 @@ export default function Login({ status }: LoginProps) {
         <div className="flex min-h-screen items-center justify-center bg-blue-50">
             <div className="w-full max-w-sm rounded-xl bg-white p-8 shadow-lg">
                 <div className="mb-6 text-center">
-                    <img src="/asset/logo.jpg" alt="Kominfo Logo" className="mx-auto mb-4 h-12" />
+                    <img src="/asset/Logo-Kominfo.png" alt="Logo Kominfo" className="mx-auto mb-4 h-16 w-16 object-contain" />
                     <h2 className="text-2xl font-semibold text-gray-800">Admin Dashboard</h2>
-                    <p className="text-gray-500">Dinas Kominfo Kota Bandar Lampung</p>
+                    <p className="text-gray-500">Sistem Manajemen Magang</p>
+                    <p className="text-sm text-gray-400">Dinas Kominfo Kota Bandar Lampung</p>
                 </div>
                 <form className="flex flex-col gap-6" onSubmit={submit}>
                     <div className="grid gap-4">
