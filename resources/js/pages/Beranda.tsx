@@ -1,11 +1,8 @@
-import NavBar from '@/components/NavBar';
+import Layout from '@/components/Layout';
 
 const Beranda = () => {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
-            {/* Header */}
-            <NavBar currentPage="beranda" />
-
+        <Layout currentPage="beranda">
             {/* Hero Section */}
             <section className="bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 py-16 text-white">
                 <div className="container mx-auto px-6">
@@ -207,32 +204,7 @@ const Beranda = () => {
                     </div>
                 </div>
             </section>
-
-            {/* Footer */}
-            <footer className="bg-gradient-to-r from-blue-800 to-blue-900 py-12 text-white">
-                <div className="container mx-auto px-6">
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
-                        <div>
-                            <h3 className="mb-4 text-xl font-bold text-blue-300">Dinas Kominfo Kota Bandar Lampung</h3>
-                            <p className="text-sm leading-relaxed opacity-90">Jl. Dr. Susilo No.2 Bandar Lampung, Kota Bandar Lampung</p>
-                        </div>
-                        <div>
-                            <h3 className="mb-4 text-xl font-bold text-blue-300">Kontak</h3>
-                            <p className="mb-2 text-sm opacity-90">📞 (0721) 481301</p>
-                            <p className="text-sm opacity-90">✉️ diskoinfo@bandarlampungkota.go.id</p>
-                        </div>
-                        <div>
-                            <h3 className="mb-4 text-xl font-bold text-blue-300">Jam Kerja</h3>
-                            <p className="mb-2 text-sm opacity-90">Senin - Jumat: 08:00 - 16:00 WIB</p>
-                            <p className="text-sm opacity-90">Sabtu - Minggu: Tutup</p>
-                        </div>
-                    </div>
-                    <div className="mt-8 border-t border-blue-700 pt-6 text-center">
-                        <p className="text-sm opacity-80">© 2025 Dinas Kominfo Kota Bandar Lampung. All rights reserved.</p>
-                    </div>
-                </div>
-            </footer>
-        </div>
+        </Layout>
     );
 };
 

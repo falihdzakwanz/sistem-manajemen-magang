@@ -16,7 +16,7 @@ const Footer = () => {
                             </div>
                             <div>
                                 <h3 className="bg-gradient-to-r from-blue-300 to-purple-300 bg-clip-text text-xl font-bold text-transparent">
-                                    KOMDIGI
+                                    Dinas Kominfo
                                 </h3>
                                 <p className="text-sm text-gray-300">Kota Bandar Lampung</p>
                             </div>
@@ -84,7 +84,7 @@ const Footer = () => {
                     </div>
                 </div>
                 <div className="pt-15 text-center">
-                    <p className="text-gray-400">© 2025 KOMDIGI Kota Bandar Lampung. All rights reserved.</p>
+                    <p className="text-gray-400">© 2025 Dinas Kominfo Kota Bandar Lampung. All rights reserved.</p>
                 </div>
             </div>
         </footer>

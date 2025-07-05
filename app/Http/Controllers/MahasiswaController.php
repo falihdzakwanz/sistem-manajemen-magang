@@ -52,7 +52,7 @@ class MahasiswaController extends Controller
         }
 
         // Tambahkan status default
-        $validated['status'] = 'pending';
+        $validated['status'] = 'Sedang Diproses';
 
         Mahasiswa::create($validated);
 

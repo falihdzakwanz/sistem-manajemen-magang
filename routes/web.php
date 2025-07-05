@@ -22,13 +22,8 @@ Route::get('/data-mahasiswa', function () {
 })->name('data-mahasiswa');
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::get('dashboard', function () {
-        return Inertia::render('dashboard');
-    })->name('dashboard');
-    
     Route::get('/admin', [AdminController::class, 'index'])->name('admin');
     Route::patch('/admin/mahasiswa/{id}/status', [AdminController::class, 'updateStatus'])->name('admin.updateStatus');
 });
 
-require __DIR__.'/settings.php';
 require __DIR__.'/auth.php';
