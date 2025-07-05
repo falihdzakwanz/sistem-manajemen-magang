@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use App\Models\Mahasiswa;
+use App\Models\User;
 use Carbon\Carbon;
 
-class MahasiswaSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -136,7 +136,7 @@ class MahasiswaSeeder extends Seeder
         ];
 
         foreach ($mahasiswas as $mahasiswa) {
-            Mahasiswa::create($mahasiswa);
+            User::create($mahasiswa);
         }
     }
 }

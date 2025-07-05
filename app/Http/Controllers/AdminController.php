@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Mahasiswa;
+use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 
@@ -11,30 +11,30 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $mahasiswas = Mahasiswa::all()->map(function ($mahasiswa) {
+        $users = User::all()->map(function ($user) {
             return [
-                'id' => $mahasiswa->id,
-                'nama' => $mahasiswa->nama,
-                'nim' => $mahasiswa->nim,
-                'universitas' => $mahasiswa->universitas,
-                'jurusan' => $mahasiswa->jurusan,
-                'email' => $mahasiswa->email,
-                'telepon' => $mahasiswa->telepon,
-                'tanggal_daftar' => $mahasiswa->tanggal_daftar,
-                'tanggal_mulai' => $mahasiswa->tanggal_mulai,
-                'tanggal_selesai' => $mahasiswa->tanggal_selesai,
-                'status' => $mahasiswa->status,
-                'bidang_id' => $mahasiswa->bidang_id,
-                'bidang' => $this->getBidangName($mahasiswa->bidang_id),
-                'motivasi' => $mahasiswa->motivasi ?? '',
-                'linkedin' => $mahasiswa->linkedin ?? '',
-                'surat_pengantar' => $mahasiswa->surat_pengantar,
-                'cv' => $mahasiswa->cv,
+                'id' => $user->id,
+                'nama' => $user->nama,
+                'nim' => $user->nim,
+                'universitas' => $user->universitas,
+                'jurusan' => $user->jurusan,
+                'email' => $user->email,
+                'telepon' => $user->telepon,
+                'tanggal_daftar' => $user->tanggal_daftar,
+                'tanggal_mulai' => $user->tanggal_mulai,
+                'tanggal_selesai' => $user->tanggal_selesai,
+                'status' => $user->status,
+                'bidang_id' => $user->bidang_id,
+                'bidang' => $this->getBidangName($user->bidang_id),
+                'motivasi' => $user->motivasi ?? '',
+                'linkedin' => $user->linkedin ?? '',
+                'surat_pengantar' => $user->surat_pengantar,
+                'cv' => $user->cv,
             ];
         });
 
         return Inertia::render('admin/DashboardAdmin', [
-            'mahasiswas' => $mahasiswas
+            'mahasiswas' => $users
         ]);
     }
 
@@ -44,12 +44,12 @@ class AdminController extends Controller
             'status' => 'required|in:Sedang Diproses,Diterima,Ditolak,Sedang Magang,Selesai Magang'
         ]);
 
-        $mahasiswa = Mahasiswa::findOrFail($id);
-        $mahasiswa->update([
+        $user = User::findOrFail($id);
+        $user->update([
             'status' => $request->status
         ]);
 
-        return redirect()->back()->with('success', 'Status mahasiswa berhasil diupdate');
+        return redirect()->back()->with('success', 'Status user berhasil diupdate');
     }
 
     private function getBidangName($bidangId)

@@ -70,34 +70,34 @@ const Beranda = () => {
                     </div>
 
                     {/* Sub Bagian */}
-                    <div className="mx-auto mt-8 grid max-w-6xl grid-cols-2 gap-6 md:grid-cols-4">
+                    <div className="mx-auto grid max-w-6xl grid-cols-2 gap-6 md:grid-cols-4">
                         <div className="rounded-lg border bg-white p-4 text-center shadow-md">
                             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
                                 <span className="text-lg text-gray-600">👨‍💼</span>
                             </div>
-                            <h5 className="text-sm font-bold text-gray-800">Rizky Agung Arisanto, S.T</h5>
-                            <p className="text-xs text-gray-600">Kepala Bidang 1</p>
+                            <h5 className="text-sm font-bold text-gray-800">Rudhy Hartono, SE., M.Si.</h5>
+                            <p className="text-xs text-gray-600">Kepala Bidang Informasi dan Komunikasi Publik</p>
                         </div>
                         <div className="rounded-lg border bg-white p-4 text-center shadow-md">
                             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
                                 <span className="text-lg text-gray-600">👨‍💼</span>
                             </div>
-                            <h5 className="text-sm font-bold text-gray-800">Rizky Agung Arisanto, S.T</h5>
-                            <p className="text-xs text-gray-600">Kepala Bidang 2</p>
+                            <h5 className="text-sm font-bold text-gray-800">Fachrizal, S.Kom, M.Kom.</h5>
+                            <p className="text-xs text-gray-600">Kepala Bidang Pemberdayaan E-Government</p>
                         </div>
                         <div className="rounded-lg border bg-white p-4 text-center shadow-md">
                             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
                                 <span className="text-lg text-gray-600">👨‍💼</span>
                             </div>
-                            <h5 className="text-sm font-bold text-gray-800">Rizky Agung Arisanto, S.T</h5>
-                            <p className="text-xs text-gray-600">Kepala Bidang 3</p>
+                            <h5 className="text-sm font-bold text-gray-800">Nursari, S.Sos., MM</h5>
+                            <p className="text-xs text-gray-600">Kepala Bidang Persandian, Pos dan Telekomunikasi</p>
                         </div>
                         <div className="rounded-lg border bg-white p-4 text-center shadow-md">
                             <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gray-200">
                                 <span className="text-lg text-gray-600">👨‍💼</span>
                             </div>
-                            <h5 className="text-sm font-bold text-gray-800">Rizky Agung Arisanto, S.T</h5>
-                            <p className="text-xs text-gray-600">Kepala Bidang 4</p>
+                            <h5 className="text-sm font-bold text-gray-800">Donny, S.H</h5>
+                            <p className="text-xs text-gray-600">Kepala Bidang Data dan Statistik</p>
                         </div>
                     </div>
                 </div>
@@ -108,12 +108,12 @@ const Beranda = () => {
                 <div className="container mx-auto px-6">
                     <h3 className="mb-12 text-center text-3xl font-bold text-gray-800">Bidang-bidang di Dinas Kominfo Kota Bandar Lampung</h3>
 
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
                         {/* Bidang 1 */}
                         <div className="rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 p-6 text-white shadow-lg">
-                            <div className="mb-4 text-4xl">�</div>
+                            <div className="mb-4 text-4xl">📢</div>
                             <h4 className="mb-3 text-lg font-bold">Bidang Informasi dan Komunikasi Publik</h4>
-                            <p className="mb-4 text-sm opacity-90">Kepala Bidang: Rudhy Hartono, SE., M.Si</p>
+                            <p className="mb-4 text-sm opacity-90">Kepala Bidang: Rudhy Hartono, SE., M.Si.</p>
                             <ul className="space-y-2 text-sm">
                                 <li>• Hubungan Media</li>
                                 <li>• Publikasi Informasi</li>
@@ -125,7 +125,7 @@ const Beranda = () => {
                         <div className="rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 p-6 text-white shadow-lg">
                             <div className="mb-4 text-4xl">🏛️</div>
                             <h4 className="mb-3 text-lg font-bold">Bidang Pemberdayaan E-Government</h4>
-                            <p className="mb-4 text-sm opacity-90">Kepala Bidang: Fachrizal, S.Kom, M.Kom</p>
+                            <p className="mb-4 text-sm opacity-90">Kepala Bidang: Fachrizal, S.Kom, M.Kom.</p>
                             <ul className="space-y-2 text-sm">
                                 <li>• Jaringan Komputer</li>
                                 <li>• Data Center</li>
@@ -139,28 +139,17 @@ const Beranda = () => {
                             <h4 className="mb-3 text-lg font-bold">Bidang Persandian, Pos dan Telekomunikasi</h4>
                             <p className="mb-4 text-sm opacity-90">Kepala Bidang: Nursari, S.Sos., MM</p>
                             <ul className="space-y-2 text-sm">
-                                <li>• E-Government</li>
-                                <li>• Smart City</li>
+                                <li>• Persandian</li>
+                                <li>• Layanan Pos</li>
+                                <li>• Telekomunikasi</li>
                             </ul>
                         </div>
 
                         {/* Bidang 4 */}
                         <div className="rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 p-6 text-white shadow-lg">
-                            <div className="mb-4 text-4xl">🛡️</div>
-                            <h4 className="mb-3 text-lg font-bold">Bidang Persandian dan Keamanan Informasi</h4>
-                            <p className="mb-4 text-sm opacity-90">Kepala Bidang: Dr. Andi Pratama, M.Eng</p>
-                            <ul className="space-y-2 text-sm">
-                                <li>• Keamanan Siber</li>
-                                <li>• Enkripsi Data</li>
-                                <li>• Audit Keamanan</li>
-                            </ul>
-                        </div>
-
-                        {/* Bidang 5 */}
-                        <div className="rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 p-6 text-white shadow-lg">
                             <div className="mb-4 text-4xl">📊</div>
-                            <h4 className="mb-3 text-lg font-bold">Bidang Statistik dan Persandian</h4>
-                            <p className="mb-4 text-sm opacity-90">Kepala Bidang: Lina Marlina, S.Si, M.Stat</p>
+                            <h4 className="mb-3 text-lg font-bold">Bidang Data dan Statistik</h4>
+                            <p className="mb-4 text-sm opacity-90">Kepala Bidang: Donny, S.H</p>
                             <ul className="space-y-2 text-sm">
                                 <li>• Analisis Data</li>
                                 <li>• Statistik Daerah</li>

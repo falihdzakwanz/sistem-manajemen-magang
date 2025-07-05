@@ -5,16 +5,11 @@ import React, { useEffect, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
 // interface IndexProps {
 //     mahasiswas: Mahasiswa[];
 // }
 
 export default function DaftarMagang() {
-import Layout from '@/components/Layout';
-import FileInput, { FileInputHandle } from '@/components/FileInput';
-
-export default function Index() {
     const { data, setData, reset, errors } = useForm({
         nama: '',
         nim: '',
@@ -202,11 +197,10 @@ export default function Index() {
                                 error={errors.bidang_id}
                                 options={[
                                     { value: '', label: 'Pilih bidang yang diminati' },
-                                    { value: '1', label: 'Web Development' },
-                                    { value: '2', label: 'Mobile Development' },
-                                    { value: '3', label: 'UI/UX Design' },
-                                    { value: '4', label: 'Data Analytics' },
-                                    { value: '5', label: 'Digital Marketing' },
+                                    { value: '1', label: 'Bidang Informasi dan Komunikasi Publik' },
+                                    { value: '2', label: 'Bidang Pemberdayaan E-Government' },
+                                    { value: '3', label: 'Bidang Persandian, Pos dan Telekomunikasi' },
+                                    { value: '4', label: 'Bidang Data dan Statistik' },
                                 ]}
                                 required
                             />

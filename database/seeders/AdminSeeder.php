@@ -4,17 +4,17 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\User;
+use App\Models\Admin;
 use Illuminate\Support\Facades\Hash;
 
-class AdminUserSeeder extends Seeder
+class AdminSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        User::create([
+        Admin::create([
             'name' => 'Admin Dinas Kominfo',
             'email' => 'admin@komdigi.com',
             'username' => 'admin',

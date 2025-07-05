@@ -2,48 +2,34 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
+use Illuminate\Database\Eloquent\Model;
 
-class User extends Authenticatable
+class User extends Model
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
-
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var list<string>
-     */
+    use HasFactory;
+    protected $table = 'mahasiswas';
+    
     protected $fillable = [
-        'name',
+        'nama',
+        'nim',
+        'universitas',
+        'jurusan',
         'email',
-        'username',
-        'password',
+        'telepon',
+        'tanggal_daftar',
+        'tanggal_mulai',
+        'tanggal_selesai',
+        'status',
+        'bidang_id',
+        'surat_pengantar',
+        'cv',
+        'linkedin',
+        'motivasi',
     ];
-
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var list<string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    
+    public function bidang()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsTo(Bidang::class);
     }
 }

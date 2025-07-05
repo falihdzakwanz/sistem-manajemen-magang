@@ -2,19 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Mahasiswa;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
 
-class MahasiswaController extends Controller
+class UserController extends Controller
 {
     public function index()
     {
-        $mahasiswas = Mahasiswa::all();
+        $users = User::all();
 
         return Inertia::render('user/DaftarMagang', [
-            'mahasiswas' => $mahasiswas,
+            'users' => $users,
         ]);
     }
 
@@ -54,23 +54,45 @@ class MahasiswaController extends Controller
         // Tambahkan status default
         $validated['status'] = 'Sedang Diproses';
 
-        Mahasiswa::create($validated);
+        User::create($validated);
 
-        return redirect()->route('mahasiswa.index')->with('success', 'Pendaftaran magang berhasil disubmit!');
+        return redirect()->route('daftar-magang')->with('success', 'Pendaftaran magang berhasil disubmit!');
     }
 
-    public function destroy(Mahasiswa $mahasiswa)
+    public function destroy(User $user)
     {
-        if ($mahasiswa->surat_pengantar) {
-            Storage::disk('public')->delete($mahasiswa->surat_pengantar);
+        if ($user->surat_pengantar) {
+            Storage::disk('public')->delete($user->surat_pengantar);
         }
 
-        if ($mahasiswa->cv) {
-            Storage::disk('public')->delete($mahasiswa->cv);
+        if ($user->cv) {
+            Storage::disk('public')->delete($user->cv);
         }
 
-        $mahasiswa->delete();
+        $user->delete();
 
-        return redirect()->route('mahasiswa.index')->with('success', 'Data mahasiswa berhasil dihapus');
+        return redirect()->route('daftar-magang')->with('success', 'Data user berhasil dihapus');
+    }
+
+    public function getStatusPendaftaran()
+    {
+        // Status yang diizinkan untuk ditampilkan
+        $allowedStatuses = ['Sedang Diproses', 'Diterima', 'Ditolak'];
+        
+        // Ambil data dari tabel mahasiswas dengan status yang diizinkan
+        $users = User::select([
+            'id',
+            'nama',
+            'nim',
+            'universitas',
+            'tanggal_daftar',
+            'status'
+        ])->whereIn('status', $allowedStatuses)
+          ->orderBy('tanggal_daftar', 'desc')
+          ->get();
+
+        return Inertia::render('user/StatusPendaftaran', [
+            'pendaftars' => $users,
+        ]);
     }
 }
