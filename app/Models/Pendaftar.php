@@ -4,10 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class pendaftar extends Model
+class Pendaftar extends Model
 {
-    protected $table = 'pendaftar';
+    // Tentukan nama tabel jika diperlukan
+    protected $table = 'pendaftars';
 
+    // Tentukan kolom yang dapat diisi (fillable)
     protected $fillable = [
         'nama',
         'nim',
@@ -20,11 +22,9 @@ class pendaftar extends Model
         'tanggal_selesai',
         'status',
         'bidang_id',
-        'surat_pengantar'
+        'surat_pengantar',
+        'cv',
+        'linkedin',
+        'motivasi',
     ];
-
-    public function bidang()
-    {
-        return $this->belongsTo(Bidang::class, 'bidang_id');
-    }
 }
