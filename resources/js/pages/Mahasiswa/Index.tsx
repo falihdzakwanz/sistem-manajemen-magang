@@ -1,7 +1,9 @@
 import { router, useForm, usePage } from '@inertiajs/react';
-import { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import Layout from '@/components/Layout';
+import FileInput, { FileInputHandle } from '@/components/FileInput';
 
 type Mahasiswa = {
     id: number;
@@ -22,9 +24,6 @@ type Mahasiswa = {
 interface IndexProps {
     mahasiswas: Mahasiswa[];
 }
-
-import Layout from '@/components/Layout';
-import React from 'react';
 
 export default function Index({ mahasiswas }: IndexProps) {
     const { data, setData, reset, errors } = useForm({
@@ -52,6 +51,9 @@ export default function Index({ mahasiswas }: IndexProps) {
             toast.success(flash.success);
         }
     }, [flash]);
+
+    const suratPengantarRef = useRef<FileInputHandle>(null);
+    const cvRef = useRef<FileInputHandle>(null);
 
     const submit = (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -85,6 +87,8 @@ export default function Index({ mahasiswas }: IndexProps) {
                 setProcessing(false);
                 toast.success('Pendaftaran magang berhasil disubmit! Kami akan menghubungi Anda segera.');
                 reset();
+                suratPengantarRef.current?.reset();
+                cvRef.current?.reset();
             },
             onError: (errors) => {
                 setProcessing(false);
@@ -256,6 +260,7 @@ export default function Index({ mahasiswas }: IndexProps) {
                             </div>
 
                             <FileInput
+                                ref={suratPengantarRef}
                                 label="Surat Pengantar dari Kampus/Sekolah *"
                                 onChange={(file: File | null) => setData('surat_pengantar', file)}
                                 error={errors.surat_pengantar}
@@ -265,6 +270,7 @@ export default function Index({ mahasiswas }: IndexProps) {
                             />
 
                             <FileInput
+                                ref={cvRef}
                                 label="CV (Opsional)"
                                 onChange={(file: File | null) => setData('cv', file)}
                                 error={errors.cv}
@@ -359,32 +365,6 @@ function Select({ label, value, onChange, error, required = false, options }: Se
                     </option>
                 ))}
             </select>
-            {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
-        </div>
-    );
-}
-
-type FileInputProps = {
-    label: string;
-    onChange: (file: File | null) => void;
-    error?: string;
-    required?: boolean;
-    accept?: string;
-    helpText?: string;
-};
-
-function FileInput({ label, onChange, error, required = false, accept, helpText }: FileInputProps) {
-    return (
-        <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
-            <input
-                type="file"
-                onChange={(e) => onChange(e.target.files?.[0] || null)}
-                required={required}
-                accept={accept}
-                className="w-full rounded-md border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
-            />
-            {helpText && <p className="mt-1 text-xs text-gray-500">{helpText}</p>}
             {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
         </div>
     );
