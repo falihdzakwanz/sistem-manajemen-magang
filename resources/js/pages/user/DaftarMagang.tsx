@@ -30,6 +30,11 @@ export default function DaftarMagang() {
     const { flash } = usePage().props as { flash?: { success?: string } };
     const [processing, setProcessing] = React.useState(false);
 
+    // Fungsi untuk mengubah text menjadi Title Case
+    const toTitleCase = (str: string) => {
+        return str.replace(/\w\S*/g, (txt) => txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase());
+    };
+
     useEffect(() => {
         if (flash?.success) {
             toast.success(flash.success);
@@ -120,34 +125,170 @@ export default function DaftarMagang() {
                     {/* Persyaratan Magang */}
                     <div className="rounded-lg bg-white p-6 shadow-md">
                         <h3 className="mb-4 text-xl font-bold text-gray-800">Persyaratan Magang</h3>
-                        <ul className="space-y-3 text-gray-600">
-                            <li className="flex items-start space-x-2">
-                                <span className="mt-1 text-green-500">•</span>
-                                <span>Siswa dan Mahasiswa Aktif</span>
-                            </li>
-                            <li className="flex items-start space-x-2">
-                                <span className="mt-1 text-green-500">•</span>
-                                <span>Memiliki surat persetujuan dari kampus/sekolah</span>
-                            </li>
-                            <li className="flex items-start space-x-2">
-                                <span className="mt-1 text-green-500">•</span>
-                                <span>Bersedia mengikuti program magang minimal 1 bulan</span>
-                            </li>
-                            <li className="flex items-start space-x-2">
-                                <span className="mt-1 text-green-500">•</span>
-                                <span>Memiliki kemampuan dasar komputer dan teknologi</span>
-                            </li>
-                        </ul>
+                        <div className="space-y-4">
+                            <div className="flex items-start space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                    <svg className="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-medium text-gray-800">Status Aktif</p>
+                                    <p className="text-sm text-gray-600">Mahasiswa/siswa aktif dengan surat keterangan dari institusi</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                    <svg className="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-medium text-gray-800">Surat Pengantar</p>
+                                    <p className="text-sm text-gray-600">Memiliki surat resmi dari kampus/sekolah</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                    <svg className="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-medium text-gray-800">Komitmen & Disiplin</p>
+                                    <p className="text-sm text-gray-600">Berkomitmen tinggi dan taat pada peraturan yang berlaku</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                    <svg className="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-medium text-gray-800">Kemampuan Dasar</p>
+                                    <p className="text-sm text-gray-600">Memiliki skill komputer dan teknologi dasar</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                    <svg className="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-medium text-gray-800">Profesionalisme</p>
+                                    <p className="text-sm text-gray-600">Berperilaku sopan dan menjaga nama baik institusi</p>
+                                </div>
+                            </div>
+
+                            <div className="flex items-start space-x-3">
+                                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-green-100">
+                                    <svg className="h-4 w-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                        <path
+                                            fillRule="evenodd"
+                                            d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                                            clipRule="evenodd"
+                                        />
+                                    </svg>
+                                </div>
+                                <div className="flex-1">
+                                    <p className="font-medium text-gray-800">Kesediaan Belajar</p>
+                                    <p className="text-sm text-gray-600">Aktif, antusias, dan siap menerima bimbingan</p>
+                                </div>
+                            </div>
+                        </div>
 
                         <div className="mt-8">
-                            <h4 className="mb-3 text-lg font-semibold text-gray-800">Alur Pendaftaran</h4>
-                            <ul className="space-y-2 text-sm text-gray-600">
-                                <li>1. Isi formulir pendaftaran di Situs ini</li>
-                                <li>2. Upload surat pengantar dari kampus/sekolah</li>
-                                <li>3. Tunggu konfirmasi dari admin (maksimal 7 hari kerja)</li>
-                                <li>4. Jika diterima, akan dihubungi untuk interview</li>
-                                <li>5. Mulai program magang sesuai jadwal yang ditentukan</li>
-                            </ul>
+                            <h4 className="mb-4 text-lg font-semibold text-gray-800">Alur Pendaftaran</h4>
+                            <div className="space-y-6">
+                                {/* Step 1 */}
+                                <div className="relative flex items-start space-x-3">
+                                    <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                                        1
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-800">Isi Formulir Online</p>
+                                        <p className="text-sm text-gray-600">Lengkapi semua data yang diperlukan di formulir pendaftaran</p>
+                                    </div>
+                                    {/* Connecting line */}
+                                    <div className="absolute top-8 left-4 h-6 w-0.5 bg-gray-300"></div>
+                                </div>
+
+                                {/* Step 2 */}
+                                <div className="relative flex items-start space-x-3">
+                                    <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
+                                        2
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-800">Upload Dokumen</p>
+                                        <p className="text-sm text-gray-600">Unggah surat pengantar dari kampus/sekolah dan CV</p>
+                                    </div>
+                                    {/* Connecting line */}
+                                    <div className="absolute top-8 left-4 h-6 w-0.5 bg-gray-300"></div>
+                                </div>
+
+                                {/* Step 3 */}
+                                <div className="relative flex items-start space-x-3">
+                                    <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-yellow-100 text-sm font-semibold text-yellow-600">
+                                        3
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-800">Proses Verifikasi</p>
+                                        <p className="text-sm text-gray-600">Tim admin akan memverifikasi dalam 3-7 hari kerja</p>
+                                    </div>
+                                    {/* Connecting line */}
+                                    <div className="absolute top-8 left-4 h-6 w-0.5 bg-gray-300"></div>
+                                </div>
+
+                                {/* Step 4 */}
+                                <div className="relative flex items-start space-x-3">
+                                    <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-purple-100 text-sm font-semibold text-purple-600">
+                                        4
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-800">Akan Dihubungi</p>
+                                        <p className="text-sm text-gray-600">Jika lolos seleksi, akan dihubungi untuk konfirmasi</p>
+                                    </div>
+                                    {/* Connecting line */}
+                                    <div className="absolute top-8 left-4 h-6 w-0.5 bg-gray-300"></div>
+                                </div>
+
+                                {/* Step 5 */}
+                                <div className="relative flex items-start space-x-3">
+                                    <div className="relative z-10 flex h-8 w-8 items-center justify-center rounded-full bg-green-100 text-sm font-semibold text-green-600">
+                                        5
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-medium text-gray-800">Mulai Magang</p>
+                                        <p className="text-sm text-gray-600">Bergabung dengan program magang sesuai jadwal</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -160,8 +301,12 @@ export default function DaftarMagang() {
                                 <Input
                                     label="Nama Lengkap"
                                     value={data.nama}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('nama', e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const titleCaseName = toTitleCase(e.target.value);
+                                        setData('nama', titleCaseName);
+                                    }}
                                     error={errors.nama}
+                                    placeholder="Masukkan nama lengkap Anda"
                                     required
                                 />
                                 <Input
@@ -169,6 +314,7 @@ export default function DaftarMagang() {
                                     value={data.nim}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('nim', e.target.value)}
                                     error={errors.nim}
+                                    placeholder="Masukkan NIM"
                                     required
                                 />
                             </div>
@@ -177,15 +323,23 @@ export default function DaftarMagang() {
                                 <Input
                                     label="Asal Universitas/Sekolah"
                                     value={data.universitas}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('universitas', e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const titleCaseUniversitas = toTitleCase(e.target.value);
+                                        setData('universitas', titleCaseUniversitas);
+                                    }}
                                     error={errors.universitas}
+                                    placeholder="Masukkan nama universitas/sekolah"
                                     required
                                 />
                                 <Input
                                     label="Jurusan"
                                     value={data.jurusan}
-                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('jurusan', e.target.value)}
+                                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
+                                        const titleCaseJurusan = toTitleCase(e.target.value);
+                                        setData('jurusan', titleCaseJurusan);
+                                    }}
                                     error={errors.jurusan}
+                                    placeholder="Masukkan jurusan/program studi"
                                     required
                                 />
                             </div>
@@ -212,6 +366,7 @@ export default function DaftarMagang() {
                                     value={data.email}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('email', e.target.value)}
                                     error={errors.email}
+                                    placeholder="Masukkan alamat email"
                                     required
                                 />
                                 <Input
@@ -219,6 +374,7 @@ export default function DaftarMagang() {
                                     value={data.telepon}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('telepon', e.target.value)}
                                     error={errors.telepon}
+                                    placeholder="Masukkan nomor telepon (WhatsApp)"
                                     required
                                 />
                             </div>
@@ -266,7 +422,7 @@ export default function DaftarMagang() {
                                 value={data.linkedin}
                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('linkedin', e.target.value)}
                                 error={errors.linkedin}
-                                placeholder="https://linkedin.com/in/username"
+                                placeholder="https://linkedin.com/in/nama-anda"
                             />
 
                             <Textarea
@@ -274,7 +430,7 @@ export default function DaftarMagang() {
                                 value={data.motivasi}
                                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setData('motivasi', e.target.value)}
                                 error={errors.motivasi}
-                                placeholder="Ceritakan motivasi Anda mengikuti program magang di Dinas Kominfo Kota Bandar Lampung."
+                                placeholder="Jelaskan motivasi dan tujuan Anda mengikuti program magang ini..."
                                 rows={4}
                                 required
                             />
