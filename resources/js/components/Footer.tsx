@@ -1,4 +1,4 @@
-import { FaInstagram, FaTiktok, FaFacebook } from "react-icons/fa6";
+import { FaFacebook, FaInstagram, FaTiktok } from 'react-icons/fa6';
 
 const Footer = () => {
     return (
@@ -25,36 +25,36 @@ const Footer = () => {
                         </div>
                         <p className="leading-relaxed text-gray-300">Jl. Dr. Susilo No.2 Bandar Lampung, Kota Bandar Lampung, Lampung 35214</p>
                         <div className="mt-6 flex space-x-4">
-      {/* Instagram */}
-      <a
-        href="https://www.instagram.com/kominfobandarlampung/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-pink-500/20 transition-colors hover:bg-pink-500/30"
-      >
-        <FaInstagram className="text-pink-400 text-xl transition-transform group-hover:scale-110" />
-      </a>
+                            {/* Instagram */}
+                            <a
+                                href="https://www.instagram.com/kominfobandarlampung/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-pink-500/20 transition-colors hover:bg-pink-500/30"
+                            >
+                                <FaInstagram className="text-xl text-pink-400 transition-transform group-hover:scale-110" />
+                            </a>
 
-      {/* TikTok */}
-      <a
-        href="https://www.tiktok.com/kominfobandarlampung/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-black/20 transition-colors hover:bg-black/30"
-      >
-        <FaTiktok className="text-white text-xl transition-transform group-hover:scale-110" />
-      </a>
+                            {/* TikTok */}
+                            <a
+                                href="https://www.tiktok.com/kominfobandarlampung/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-black/20 transition-colors hover:bg-black/30"
+                            >
+                                <FaTiktok className="text-xl text-white transition-transform group-hover:scale-110" />
+                            </a>
 
-      {/* Facebook */}
-      <a
-        href="https://www.facebook.com/kominfobandarlampung/"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-blue-500/20 transition-colors hover:bg-blue-500/30"
-      >
-        <FaFacebook className="text-blue-400 text-xl transition-transform group-hover:scale-110" />
-      </a>
-    </div>
+                            {/* Facebook */}
+                            <a
+                                href="https://www.facebook.com/kominfobandarlampung/"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-blue-500/20 transition-colors hover:bg-blue-500/30"
+                            >
+                                <FaFacebook className="text-xl text-blue-400 transition-transform group-hover:scale-110" />
+                            </a>
+                        </div>
                     </div>
                     <div className="space-y-4">
                         <h3 className="mb-4 text-xl font-bold text-blue-300">Kontak Kami</h3>

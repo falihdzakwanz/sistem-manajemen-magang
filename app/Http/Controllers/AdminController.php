@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 use App\Mail\StatusMagangNotification;
 use Carbon\Carbon;
 
@@ -19,7 +20,7 @@ class AdminController extends Controller
     {
         // Jalankan auto-update status jika diperlukan
         $this->autoUpdateStatusIfNeeded();
-        
+
         $users = User::with('bidang')->get()->map(function ($user) {
             return [
                 'id' => $user->id,
@@ -57,19 +58,19 @@ class AdminController extends Controller
 
         $user = User::findOrFail($id);
         $oldStatus = $user->status;
-        
+
         $updateData = ['status' => $request->status];
-        
+
         // Jika status ditolak, simpan alasan penolakan
         if ($request->status === 'Ditolak' && $request->reject_reason) {
             $updateData['reject_reason'] = $request->reject_reason;
         }
-        
+
         // Jika status bukan ditolak, hapus alasan penolakan jika ada
         if ($request->status !== 'Ditolak') {
             $updateData['reject_reason'] = null;
         }
-        
+
         $user->update($updateData);
 
         // Kirim email notifikasi jika status berubah dari Menunggu ke Diterima atau Ditolak
@@ -77,14 +78,14 @@ class AdminController extends Controller
             try {
                 $rejectReason = $request->status === 'Ditolak' ? $request->reject_reason : null;
                 Mail::to($user->email)->send(new StatusMagangNotification($user, $request->status, $rejectReason));
-                
-                $emailMessage = $request->status === 'Diterima' 
+
+                $emailMessage = $request->status === 'Diterima'
                     ? 'Status berhasil diupdate dan email pemberitahuan telah dikirim ke mahasiswa'
                     : 'Status berhasil diupdate dan email pemberitahuan penolakan telah dikirim ke mahasiswa';
-                    
+
                 return redirect()->back()->with('success', $emailMessage);
             } catch (\Exception $e) {
-                \Log::error('Failed to send email notification: ' . $e->getMessage());
+                Log::error('Failed to send email notification: ' . $e->getMessage());
                 return redirect()->back()->with('success', 'Status berhasil diupdate, namun email notifikasi gagal dikirim');
             }
         }
@@ -125,7 +126,7 @@ class AdminController extends Controller
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * Trigger manual update status magang
      */
@@ -135,7 +136,7 @@ class AdminController extends Controller
             // Jalankan command update status
             Artisan::call('magang:update-status');
             $output = Artisan::output();
-            
+
             // Parse output untuk mendapatkan informasi update
             $lines = explode("\n", $output);
             $summary = [];
@@ -144,18 +145,17 @@ class AdminController extends Controller
                     $summary['total'] = trim(str_replace(['Total perubahan:', 'mahasiswa'], '', $line));
                 }
             }
-            
-            $message = isset($summary['total']) 
+
+            $message = isset($summary['total'])
                 ? "Status magang berhasil diupdate untuk {$summary['total']} mahasiswa"
                 : "Update status magang berhasil dijalankan";
-                
+
             return redirect()->back()->with('success', $message);
-            
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mengupdate status: ' . $e->getMessage());
         }
     }
-    
+
     /**
      * Otomatisasi real-time - dipanggil setiap kali load dashboard
      */
@@ -163,35 +163,34 @@ class AdminController extends Controller
     {
         $today = Carbon::today();
         $lastUpdate = cache()->get('last_status_update_check');
-        
+
         // Cek apakah sudah diupdate hari ini
         if (!$lastUpdate || !$lastUpdate->isSameDay($today)) {
             try {
                 // Update status otomatis
                 $this->performStatusUpdate();
-                
+
                 // Simpan waktu update terakhir
                 cache()->put('last_status_update_check', $today, now()->endOfDay());
-                
             } catch (\Exception $e) {
                 // Log error tapi jangan stop aplikasi
-                \Log::error('Auto update status failed: ' . $e->getMessage());
+                Log::error('Auto update status failed: ' . $e->getMessage());
             }
         }
     }
-    
+
     /**
      * Perform actual status update
      */
     private function performStatusUpdate()
     {
         $today = Carbon::today();
-        
+
         // Update Diterima -> Sedang Magang
         User::where('status', 'Diterima')
             ->whereDate('tanggal_mulai', '<=', $today)
             ->update(['status' => 'Sedang Magang']);
-            
+
         // Update Sedang Magang -> Selesai Magang  
         User::where('status', 'Sedang Magang')
             ->whereDate('tanggal_selesai', '<', $today)
@@ -205,21 +204,20 @@ class AdminController extends Controller
     {
         try {
             $user = User::findOrFail($id);
-            
+
             // Hapus file dokumen jika ada
             if ($user->surat_pengantar && Storage::exists('public/' . $user->surat_pengantar)) {
                 Storage::delete('public/' . $user->surat_pengantar);
             }
-            
+
             if ($user->cv && Storage::exists('public/' . $user->cv)) {
                 Storage::delete('public/' . $user->cv);
             }
-            
+
             // Hapus data mahasiswa
             $user->delete();
-            
+
             return redirect()->back()->with('success', 'Data mahasiswa berhasil dihapus');
-            
         } catch (ModelNotFoundException $e) {
             return redirect()->back()->with('error', 'Data mahasiswa tidak ditemukan');
         } catch (\Exception $e) {
