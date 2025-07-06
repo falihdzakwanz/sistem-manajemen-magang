@@ -60,20 +60,28 @@ class UserController extends Controller
         // Status yang diizinkan untuk ditampilkan
         $allowedStatuses = ['Sedang Diproses', 'Diterima', 'Ditolak'];
 
-        // Ambil data dari tabel mahasiswas dengan status yang diizinkan
-        $users = User::select([
+        // Ambil data dari tabel pesertas dengan status yang diizinkan dan relasi bidang
+        $users = User::with('bidang')->select([
             'id',
             'nama',
             'nim',
             'universitas',
+            'jurusan',
+            'email',
+            'telepon',
             'tanggal_daftar',
-            'status'
+            'tanggal_mulai',
+            'tanggal_selesai',
+            'status',
+            'bidang_id',
+            'linkedin',
+            'motivasi'
         ])->whereIn('status', $allowedStatuses)
             ->orderBy('tanggal_daftar', 'desc')
-            ->paginate(10);
+            ->get();
 
         return Inertia::render('user/StatusPendaftaran', [
-            'pesertas' => $users,
+            'pendaftars' => $users,
         ]);
     }
 }

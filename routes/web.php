@@ -12,7 +12,11 @@ Route::get('/', function () {
 
 Route::get('/daftar-magang', [UserController::class, 'create'])->name('daftar-magang');
 Route::post('/daftar-magang', [UserController::class, 'store'])->name('daftar-magang.store');
+Route::post('/mahasiswa', [UserController::class, 'store'])->name('mahasiswa.store');
 Route::get('/status-pendaftaran', [UserController::class, 'getStatusPendaftaran'])->name('status-pendaftaran');
+Route::get('/data-mahasiswa', function () {
+    return Inertia::render('user/DataMahasiswa');
+})->name('data-mahasiswa');
 
 // Admin Routes
 Route::middleware(['auth', 'verified'])->group(function () {

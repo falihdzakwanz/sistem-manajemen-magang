@@ -7,8 +7,22 @@ interface Pendaftar {
     nama: string;
     nim: string;
     universitas: string;
+    jurusan: string;
+    email: string;
+    telepon: string;
     tanggal_daftar: string;
+    tanggal_mulai: string;
+    tanggal_selesai: string;
     status: 'Sedang Diproses' | 'Diterima' | 'Ditolak' | 'Sedang Magang' | 'Selesai Magang';
+    bidang_id: number;
+    bidang?: {
+        id: number;
+        nama_bidang: string;
+        kepala_bidang: string;
+        deskripsi: string;
+    };
+    linkedin?: string;
+    motivasi: string;
 }
 
 interface StatusPendaftaranProps {
@@ -83,7 +97,10 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
             searchQuery === '' ||
             item.nama.toLowerCase().trim().includes(searchQuery) ||
             item.nim.toLowerCase().trim().includes(searchQuery) ||
-            item.universitas.toLowerCase().trim().includes(searchQuery);
+            item.universitas.toLowerCase().trim().includes(searchQuery) ||
+            item.jurusan.toLowerCase().trim().includes(searchQuery) ||
+            item.email.toLowerCase().trim().includes(searchQuery) ||
+            (item.bidang?.nama_bidang && item.bidang.nama_bidang.toLowerCase().trim().includes(searchQuery));
 
         // Filter berdasarkan status
         const matchesStatus = statusFilter === 'all' || item.status === statusFilter;
@@ -151,11 +168,13 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                     <div className="mb-8 rounded-3xl border border-gray-100 bg-white p-8 shadow-xl">
                         <div className="flex flex-col gap-6 md:flex-row">
                             <div className="flex-1">
-                                <label className="mb-2 block text-sm font-medium text-gray-700">Cari berdasarkan Nama, NIM, atau Universitas</label>
+                                <label className="mb-2 block text-sm font-medium text-gray-700">
+                                    Cari berdasarkan Nama, NIM, Universitas, Jurusan, Email, atau Bidang
+                                </label>
                                 <div className="relative">
                                     <Input
                                         type="text"
-                                        placeholder="Masukkan nama, NIM, atau universitas..."
+                                        placeholder="Masukkan nama, NIM, universitas, jurusan, email, atau bidang..."
                                         className="w-full text-black"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
@@ -230,7 +249,10 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                                         <th className="px-6 py-4 text-left text-sm font-semibold">Nama</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold">NIM</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold">Universitas</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold">Tanggal Daftar</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold">Jurusan</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold">Bidang</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold">Periode Magang</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold">Kontak</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold">Status</th>
                                     </tr>
                                 </thead>
@@ -242,7 +264,19 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                                                 <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.nama}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-600">{item.nim}</td>
                                                 <td className="px-6 py-4 text-sm text-gray-600">{item.universitas}</td>
-                                                <td className="px-6 py-4 text-sm text-gray-600">{formatTanggal(item.tanggal_daftar)}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-600">{item.jurusan}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-600">
+                                                    <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+                                                        {item.bidang?.nama_bidang || 'Belum ditentukan'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-600">
+                                                    <div>{formatTanggal(item.tanggal_mulai)}</div>
+                                                    <div className="text-xs text-gray-500">s/d {formatTanggal(item.tanggal_selesai)}</div>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-600">
+                                                    <div>{item.email}</div>
+                                                </td>
                                                 <td className="px-6 py-4">
                                                     <span
                                                         className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(item.status)}`}
@@ -254,7 +288,7 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                                         ))
                                     ) : (
                                         <tr>
-                                            <td colSpan={6} className="px-6 py-12 text-center text-gray-500">
+                                            <td colSpan={9} className="px-6 py-12 text-center text-gray-500">
                                                 <div className="flex flex-col items-center">
                                                     <svg
                                                         className="mb-4 h-12 w-12 text-gray-400"
