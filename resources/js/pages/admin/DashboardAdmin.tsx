@@ -708,16 +708,6 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                 {/* Automation Info */}
                 <div className="mb-8 rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 to-green-50 p-6 shadow-xl">
                     <div className="flex items-start space-x-4">
-                        <div className="rounded-full bg-blue-500 p-3">
-                            <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                                />
-                            </svg>
-                        </div>
                         <div className="flex-1">
                             <h3 className="text-lg font-semibold text-gray-800">🤖 Otomatisasi Status Aktif</h3>
                             <p className="mt-1 text-sm text-gray-600">Sistem otomatis mengupdate status mahasiswa setiap hari berdasarkan tanggal:</p>
@@ -752,47 +742,31 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                     </div>
 
                     {/* Tab Navigation */}
-                    <div className="flex flex-wrap gap-2">
+                    <div className="flex flex-wrap gap-2 text-white">
                         {[
-                            { status: 'Menunggu', count: statistik.menunggu, color: 'yellow', emailIcon: true },
-                            { status: 'Diterima', count: statistik.diterima, color: 'green', autoIcon: true, emailIcon: true },
-                            { status: 'Sedang Magang', count: statistik.sedangMagang, color: 'purple', autoIcon: true },
+                            { status: 'Menunggu', count: statistik.menunggu, color: 'orange' },
+                            { status: 'Diterima', count: statistik.diterima, color: 'green' },
+                            { status: 'Sedang Magang', count: statistik.sedangMagang, color: 'purple' },
                             { status: 'Selesai Magang', count: statistik.selesai, color: 'blue' },
-                            { status: 'Ditolak', count: statistik.ditolak, color: 'red', emailIcon: true },
+                            { status: 'Ditolak', count: statistik.ditolak, color: 'red' },
                         ].map((tab) => (
                             <button
                                 key={tab.status}
                                 onClick={() => setActiveTab(tab.status)}
-                                className={`relative flex items-center space-x-2 rounded-xl px-4 py-3 text-sm font-medium transition-all duration-200 ${
+                                className={`relative flex items-center space-x-2 rounded-xl px-4 py-3 text-sm font-medium duration-200 ${
                                     activeTab === tab.status
-                                        ? `bg-${tab.color}-500 text-white shadow-lg`
-                                        : `bg-${tab.color}-100 text-${tab.color}-700 hover:bg-${tab.color}-200`
+                                        ? `bg-${tab.color}-500 text-white-700 hover:bg-${tab.color}-600`
+                                        : `bg-${tab.color}-500 text-white-700 hover:bg-${tab.color}-600`
                                 }`}
                             >
                                 <span>{tab.status}</span>
                                 <span
-                                    className={`rounded-full px-2 py-1 text-xs font-bold ${
+                                    className={`rounded-full px-2 py-1 text-xs font-bold text-white ${
                                         activeTab === tab.status ? 'bg-white/20 text-white' : `bg-${tab.color}-200 text-${tab.color}-800`
                                     }`}
                                 >
                                     {tab.count}
                                 </span>
-                                {tab.autoIcon && (
-                                    <span
-                                        className={`rounded-full p-1 ${activeTab === tab.status ? 'bg-white/20' : `bg-${tab.color}-200`}`}
-                                        title="Status ini memiliki otomatisasi"
-                                    >
-                                        🤖
-                                    </span>
-                                )}
-                                {tab.emailIcon && (
-                                    <span
-                                        className={`rounded-full p-1 ${activeTab === tab.status ? 'bg-white/20' : `bg-${tab.color}-200`}`}
-                                        title="Perubahan status mengirim email otomatis"
-                                    >
-                                        📧
-                                    </span>
-                                )}
                             </button>
                         ))}
                     </div>
@@ -996,7 +970,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
 
             {/* Detail Modal */}
             {showModal && selectedMahasiswa && (
-                <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4" onClick={closeModal}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm" onClick={closeModal}>
                     <div
                         className="modal-content-active scrollbar-hide max-h-[95vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
@@ -1428,7 +1402,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
 
             {/* Edit Status Modal */}
             {showEditModal && selectedMahasiswa && (
-                <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4" onClick={closeEditModal}>
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm" onClick={closeModal}>
                     <div className="modal-content-active w-full max-w-md rounded-3xl bg-white" onClick={(e) => e.stopPropagation()}>
                         <div className="border-b border-gray-200 p-6">
                             <div className="flex items-center justify-between">
