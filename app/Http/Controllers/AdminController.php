@@ -44,7 +44,7 @@ class AdminController extends Controller
     public function updateStatus(Request $request, $id): RedirectResponse
     {
         $request->validate([
-            'status' => 'required|in:Sedang Diproses,Diterima,Ditolak,Sedang Magang,Selesai Magang',
+            'status' => 'required|in:Menunggu,Diterima,Ditolak,Sedang Magang,Selesai Magang',
             'reject_reason' => 'nullable|string'
         ]);
 

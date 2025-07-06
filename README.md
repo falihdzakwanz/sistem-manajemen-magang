@@ -34,7 +34,7 @@ Folder `pages` telah direorganisasi untuk memisahkan halaman admin dan user:
 - Halaman admin memerlukan autentikasi
 - Data mahasiswa/pendaftar menggunakan model `User` dengan tabel `mahasiswas`
 - Model `Admin` untuk autentikasi admin dengan tabel `users`
-- Status yang ditampilkan: Sedang Diproses, Diterima, Ditolak
+- Status yang ditampilkan: Menunggu, Diterima, Ditolak, Sedang Magang, Selesai Magang
 
 ## 🧹 Struktur yang Telah Dibersihkan
 
@@ -63,7 +63,13 @@ Hanya menyisakan file yang diperlukan untuk 6 page utama:
 
 ### Database:
 
-- **Migrations**: users, mahasiswas, bidangs, dan foreign keys
+- **Migrations**: 7 migration files yang sudah dioptimalkan
+    - `create_users_table` - Tabel admin dengan username support
+    - `create_bidangs_table` - Tabel referensi bidang magang
+    - `create_pesertas_table` - Tabel mahasiswa dengan status enum final
+    - `add_foreign_key_to_pesertas_table` - Relasi pesertas->bidangs
+    - `add_reject_reason_to_pesertas_table` - Kolom alasan penolakan
+    - `recreate_status_column_fix` - Final status enum fix
 - **Seeders**: AdminSeeder, UserSeeder, BidangSeeder
 - **Factories**: UserFactory, AdminFactory
 

@@ -13,7 +13,7 @@ interface Pendaftar {
     tanggal_daftar: string;
     tanggal_mulai: string;
     tanggal_selesai: string;
-    status: 'Sedang Diproses' | 'Diterima' | 'Ditolak' | 'Sedang Magang' | 'Selesai Magang';
+    status: 'Menunggu' | 'Diterima' | 'Ditolak' | 'Sedang Magang' | 'Selesai Magang';
     bidang_id: number;
     bidang?: {
         id: number;
@@ -40,7 +40,7 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
         switch (status) {
             case 'Diterima':
                 return 'bg-green-100 text-green-800';
-            case 'Sedang Diproses':
+            case 'Menunggu':
                 return 'bg-yellow-100 text-yellow-800';
             case 'Selesai Magang':
                 return 'bg-blue-100 text-blue-800';
@@ -67,7 +67,7 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
     // Hitung statistik status - hanya untuk status yang ditampilkan
     const getStatusStats = () => {
         const stats = {
-            'Sedang Diproses': 0,
+            Menunggu: 0,
             Diterima: 0,
             Ditolak: 0,
         };
@@ -84,7 +84,7 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
     const statusStats = getStatusStats();
 
     // Filter data untuk hanya menampilkan status tertentu
-    const allowedStatuses = ['Sedang Diproses', 'Diterima', 'Ditolak'];
+    const allowedStatuses = ['Menunggu', 'Diterima', 'Ditolak'];
 
     // Pertama filter data berdasarkan kriteria
     const filteredPendaftars = pendaftars.filter((item) => {
@@ -202,7 +202,7 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                                     onChange={(e) => setStatusFilter(e.target.value)}
                                 >
                                     <option value="all">Semua Status</option>
-                                    <option value="Sedang Diproses">Sedang Diproses</option>
+                                    <option value="Menunggu">Menunggu</option>
                                     <option value="Diterima">Diterima</option>
                                     <option value="Ditolak">Ditolak</option>
                                 </select>
@@ -214,8 +214,8 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                     {pendaftars.length > 0 && (
                         <div className="mb-8 grid grid-cols-3 gap-4 md:grid-cols-3">
                             <div className="rounded-2xl border border-yellow-200 bg-yellow-50 p-4 text-center">
-                                <div className="text-2xl font-bold text-yellow-800">{statusStats['Sedang Diproses']}</div>
-                                <div className="text-sm text-yellow-600">Sedang Diproses</div>
+                                <div className="text-2xl font-bold text-yellow-800">{statusStats['Menunggu']}</div>
+                                <div className="text-sm text-yellow-600">Menunggu</div>
                             </div>
                             <div className="rounded-2xl border border-green-200 bg-green-50 p-4 text-center">
                                 <div className="text-2xl font-bold text-green-800">{statusStats['Diterima']}</div>
@@ -383,7 +383,7 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                         <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                             <div className="flex items-center space-x-2">
                                 <span className="inline-flex rounded-full bg-yellow-100 px-3 py-1 text-xs font-medium text-yellow-800">
-                                    Sedang Diproses ({statusStats['Sedang Diproses']})
+                                    Menunggu ({statusStats['Menunggu']})
                                 </span>
                                 <span className="text-sm text-gray-600">Dalam review</span>
                             </div>

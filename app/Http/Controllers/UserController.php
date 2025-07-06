@@ -48,7 +48,7 @@ class UserController extends Controller
         }
 
         // Tambahkan status default
-        $validated['status'] = 'Sedang Diproses';
+        $validated['status'] = 'Menunggu';
 
         User::create($validated);
 
@@ -58,7 +58,7 @@ class UserController extends Controller
     public function getStatusPendaftaran()
     {
         // Status yang diizinkan untuk ditampilkan
-        $allowedStatuses = ['Sedang Diproses', 'Diterima', 'Ditolak'];
+        $allowedStatuses = ['Menunggu', 'Diterima', 'Ditolak'];
 
         // Ambil data dari tabel pesertas dengan status yang diizinkan dan relasi bidang
         $users = User::with('bidang')->select([
@@ -82,6 +82,47 @@ class UserController extends Controller
 
         return Inertia::render('user/StatusPendaftaran', [
             'pendaftars' => $users,
+        ]);
+    }
+
+    public function getDataMahasiswa()
+    {
+        // Ambil data mahasiswa yang statusnya 'Sedang Magang' (sedang aktif) atau 'Selesai Magang'
+        $mahasiswa = User::with('bidang')
+            ->whereIn('status', ['Sedang Magang', 'Selesai Magang'])
+            ->orderBy('tanggal_mulai', 'desc')
+            ->get();
+
+        // Hitung statistik
+        $totalMahasiswa = $mahasiswa->count();
+        $sedangAktif = $mahasiswa->where('status', 'Sedang Magang')->count();
+        $telahSelesai = $mahasiswa->where('status', 'Selesai Magang')->count();
+        $totalUniversitas = $mahasiswa->pluck('universitas')->unique()->count();
+
+        // Distribusi bidang
+        $distribusiBidang = $mahasiswa->groupBy('bidang.nama_bidang')
+            ->map(function ($items) {
+                return $items->count();
+            })
+            ->sortDesc();
+
+        // Distribusi universitas
+        $distribusiUniversitas = $mahasiswa->groupBy('universitas')
+            ->map(function ($items) {
+                return $items->count();
+            })
+            ->sortDesc();
+
+        return Inertia::render('user/DataMahasiswa', [
+            'mahasiswa' => $mahasiswa,
+            'statistik' => [
+                'total_mahasiswa' => $totalMahasiswa,
+                'sedang_aktif' => $sedangAktif,
+                'telah_selesai' => $telahSelesai,
+                'total_universitas' => $totalUniversitas,
+            ],
+            'distribusi_bidang' => $distribusiBidang,
+            'distribusi_universitas' => $distribusiUniversitas,
         ]);
     }
 }

@@ -158,14 +158,14 @@ export default function DaftarMagang() {
                         <form onSubmit={submit} className="space-y-6">
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <Input
-                                    label="Nama Lengkap *"
+                                    label="Nama Lengkap"
                                     value={data.nama}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('nama', e.target.value)}
                                     error={errors.nama}
                                     required
                                 />
                                 <Input
-                                    label="NIM *"
+                                    label="NIM"
                                     value={data.nim}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('nim', e.target.value)}
                                     error={errors.nim}
@@ -175,14 +175,14 @@ export default function DaftarMagang() {
 
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <Input
-                                    label="Asal Universitas/Sekolah *"
+                                    label="Asal Universitas/Sekolah"
                                     value={data.universitas}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('universitas', e.target.value)}
                                     error={errors.universitas}
                                     required
                                 />
                                 <Input
-                                    label="Jurusan *"
+                                    label="Jurusan"
                                     value={data.jurusan}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('jurusan', e.target.value)}
                                     error={errors.jurusan}
@@ -191,7 +191,7 @@ export default function DaftarMagang() {
                             </div>
 
                             <Select
-                                label="Bidang yang Diminati *"
+                                label="Bidang yang Diminati"
                                 value={data.bidang_id}
                                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setData('bidang_id', e.target.value)}
                                 error={errors.bidang_id}
@@ -207,7 +207,7 @@ export default function DaftarMagang() {
 
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <Input
-                                    label="Email *"
+                                    label="Email"
                                     type="email"
                                     value={data.email}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('email', e.target.value)}
@@ -215,7 +215,7 @@ export default function DaftarMagang() {
                                     required
                                 />
                                 <Input
-                                    label="No. Telepon *"
+                                    label="No. Telepon"
                                     value={data.telepon}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('telepon', e.target.value)}
                                     error={errors.telepon}
@@ -225,7 +225,7 @@ export default function DaftarMagang() {
 
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <Input
-                                    label="Tanggal Mulai Magang *"
+                                    label="Tanggal Mulai Magang"
                                     type="date"
                                     value={data.tanggal_mulai}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('tanggal_mulai', e.target.value)}
@@ -233,7 +233,7 @@ export default function DaftarMagang() {
                                     required
                                 />
                                 <Input
-                                    label="Tanggal Selesai Magang *"
+                                    label="Tanggal Selesai Magang"
                                     type="date"
                                     value={data.tanggal_selesai}
                                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setData('tanggal_selesai', e.target.value)}
@@ -244,7 +244,7 @@ export default function DaftarMagang() {
 
                             <FileInput
                                 ref={suratPengantarRef}
-                                label="Surat Pengantar dari Kampus/Sekolah *"
+                                label="Surat Pengantar dari Kampus/Sekolah"
                                 onChange={(file: File | null) => setData('surat_pengantar', file)}
                                 error={errors.surat_pengantar}
                                 accept=".pdf,.doc,.docx"
@@ -276,6 +276,7 @@ export default function DaftarMagang() {
                                 error={errors.motivasi}
                                 placeholder="Ceritakan motivasi Anda mengikuti program magang di Dinas Kominfo Kota Bandar Lampung."
                                 rows={4}
+                                required
                             />
 
                             <button
@@ -309,7 +310,9 @@ type InputProps = {
 function Input({ label, type = 'text', value, onChange, error, required = false, placeholder }: InputProps) {
     return (
         <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
             <input
                 type={type}
                 value={value}
@@ -335,7 +338,9 @@ type SelectProps = {
 function Select({ label, value, onChange, error, required = false, options }: SelectProps) {
     return (
         <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
             <select
                 value={value}
                 onChange={onChange}
@@ -366,7 +371,9 @@ type TextareaProps = {
 function Textarea({ label, value, onChange, error, required = false, placeholder, rows = 3 }: TextareaProps) {
     return (
         <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700">{label}</label>
+            <label className="mb-1 block text-sm font-medium text-gray-700">
+                {label} {required && <span className="text-red-500">*</span>}
+            </label>
             <textarea
                 value={value}
                 onChange={onChange}

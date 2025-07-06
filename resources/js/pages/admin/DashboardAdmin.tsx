@@ -69,7 +69,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
             tanggal_daftar: '2025-06-05',
             tanggal_mulai: '2025-07-15',
             tanggal_selesai: '2025-09-15',
-            status: 'Sedang Diproses',
+            status: 'Menunggu',
             bidang_id: 2,
             bidang: 'Web Development',
             motivasi: 'Tertarik untuk mengembangkan skill web development',
@@ -142,7 +142,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
         switch (status) {
             case 'Diterima':
                 return 'bg-green-100 text-green-800';
-            case 'Sedang Diproses':
+            case 'Menunggu':
                 return 'bg-yellow-100 text-yellow-800';
             case 'Selesai Magang':
                 return 'bg-blue-100 text-blue-800';
@@ -228,7 +228,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
     const statistik = {
         total: data.length,
         diterima: data.filter((m) => m.status === 'Diterima').length,
-        sedangProses: data.filter((m) => m.status === 'Sedang Diproses').length,
+        menunggu: data.filter((m) => m.status === 'Menunggu').length,
         selesai: data.filter((m) => m.status === 'Selesai Magang').length,
         ditolak: data.filter((m) => m.status === 'Ditolak').length,
         sedangMagang: data.filter((m) => m.status === 'Sedang Magang').length,
@@ -285,8 +285,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                     </div>
                     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
                         <div className="text-center">
-                            <div className="text-3xl font-bold text-yellow-600">{statistik.sedangProses}</div>
-                            <div className="mt-1 text-sm text-gray-600">Sedang Diproses</div>
+                            <div className="text-3xl font-bold text-yellow-600">{statistik.menunggu}</div>
+                            <div className="mt-1 text-sm text-gray-600">Menunggu</div>
                         </div>
                     </div>
                     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
@@ -328,11 +328,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 onChange={(e) => setStatusFilter(e.target.value)}
                             >
                                 <option value="all">Semua Status</option>
+                                <option value="Menunggu">Menunggu</option>
                                 <option value="Diterima">Diterima</option>
-                                <option value="Sedang Diproses">Sedang Diproses</option>
+                                <option value="Ditolak">Ditolak</option>
                                 <option value="Sedang Magang">Sedang Magang</option>
                                 <option value="Selesai Magang">Selesai Magang</option>
-                                <option value="Ditolak">Ditolak</option>
                             </select>
                         </div>
                     </div>
@@ -522,7 +522,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                         </div>
                         <div className="flex justify-between border-t border-gray-200 p-6">
                             <div className="flex space-x-3">
-                                {selectedMahasiswa.status === 'Sedang Diproses' && (
+                                {selectedMahasiswa.status === 'Menunggu' && (
                                     <>
                                         <button
                                             onClick={() => handleApprove(selectedMahasiswa.id)}

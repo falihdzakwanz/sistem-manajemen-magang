@@ -1,79 +1,68 @@
 import Layout from '@/components/Layout';
+import { PageProps } from '@/types';
 
-const DataMahasiswa = () => {
-    // Data dummy untuk demo
-    const mahasiswaData = [
-        {
-            id: 1,
-            nama: 'Ahmad Rizki Pratama',
-            nim: '19104001',
-            universitas: 'Universitas Lampung',
-            jurusan: 'Teknik Informatika',
-            email: 'ahmad.rizki@example.com',
-            telepon: '08123456789',
-            bidang: 'Bidang Pemberdayaan E-Government',
-            status: 'Aktif',
-            tanggal_mulai: '1 Juli 2025',
-            tanggal_selesai: '31 Agustus 2025',
-            statusColor: 'bg-green-100 text-green-800',
-        },
-        {
-            id: 2,
-            nama: 'Siti Nurhaliza',
-            nim: '20104002',
-            universitas: 'Institut Teknologi Sumatera',
-            jurusan: 'Sistem Informasi',
-            email: 'siti.nur@example.com',
-            telepon: '08234567890',
-            bidang: 'Bidang Informasi dan Komunikasi Publik',
-            status: 'Selesai',
-            tanggal_mulai: '1 Juni 2025',
-            tanggal_selesai: '31 Juli 2025',
-            statusColor: 'bg-blue-100 text-blue-800',
-        },
-        {
-            id: 3,
-            nama: 'Budi Santoso',
-            nim: '19104003',
-            universitas: 'Universitas Bandar Lampung',
-            jurusan: 'Teknik Komputer',
-            email: 'budi.santoso@example.com',
-            telepon: '08345678901',
-            bidang: 'Bidang Persandian, Pos dan Telekomunikasi',
-            status: 'Aktif',
-            tanggal_mulai: '15 Juli 2025',
-            tanggal_selesai: '15 September 2025',
-            statusColor: 'bg-green-100 text-green-800',
-        },
-        {
-            id: 4,
-            nama: 'Maya Dewi',
-            nim: '20104004',
-            universitas: 'Universitas Lampung',
-            jurusan: 'Desain Komunikasi Visual',
-            email: 'maya.dewi@example.com',
-            telepon: '08456789012',
-            bidang: 'Bidang Informasi dan Komunikasi Publik',
-            status: 'Aktif',
-            tanggal_mulai: '10 Juli 2025',
-            tanggal_selesai: '10 September 2025',
-            statusColor: 'bg-green-100 text-green-800',
-        },
-        {
-            id: 5,
-            nama: 'Rentra Wijaya',
-            nim: '19104005',
-            universitas: 'Institut Teknologi Sumatera',
-            jurusan: 'Teknik Informatika',
-            email: 'rentra.wijaya@example.com',
-            telepon: '08567890123',
-            bidang: 'Bidang Data dan Statistik',
-            status: 'Selesai',
-            tanggal_mulai: '15 Mei 2025',
-            tanggal_selesai: '15 Juli 2025',
-            statusColor: 'bg-blue-100 text-blue-800',
-        },
-    ];
+interface Bidang {
+    id: number;
+    nama_bidang: string;
+    kepala_bidang: string;
+    deskripsi: string;
+}
+
+interface Mahasiswa {
+    id: number;
+    nama: string;
+    nim: string;
+    universitas: string;
+    jurusan: string;
+    email: string;
+    telepon: string;
+    bidang: Bidang;
+    status: string;
+    tanggal_mulai: string;
+    tanggal_selesai: string;
+}
+
+interface Statistik {
+    total_mahasiswa: number;
+    sedang_aktif: number;
+    telah_selesai: number;
+    total_universitas: number;
+}
+
+interface DataMahasiswaPageProps extends PageProps {
+    mahasiswa: Mahasiswa[];
+    statistik: Statistik;
+    distribusi_bidang: Record<string, number>;
+    distribusi_universitas: Record<string, number>;
+}
+
+const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_universitas }: DataMahasiswaPageProps) => {
+    // Fungsi untuk menentukan warna status
+    const getStatusColor = (status: string) => {
+        switch (status) {
+            case 'Menunggu':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'Diterima':
+                return 'bg-green-100 text-green-800';
+            case 'Ditolak':
+                return 'bg-red-100 text-red-800';
+            case 'Sedang Magang':
+                return 'bg-purple-100 text-purple-800';
+            case 'Selesai Magang':
+                return 'bg-blue-100 text-blue-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    };
+
+    // Fungsi untuk format tanggal
+    const formatTanggal = (tanggal: string) => {
+        return new Date(tanggal).toLocaleDateString('id-ID', {
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+        });
+    };
 
     return (
         <Layout currentPage="data-mahasiswa">
@@ -113,7 +102,7 @@ const DataMahasiswa = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">Total Mahasiswa</p>
-                                    <p className="text-2xl font-bold text-gray-800">24</p>
+                                    <p className="text-2xl font-bold text-gray-800">{statistik.total_mahasiswa}</p>
                                 </div>
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
                                     <span className="text-xl text-blue-600">👥</span>
@@ -124,7 +113,7 @@ const DataMahasiswa = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">Sedang Aktif</p>
-                                    <p className="text-2xl font-bold text-green-600">18</p>
+                                    <p className="text-2xl font-bold text-green-600">{statistik.sedang_aktif}</p>
                                 </div>
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
                                     <span className="text-xl text-green-600">✅</span>
@@ -135,7 +124,7 @@ const DataMahasiswa = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">Telah Selesai</p>
-                                    <p className="text-2xl font-bold text-blue-600">6</p>
+                                    <p className="text-2xl font-bold text-blue-600">{statistik.telah_selesai}</p>
                                 </div>
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
                                     <span className="text-xl text-blue-600">🎓</span>
@@ -146,7 +135,7 @@ const DataMahasiswa = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <p className="text-sm font-medium text-gray-600">Universitas</p>
-                                    <p className="text-2xl font-bold text-purple-600">5</p>
+                                    <p className="text-2xl font-bold text-purple-600">{statistik.total_universitas}</p>
                                 </div>
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100">
                                     <span className="text-xl text-purple-600">🏫</span>
@@ -178,35 +167,49 @@ const DataMahasiswa = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {mahasiswaData.map((mahasiswa, index) => (
-                                        <tr key={mahasiswa.id} className="transition-colors duration-200 hover:bg-gray-50">
-                                            <td className="px-6 py-4 text-sm font-medium text-gray-900">{index + 1}</td>
-                                            <td className="px-6 py-4">
-                                                <div className="text-sm font-medium text-gray-900">{mahasiswa.nama}</div>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">{mahasiswa.nim}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">{mahasiswa.universitas}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">{mahasiswa.jurusan}</td>
-                                            <td className="px-6 py-4">
-                                                <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
-                                                    {mahasiswa.bidang}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">
-                                                <div>{mahasiswa.tanggal_mulai}</div>
-                                                <div className="text-xs text-gray-500">s/d {mahasiswa.tanggal_selesai}</div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <span className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${mahasiswa.statusColor}`}>
-                                                    {mahasiswa.status}
-                                                </span>
-                                            </td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">
-                                                <div>{mahasiswa.email}</div>
-                                                <div className="text-xs text-gray-500">{mahasiswa.telepon}</div>
+                                    {mahasiswa.length > 0 ? (
+                                        mahasiswa.map((mhs, index) => (
+                                            <tr key={mhs.id} className="transition-colors duration-200 hover:bg-gray-50">
+                                                <td className="px-6 py-4 text-sm font-medium text-gray-900">{index + 1}</td>
+                                                <td className="px-6 py-4">
+                                                    <div className="text-sm font-medium text-gray-900">{mhs.nama}</div>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-600">{mhs.nim}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-600">{mhs.universitas}</td>
+                                                <td className="px-6 py-4 text-sm text-gray-600">{mhs.jurusan}</td>
+                                                <td className="px-6 py-4">
+                                                    <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+                                                        {mhs.bidang?.nama_bidang || 'Tidak Ada Bidang'}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-600">
+                                                    <div>{formatTanggal(mhs.tanggal_mulai)}</div>
+                                                    <div className="text-xs text-gray-500">s/d {formatTanggal(mhs.tanggal_selesai)}</div>
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span
+                                                        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(mhs.status)}`}
+                                                    >
+                                                        {mhs.status === 'Sedang Magang' ? 'Sedang Aktif' : mhs.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-sm text-gray-600">
+                                                    <div>{mhs.email}</div>
+                                                    <div className="text-xs text-gray-500">{mhs.telepon}</div>
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
+                                                <div className="flex flex-col items-center justify-center">
+                                                    <span className="mb-2 text-4xl">📋</span>
+                                                    <p className="text-lg font-medium">Belum ada data mahasiswa</p>
+                                                    <p className="text-sm">Data akan muncul setelah ada mahasiswa yang diterima</p>
+                                                </div>
                                             </td>
                                         </tr>
-                                    ))}
+                                    )}
                                 </tbody>
                             </table>
                         </div>
@@ -217,73 +220,87 @@ const DataMahasiswa = () => {
                         <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
                             <h4 className="mb-4 text-lg font-semibold text-gray-800">Distribusi Bidang</h4>
                             <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">IT Support</span>
-                                    <span className="text-sm font-medium text-blue-600">8 orang</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">Web Development</span>
-                                    <span className="text-sm font-medium text-purple-600">6 orang</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">Network Admin</span>
-                                    <span className="text-sm font-medium text-green-600">5 orang</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">UI/UX Design</span>
-                                    <span className="text-sm font-medium text-orange-600">3 orang</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">Data Analysis</span>
-                                    <span className="text-sm font-medium text-red-600">2 orang</span>
-                                </div>
+                                {Object.entries(distribusi_bidang).length > 0 ? (
+                                    Object.entries(distribusi_bidang)
+                                        .slice(0, 5)
+                                        .map(([bidang, jumlah], index) => (
+                                            <div key={bidang} className="flex items-center justify-between">
+                                                <span className="text-sm text-gray-600">{bidang}</span>
+                                                <span
+                                                    className={`text-sm font-medium ${
+                                                        index === 0
+                                                            ? 'text-blue-600'
+                                                            : index === 1
+                                                              ? 'text-purple-600'
+                                                              : index === 2
+                                                                ? 'text-green-600'
+                                                                : index === 3
+                                                                  ? 'text-orange-600'
+                                                                  : 'text-red-600'
+                                                    }`}
+                                                >
+                                                    {jumlah} orang
+                                                </span>
+                                            </div>
+                                        ))
+                                ) : (
+                                    <p className="text-sm text-gray-500">Belum ada data bidang</p>
+                                )}
                             </div>
                         </div>
 
                         <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
                             <h4 className="mb-4 text-lg font-semibold text-gray-800">Universitas Asal</h4>
                             <div className="space-y-3">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">Universitas Lampung</span>
-                                    <span className="text-sm font-medium text-blue-600">10 orang</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">Institut Teknologi Sumatera</span>
-                                    <span className="text-sm font-medium text-purple-600">8 orang</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">Universitas Bandar Lampung</span>
-                                    <span className="text-sm font-medium text-green-600">4 orang</span>
-                                </div>
-                                <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-600">Universitas Teknokrat</span>
-                                    <span className="text-sm font-medium text-orange-600">2 orang</span>
-                                </div>
+                                {Object.entries(distribusi_universitas).length > 0 ? (
+                                    Object.entries(distribusi_universitas)
+                                        .slice(0, 4)
+                                        .map(([universitas, jumlah], index) => (
+                                            <div key={universitas} className="flex items-center justify-between">
+                                                <span className="text-sm text-gray-600">{universitas}</span>
+                                                <span
+                                                    className={`text-sm font-medium ${
+                                                        index === 0
+                                                            ? 'text-blue-600'
+                                                            : index === 1
+                                                              ? 'text-purple-600'
+                                                              : index === 2
+                                                                ? 'text-green-600'
+                                                                : 'text-orange-600'
+                                                    }`}
+                                                >
+                                                    {jumlah} orang
+                                                </span>
+                                            </div>
+                                        ))
+                                ) : (
+                                    <p className="text-sm text-gray-500">Belum ada data universitas</p>
+                                )}
                             </div>
                         </div>
 
                         <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl md:col-span-2">
-                            <h4 className="mb-4 text-lg font-semibold text-gray-800">Timeline Magang</h4>
+                            <h4 className="mb-4 text-lg font-semibold text-gray-800">Status Magang</h4>
                             <div className="space-y-4">
                                 <div className="flex items-center space-x-4">
                                     <div className="h-3 w-3 rounded-full bg-green-500"></div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-800">Periode Juli - September 2025</p>
-                                        <p className="text-xs text-gray-600">18 mahasiswa sedang aktif</p>
+                                        <p className="text-sm font-medium text-gray-800">Mahasiswa Sedang Aktif</p>
+                                        <p className="text-xs text-gray-600">{statistik.sedang_aktif} mahasiswa sedang menjalani magang</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-4">
                                     <div className="h-3 w-3 rounded-full bg-blue-500"></div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-800">Periode Mei - Juli 2025</p>
-                                        <p className="text-xs text-gray-600">6 mahasiswa telah selesai</p>
+                                        <p className="text-sm font-medium text-gray-800">Mahasiswa Telah Selesai</p>
+                                        <p className="text-xs text-gray-600">{statistik.telah_selesai} mahasiswa telah menyelesaikan program</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-4">
                                     <div className="h-3 w-3 rounded-full bg-purple-500"></div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-800">Periode September - November 2025</p>
-                                        <p className="text-xs text-gray-600">Pendaftaran akan dibuka</p>
+                                        <p className="text-sm font-medium text-gray-800">Total Kerjasama</p>
+                                        <p className="text-xs text-gray-600">{statistik.total_universitas} universitas telah bekerjasama</p>
                                     </div>
                                 </div>
                             </div>
