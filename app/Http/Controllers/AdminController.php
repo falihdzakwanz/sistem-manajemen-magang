@@ -13,7 +13,7 @@ class AdminController extends Controller
 {
     public function index()
     {
-        $users = User::all()->map(function ($user) {
+        $users = User::with('bidang')->get()->map(function ($user) {
             return [
                 'id' => $user->id,
                 'nama' => $user->nama,
@@ -27,11 +27,12 @@ class AdminController extends Controller
                 'tanggal_selesai' => $user->tanggal_selesai,
                 'status' => $user->status,
                 'bidang_id' => $user->bidang_id,
-                'bidang' => $this->getBidangName($user->bidang_id),
+                'bidang' => $user->bidang ? $user->bidang->nama_bidang : 'Belum ditentukan',
                 'motivasi' => $user->motivasi ?? '',
                 'linkedin' => $user->linkedin ?? '',
                 'surat_pengantar' => $user->surat_pengantar,
                 'cv' => $user->cv,
+                'reject_reason' => $user->reject_reason ?? '',
             ];
         });
 
@@ -43,13 +44,25 @@ class AdminController extends Controller
     public function updateStatus(Request $request, $id): RedirectResponse
     {
         $request->validate([
-            'status' => 'required|in:Sedang Diproses,Diterima,Ditolak,Sedang Magang,Selesai Magang'
+            'status' => 'required|in:Sedang Diproses,Diterima,Ditolak,Sedang Magang,Selesai Magang',
+            'reject_reason' => 'nullable|string'
         ]);
 
         $user = User::findOrFail($id);
-        $user->update([
-            'status' => $request->status
-        ]);
+        
+        $updateData = ['status' => $request->status];
+        
+        // Jika status ditolak, simpan alasan penolakan
+        if ($request->status === 'Ditolak' && $request->reject_reason) {
+            $updateData['reject_reason'] = $request->reject_reason;
+        }
+        
+        // Jika status bukan ditolak, hapus alasan penolakan jika ada
+        if ($request->status !== 'Ditolak') {
+            $updateData['reject_reason'] = null;
+        }
+        
+        $user->update($updateData);
 
         return redirect()->back()->with('success', 'Status user berhasil diupdate');
     }
@@ -86,24 +99,5 @@ class AdminController extends Controller
             return redirect()->route('admin.destroy')
                 ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
-    }
-
-
-    private function getBidangName($bidangId)
-    {
-        $bidangNames = [
-            1 => 'IT Support',
-            2 => 'Web Development', 
-            3 => 'Network Administration',
-            4 => 'UI/UX Design',
-            5 => 'Data Analysis',
-            6 => 'Mobile Development',
-            7 => 'Database Administration',
-            8 => 'Cybersecurity',
-            9 => 'Digital Marketing',
-            10 => 'Project Management'
-        ];
-
-        return $bidangNames[$bidangId] ?? 'Unknown';
     }
 }

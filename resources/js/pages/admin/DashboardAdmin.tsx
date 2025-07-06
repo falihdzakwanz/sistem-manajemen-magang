@@ -354,9 +354,9 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                     <th className="px-6 py-4 text-left text-sm font-semibold">NIM</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold">Universitas</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold">Bidang</th>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold">Tanggal Daftar</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold">Periode Magang</th>
                                     <th className="px-6 py-4 text-left text-sm font-semibold">Status</th>
-                                    <th className="px-6 py-4 text-left text-sm font-semibold">Aksi</th>
+                                    <th className="px-6 py-4 text-left text-sm font-semibold">Detail</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
@@ -374,9 +374,12 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                                 <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
                                                     {mahasiswa.bidang}
                                                 </span>
-                                            </td>
+                                            </td>{' '}
                                             <td className="px-6 py-4 text-sm text-gray-600">
-                                                {new Date(mahasiswa.tanggal_daftar).toLocaleDateString('id-ID')}
+                                                <div>{new Date(mahasiswa.tanggal_mulai).toLocaleDateString('id-ID')}</div>
+                                                <div className="text-xs text-gray-500">
+                                                    s/d {new Date(mahasiswa.tanggal_selesai).toLocaleDateString('id-ID')}
+                                                </div>
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span
@@ -493,6 +496,12 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                     <label className="block text-sm font-medium text-gray-700">Tanggal Selesai</label>
                                     <p className="mt-1 text-sm text-gray-900">
                                         {new Date(selectedMahasiswa.tanggal_selesai).toLocaleDateString('id-ID')}
+                                    </p>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700">Tanggal Daftar</label>
+                                    <p className="mt-1 text-sm text-gray-900">
+                                        {new Date(selectedMahasiswa.tanggal_daftar).toLocaleDateString('id-ID')}
                                     </p>
                                 </div>
                             </div>

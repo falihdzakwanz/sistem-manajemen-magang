@@ -26,6 +26,7 @@ class User extends Model
         'cv',
         'linkedin',
         'motivasi',
+        'reject_reason',
     ];
     
     public function bidang()
