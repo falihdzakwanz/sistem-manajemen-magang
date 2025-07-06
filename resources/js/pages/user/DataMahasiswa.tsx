@@ -216,8 +216,8 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                     </div>
 
                     {/* Bidang Statistics */}
-                    <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
+                    <div className="mt-12 grid grid-cols-1 gap-6 md:grid-cols-3 lg:grid-cols-5">
+                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl md:col-span-1 lg:col-span-2">
                             <h4 className="mb-4 text-lg font-semibold text-gray-800">Distribusi Bidang</h4>
                             <div className="space-y-3">
                                 {Object.entries(distribusi_bidang).length > 0 ? (
@@ -249,7 +249,7 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                             </div>
                         </div>
 
-                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
+                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl md:col-span-1 lg:col-span-2">
                             <h4 className="mb-4 text-lg font-semibold text-gray-800">Universitas Asal</h4>
                             <div className="space-y-3">
                                 {Object.entries(distribusi_universitas).length > 0 ? (
@@ -279,28 +279,28 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                             </div>
                         </div>
 
-                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl md:col-span-2">
+                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl md:col-span-1 lg:col-span-1">
                             <h4 className="mb-4 text-lg font-semibold text-gray-800">Status Magang</h4>
                             <div className="space-y-4">
                                 <div className="flex items-center space-x-4">
                                     <div className="h-3 w-3 rounded-full bg-green-500"></div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-800">Mahasiswa Sedang Aktif</p>
-                                        <p className="text-xs text-gray-600">{statistik.sedang_aktif} mahasiswa sedang menjalani magang</p>
+                                        <p className="text-sm font-medium text-gray-800">Sedang Aktif</p>
+                                        <p className="text-xs text-gray-600">{statistik.sedang_aktif} mahasiswa</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-4">
                                     <div className="h-3 w-3 rounded-full bg-blue-500"></div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-800">Mahasiswa Telah Selesai</p>
-                                        <p className="text-xs text-gray-600">{statistik.telah_selesai} mahasiswa telah menyelesaikan program</p>
+                                        <p className="text-sm font-medium text-gray-800">Telah Selesai</p>
+                                        <p className="text-xs text-gray-600">{statistik.telah_selesai} mahasiswa</p>
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-4">
                                     <div className="h-3 w-3 rounded-full bg-purple-500"></div>
                                     <div className="flex-1">
-                                        <p className="text-sm font-medium text-gray-800">Total Kerjasama</p>
-                                        <p className="text-xs text-gray-600">{statistik.total_universitas} universitas telah bekerjasama</p>
+                                        <p className="text-sm font-medium text-gray-800">Kerjasama</p>
+                                        <p className="text-xs text-gray-600">{statistik.total_universitas} universitas</p>
                                     </div>
                                 </div>
                             </div>
