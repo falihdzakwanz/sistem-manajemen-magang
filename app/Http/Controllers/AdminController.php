@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Storage;
 
 class AdminController extends Controller
 {
@@ -51,6 +53,41 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Status user berhasil diupdate');
     }
+    public function destroy(User $users)
+    {
+        try {
+            // Pastikan data ditemukan (jika tidak ada, akan melemparkan ModelNotFoundException)
+            if (!$users) {
+                throw new ModelNotFoundException("User not found");
+            }
+
+            // Cek dan hapus surat pengantar jika ada
+            if ($users->surat_pengantar) {
+                Storage::disk('public')->delete($users->surat_pengantar);
+            }
+
+            // Cek dan hapus CV jika ada
+            if ($users->cv) {
+                Storage::disk('public')->delete($users->cv);
+            }
+
+            // Menghapus data user
+            $users->delete();
+
+            // Redirect dengan pesan sukses
+            return redirect()->route('admin.destroy')
+                ->with('success', 'Data user berhasil dihapus');
+        } catch (ModelNotFoundException $e) {
+            // Menangani kasus ketika data tidak ditemukan
+            return redirect()->route('admin.destroy')
+                ->with('error', 'User tidak ditemukan.');
+        } catch (\Exception $e) {
+            // Menangani kesalahan lainnya (misalnya file yang tidak bisa dihapus)
+            return redirect()->route('admin.destroy')
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
 
     private function getBidangName($bidangId)
     {

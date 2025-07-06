@@ -9,23 +9,19 @@ use Illuminate\Support\Facades\Storage;
 
 class UserController extends Controller
 {
-    public function index()
+    public function create()
     {
-        $users = User::all();
-
-        return Inertia::render('user/DaftarMagang', [
-            'users' => $users,
-        ]);
+        return Inertia::render('user/DaftarMagang');
     }
 
     public function store(Request $request)
     {
         $validated = $request->validate([
             'nama'             => 'required|string|max:255',
-            'nim'              => 'required|string|unique:mahasiswas,nim',
+            'nim'              => 'required|string|unique:pesertas,nim',
             'universitas'      => 'required|string|max:255',
             'jurusan'          => 'required|string|max:255',
-            'email'            => 'required|email|unique:mahasiswas,email',
+            'email'            => 'required|email|unique:pesertas,email',
             'telepon'          => 'required|string|max:20',
             'tanggal_daftar'   => 'required|date',
             'tanggal_mulai'    => 'required|date',
@@ -59,26 +55,11 @@ class UserController extends Controller
         return redirect()->route('daftar-magang')->with('success', 'Pendaftaran magang berhasil disubmit!');
     }
 
-    public function destroy(User $user)
-    {
-        if ($user->surat_pengantar) {
-            Storage::disk('public')->delete($user->surat_pengantar);
-        }
-
-        if ($user->cv) {
-            Storage::disk('public')->delete($user->cv);
-        }
-
-        $user->delete();
-
-        return redirect()->route('daftar-magang')->with('success', 'Data user berhasil dihapus');
-    }
-
     public function getStatusPendaftaran()
     {
         // Status yang diizinkan untuk ditampilkan
         $allowedStatuses = ['Sedang Diproses', 'Diterima', 'Ditolak'];
-        
+
         // Ambil data dari tabel mahasiswas dengan status yang diizinkan
         $users = User::select([
             'id',
@@ -88,11 +69,11 @@ class UserController extends Controller
             'tanggal_daftar',
             'status'
         ])->whereIn('status', $allowedStatuses)
-          ->orderBy('tanggal_daftar', 'desc')
-          ->get();
+            ->orderBy('tanggal_daftar', 'desc')
+            ->paginate(10);
 
         return Inertia::render('user/StatusPendaftaran', [
-            'pendaftars' => $users,
+            'pesertas' => $users,
         ]);
     }
 }
