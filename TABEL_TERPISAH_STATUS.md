@@ -5,6 +5,7 @@
 Dashboard Admin telah dikembalikan ke sistem tab navigation dengan fitur lengkap:
 
 ### **Fitur yang Dikembalikan:**
+
 - ✅ **Tab Navigation** - 5 tab terpisah berdasarkan status
 - ✅ **Counter Mahasiswa** per tab dengan warna berbeda
 - ✅ **Panel Otomatisasi** - Informasi visual tentang auto-transition
@@ -15,6 +16,7 @@ Dashboard Admin telah dikembalikan ke sistem tab navigation dengan fitur lengkap
 - ✅ **Pagination** - Per tab dengan counting yang akurat
 
 ### **Visual Indicators:**
+
 - **🤖 Badge** - Status dengan otomatisasi (Diterima, Sedang Magang)
 - **📧 Badge** - Status yang trigger email (Menunggu→Diterima/Ditolak)
 - **Color Coding** - Setiap tab memiliki warna konsisten

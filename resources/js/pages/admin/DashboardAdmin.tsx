@@ -720,9 +720,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                         </div>
                         <div className="flex-1">
                             <h3 className="text-lg font-semibold text-gray-800">🤖 Otomatisasi Status Aktif</h3>
-                            <p className="mt-1 text-sm text-gray-600">
-                                Sistem otomatis mengupdate status mahasiswa setiap hari berdasarkan tanggal:
-                            </p>
+                            <p className="mt-1 text-sm text-gray-600">Sistem otomatis mengupdate status mahasiswa setiap hari berdasarkan tanggal:</p>
                             <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
                                 <div className="flex items-center space-x-2 rounded-lg bg-green-100 p-2">
                                     <span className="text-green-600">✅</span>
@@ -774,18 +772,14 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 <span>{tab.status}</span>
                                 <span
                                     className={`rounded-full px-2 py-1 text-xs font-bold ${
-                                        activeTab === tab.status
-                                            ? 'bg-white/20 text-white'
-                                            : `bg-${tab.color}-200 text-${tab.color}-800`
+                                        activeTab === tab.status ? 'bg-white/20 text-white' : `bg-${tab.color}-200 text-${tab.color}-800`
                                     }`}
                                 >
                                     {tab.count}
                                 </span>
                                 {tab.autoIcon && (
                                     <span
-                                        className={`rounded-full p-1 ${
-                                            activeTab === tab.status ? 'bg-white/20' : `bg-${tab.color}-200`
-                                        }`}
+                                        className={`rounded-full p-1 ${activeTab === tab.status ? 'bg-white/20' : `bg-${tab.color}-200`}`}
                                         title="Status ini memiliki otomatisasi"
                                     >
                                         🤖
@@ -793,9 +787,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 )}
                                 {tab.emailIcon && (
                                     <span
-                                        className={`rounded-full p-1 ${
-                                            activeTab === tab.status ? 'bg-white/20' : `bg-${tab.color}-200`
-                                        }`}
+                                        className={`rounded-full p-1 ${activeTab === tab.status ? 'bg-white/20' : `bg-${tab.color}-200`}`}
                                         title="Perubahan status mengirim email otomatis"
                                     >
                                         📧
@@ -809,14 +801,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                 {/* Data Table */}
                 <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-xl">
                     <div className="border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6">
-                        <h3 className="text-xl font-bold text-gray-800">
-                            Data Mahasiswa - Status: {activeTab}
-                        </h3>
+                        <h3 className="text-xl font-bold text-gray-800">Data Mahasiswa - Status: {activeTab}</h3>
                         <p className="mt-1 text-sm text-gray-600">
                             Menampilkan {activeTabData.length} mahasiswa dengan status "{activeTab}"
-                            {activeTabData.length !== getDataByStatus(activeTab).length && 
-                                ` (${getDataByStatus(activeTab).length} total, ${activeTabData.length} hasil pencarian)`
-                            }
+                            {activeTabData.length !== getDataByStatus(activeTab).length &&
+                                ` (${getDataByStatus(activeTab).length} total, ${activeTabData.length} hasil pencarian)`}
                         </p>
                     </div>
 
@@ -1513,14 +1502,10 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                         </svg>
                                     </div>
                                 </div>
-                                <p className="text-center text-sm text-gray-600">
-                                    Apakah Anda yakin ingin menghapus data mahasiswa:
-                                </p>
+                                <p className="text-center text-sm text-gray-600">Apakah Anda yakin ingin menghapus data mahasiswa:</p>
                                 <p className="mt-2 text-center text-lg font-medium text-gray-900">{selectedMahasiswa.nama}</p>
                                 <p className="mt-1 text-center text-sm text-gray-500">NIM: {selectedMahasiswa.nim}</p>
-                                <p className="mt-4 text-center text-sm text-red-600 font-medium">
-                                    Tindakan ini tidak dapat dibatalkan!
-                                </p>
+                                <p className="mt-4 text-center text-sm font-medium text-red-600">Tindakan ini tidak dapat dibatalkan!</p>
                             </div>
                         </div>
                         <div className="flex justify-between border-t border-gray-200 p-6">
