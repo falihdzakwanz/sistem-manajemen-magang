@@ -136,7 +136,13 @@ class UserSeeder extends Seeder
         ];
 
         foreach ($mahasiswas as $mahasiswa) {
-            User::create($mahasiswa);
+            User::updateOrCreate(
+                [
+                    'nim' => $mahasiswa['nim'],
+                    'email' => $mahasiswa['email'],
+                ],
+                $mahasiswa
+            );
         }
     }
 }

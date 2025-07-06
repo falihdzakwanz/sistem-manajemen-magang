@@ -12,14 +12,16 @@ class AdminSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
-    {
-        Admin::create([
+    public function run()
+{
+    Admin::updateOrCreate(
+        ['email' => 'admin@komdigi.com'],
+        [
             'name' => 'Admin Dinas Kominfo',
-            'email' => 'admin@komdigi.com',
             'username' => 'admin',
             'password' => Hash::make('admin123'),
             'email_verified_at' => now(),
-        ]);
-    }
+        ]
+    );
+}
 }
