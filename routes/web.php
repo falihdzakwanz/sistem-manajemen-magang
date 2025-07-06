@@ -21,6 +21,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard-admin', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::delete('/dashboard-admin/pendaftar/{user}', [UserController::class, 'destroy'])->name('admin.destroy');
     Route::patch('/dashboard-admin/pendaftar/{id}/status', [AdminController::class, 'updateStatus'])->name('admin.updateStatus');
+    Route::delete('/dashboard-admin/mahasiswa/{id}', [AdminController::class, 'deleteMahasiswa'])->name('admin.deleteMahasiswa');
+    Route::post('/dashboard-admin/update-status-manual', [AdminController::class, 'updateStatusMagangManual'])->name('admin.updateStatusManual');
 });
 
 // Legacy admin route redirect

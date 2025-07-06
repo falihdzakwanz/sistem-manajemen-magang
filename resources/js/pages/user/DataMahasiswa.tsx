@@ -40,16 +40,16 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
     // Fungsi untuk menentukan warna status
     const getStatusColor = (status: string) => {
         switch (status) {
-            case 'Menunggu':
-                return 'bg-yellow-100 text-yellow-800';
             case 'Diterima':
                 return 'bg-green-100 text-green-800';
+            case 'Menunggu':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'Selesai Magang':
+                return 'bg-blue-100 text-blue-800';
             case 'Ditolak':
                 return 'bg-red-100 text-red-800';
             case 'Sedang Magang':
                 return 'bg-purple-100 text-purple-800';
-            case 'Selesai Magang':
-                return 'bg-blue-100 text-blue-800';
             default:
                 return 'bg-gray-100 text-gray-800';
         }
@@ -190,7 +190,7 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                                                     <span
                                                         className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(mhs.status)}`}
                                                     >
-                                                        {mhs.status === 'Sedang Magang' ? 'Sedang Aktif' : mhs.status}
+                                                        {mhs.status}
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-600">

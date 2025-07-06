@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Storage;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -57,6 +58,9 @@ class UserController extends Controller
 
     public function getStatusPendaftaran()
     {
+        // Auto update status sebelum menampilkan data
+        $this->autoUpdateStatus();
+        
         // Status yang diizinkan untuk ditampilkan
         $allowedStatuses = ['Menunggu', 'Diterima', 'Ditolak'];
 
@@ -87,6 +91,9 @@ class UserController extends Controller
 
     public function getDataMahasiswa()
     {
+        // Auto update status sebelum menampilkan data
+        $this->autoUpdateStatus();
+        
         // Ambil data mahasiswa yang statusnya 'Sedang Magang' (sedang aktif) atau 'Selesai Magang'
         $mahasiswa = User::with('bidang')
             ->whereIn('status', ['Sedang Magang', 'Selesai Magang'])
@@ -124,5 +131,23 @@ class UserController extends Controller
             'distribusi_bidang' => $distribusiBidang,
             'distribusi_universitas' => $distribusiUniversitas,
         ]);
+    }
+
+    /**
+     * Auto update status before displaying data
+     */
+    private function autoUpdateStatus()
+    {
+        $today = Carbon::today();
+        
+        // Update Diterima -> Sedang Magang (jika tanggal mulai sudah tiba)
+        User::where('status', 'Diterima')
+            ->whereDate('tanggal_mulai', '<=', $today)
+            ->update(['status' => 'Sedang Magang']);
+            
+        // Update Sedang Magang -> Selesai Magang (jika tanggal selesai sudah lewat)
+        User::where('status', 'Sedang Magang')
+            ->whereDate('tanggal_selesai', '<', $today)
+            ->update(['status' => 'Selesai Magang']);
     }
 }
