@@ -1,6 +1,10 @@
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
+/**
+ * Interface untuk data mahasiswa yang mendaftar magang
+ * Berisi semua informasi yang diperlukan untuk proses pendaftaran
+ */
 interface Mahasiswa {
     id: number;
     nama: string;
@@ -15,13 +19,17 @@ interface Mahasiswa {
     status: string;
     bidang_id: number;
     bidang: string;
-    surat_pengantar?: string;
-    cv?: string;
-    linkedin?: string;
-    motivasi?: string;
-    reject_reason?: string;
+    surat_pengantar?: string; // Optional: file surat pengantar
+    cv?: string; // Optional: file CV
+    linkedin?: string; // Optional: LinkedIn profile URL
+    motivasi?: string; // Optional: motivasi pendaftaran
+    reject_reason?: string; // Optional: alasan penolakan jika ditolak
 }
 
+/**
+ * Props untuk komponen DashboardAdmin
+ * Menerima data mahasiswa dan informasi autentikasi admin
+ */
 interface AdminProps {
     mahasiswas?: Mahasiswa[];
     auth?: {
@@ -32,20 +40,45 @@ interface AdminProps {
     };
 }
 
+/**
+ * Komponen utama Dashboard Admin untuk mengelola data mahasiswa magang
+ *
+ * Fitur utama:
+ * - Melihat statistik pendaftar magang
+ * - Filter dan pencarian mahasiswa berdasarkan status
+ * - Menyetujui/menolak pendaftaran mahasiswa
+ * - Edit status mahasiswa
+ * - Hapus data mahasiswa
+ * - Preview dan download dokumen pendaftar
+ * - Update status otomatis berdasarkan tanggal
+ */
 export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
+    // ===== STATE MANAGEMENT =====
+    // State untuk pencarian dan filter
     const [searchTerm, setSearchTerm] = useState('');
     const [activeTab, setActiveTab] = useState('Menunggu');
+
+    // State untuk modal dan data yang dipilih
     const [selectedMahasiswa, setSelectedMahasiswa] = useState<Mahasiswa | null>(null);
     const [showModal, setShowModal] = useState(false);
     const [showRejectModal, setShowRejectModal] = useState(false);
-    const [rejectReason, setRejectReason] = useState('');
     const [showEditModal, setShowEditModal] = useState(false);
-    const [editStatus, setEditStatus] = useState('');
     const [showDeleteModal, setShowDeleteModal] = useState(false);
+
+    // State untuk form input
+    const [rejectReason, setRejectReason] = useState('');
+    const [editStatus, setEditStatus] = useState('');
+
+    // State untuk pagination
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(10);
 
-    // Effect untuk menangani scroll delegation dari overlay ke modal content
+    // ===== EFFECT HOOKS =====
+
+    /**
+     * Effect untuk menangani scroll delegation dari overlay modal ke modal content
+     * Berguna untuk memungkinkan scroll di dalam modal tanpa scroll halaman utama
+     */
     useEffect(() => {
         const handleOverlayScroll = (e: WheelEvent) => {
             if (showModal || showRejectModal || showEditModal || showDeleteModal) {
@@ -64,33 +97,54 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
             document.addEventListener('wheel', handleOverlayScroll, { passive: false });
         }
 
-        // Cleanup
+        // Cleanup function untuk remove event listener
         return () => {
             document.removeEventListener('wheel', handleOverlayScroll);
         };
     }, [showModal, showRejectModal, showEditModal, showDeleteModal]);
 
-    // Reset pagination when search term or active tab changes
+    /**
+     * Effect untuk reset pagination ketika search term atau tab aktif berubah
+     * Memastikan user selalu kembali ke halaman pertama saat melakukan filter baru
+     */
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm, activeTab]);
 
-    // Helper function untuk mendapatkan URL file storage
+    // ===== HELPER FUNCTIONS =====
+
+    /**
+     * Mendapatkan URL lengkap untuk file yang disimpan di storage
+     * @param filePath - Path relatif file di storage
+     * @returns URL lengkap file
+     */
     const getFileUrl = (filePath: string) => {
         return `/storage/${filePath}`;
     };
 
-    // Helper function untuk mendapatkan nama file dari path
+    /**
+     * Mengekstrak nama file dari path lengkap
+     * @param filePath - Path lengkap file
+     * @returns Nama file saja
+     */
     const getFileName = (filePath: string) => {
         return filePath.split('/').pop() || filePath;
     };
 
-    // Helper function untuk mendapatkan extension file
+    /**
+     * Mendapatkan ekstensi file dari path
+     * @param filePath - Path file
+     * @returns Ekstensi file dalam lowercase
+     */
     const getFileExtension = (filePath: string) => {
         return filePath.split('.').pop()?.toLowerCase() || '';
     };
 
-    // Helper function untuk mendapatkan icon berdasarkan tipe file
+    /**
+     * Mendapatkan icon emoji berdasarkan tipe file
+     * @param filePath - Path file untuk menentukan ekstensi
+     * @returns Emoji icon yang sesuai dengan tipe file
+     */
     const getFileIcon = (filePath: string) => {
         const ext = getFileExtension(filePath);
         switch (ext) {
@@ -109,341 +163,80 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
         }
     };
 
-    // Helper function untuk membuka/preview file
+    /**
+     * Membuka file dalam tab baru untuk preview
+     * @param filePath - Path file yang akan dibuka
+     */
     const handleFilePreview = (filePath: string) => {
         const url = getFileUrl(filePath);
         window.open(url, '_blank');
     };
 
-    // Data dummy jika tidak ada data dari props
-    const defaultData: Mahasiswa[] = [
-        {
-            id: 1,
-            nama: 'Ahmad Rizki Pratama',
-            nim: '19104001',
-            universitas: 'Universitas Lampung',
-            jurusan: 'Teknik Informatika',
-            email: 'ahmad.rizki@example.com',
-            telepon: '08123456789',
-            tanggal_daftar: '2025-06-01',
-            tanggal_mulai: '2025-07-01',
-            tanggal_selesai: '2025-08-31',
-            status: 'Diterima',
-            bidang_id: 1,
-            bidang: 'IT Support',
-            motivasi: 'Ingin belajar tentang teknologi informasi dan komunikasi untuk meningkatkan skill dalam bidang IT',
-            surat_pengantar: 'surat-pengantar/ahmad_rizki_surat_pengantar_1625097600.pdf',
-            cv: 'cv/ahmad_rizki_cv_1625097600.pdf',
-            linkedin: 'https://linkedin.com/in/ahmad-rizki-pratama',
-        },
-        {
-            id: 2,
-            nama: 'Siti Nurhaliza',
-            nim: '20104002',
-            universitas: 'Institut Teknologi Sumatera',
-            jurusan: 'Sistem Informasi',
-            email: 'siti.nur@example.com',
-            telepon: '08234567890',
-            tanggal_daftar: '2025-06-05',
-            tanggal_mulai: '2025-07-15',
-            tanggal_selesai: '2025-09-15',
-            status: 'Menunggu',
-            bidang_id: 2,
-            bidang: 'Web Development',
-            motivasi: 'Tertarik untuk mengembangkan skill web development dan ingin berkontribusi dalam digitalisasi pemerintahan',
-            surat_pengantar: 'surat-pengantar/siti_nurhaliza_surat_pengantar_1625184000.pdf',
-            cv: 'cv/siti_nurhaliza_cv_1625184000.docx',
-            linkedin: 'https://linkedin.com/in/siti-nurhaliza',
-        },
-        {
-            id: 3,
-            nama: 'Budi Santoso',
-            nim: '19104003',
-            universitas: 'Universitas Bandar Lampung',
-            jurusan: 'Teknik Komputer',
-            email: 'budi.santoso@example.com',
-            telepon: '08345678901',
-            tanggal_daftar: '2025-05-20',
-            tanggal_mulai: '2025-06-01',
-            tanggal_selesai: '2025-07-31',
-            status: 'Selesai Magang',
-            bidang_id: 3,
-            bidang: 'Network Administration',
-            motivasi: 'Ingin memahami infrastruktur jaringan pemerintahan dan meningkatkan kemampuan troubleshooting',
-            surat_pengantar: 'surat-pengantar/budi_santoso_surat_pengantar_1621468800.pdf',
-            cv: 'cv/budi_santoso_cv_1621468800.pdf',
-        },
-        {
-            id: 4,
-            nama: 'Maya Dewi',
-            nim: '20104004',
-            universitas: 'Universitas Lampung',
-            jurusan: 'Desain Komunikasi Visual',
-            email: 'maya.dewi@example.com',
-            telepon: '08456789012',
-            tanggal_daftar: '2025-06-10',
-            tanggal_mulai: '2025-07-10',
-            tanggal_selesai: '2025-09-10',
-            status: 'Ditolak',
-            bidang_id: 4,
-            bidang: 'UI/UX Design',
-            motivasi: 'Passion dalam bidang desain dan user experience, ingin membantu meningkatkan tampilan website pemerintah',
-            reject_reason: 'Kuota untuk bidang UI/UX Design sudah penuh untuk periode ini. Silakan mendaftar pada periode berikutnya.',
-            surat_pengantar: 'surat-pengantar/maya_dewi_surat_pengantar_1625270400.pdf',
-            linkedin: 'https://linkedin.com/in/maya-dewi-dkv',
-        },
-        {
-            id: 5,
-            nama: 'Rentra Wijaya',
-            nim: '19104005',
-            universitas: 'Institut Teknologi Sumatera',
-            jurusan: 'Teknik Informatika',
-            email: 'rentra.wijaya@example.com',
-            telepon: '08567890123',
-            tanggal_daftar: '2025-05-15',
-            tanggal_mulai: '2025-06-15',
-            tanggal_selesai: '2025-08-15',
-            status: 'Sedang Magang',
-            bidang_id: 5,
-            bidang: 'Data Analysis',
-            motivasi: 'Ingin belajar analisis data untuk smart city dan membantu pengambilan keputusan berbasis data',
-            surat_pengantar: 'surat-pengantar/rentra_wijaya_surat_pengantar_1621036800.pdf',
-            cv: 'cv/rentra_wijaya_cv_1621036800.pdf',
-            linkedin: 'https://linkedin.com/in/rentra-wijaya',
-        },
-        {
-            id: 6,
-            nama: 'Andi Prasetyo',
-            nim: '19104006',
-            universitas: 'Universitas Lampung',
-            jurusan: 'Teknik Elektro',
-            email: 'andi.prasetyo@example.com',
-            telepon: '08678901234',
-            tanggal_daftar: '2025-06-12',
-            tanggal_mulai: '2025-07-20',
-            tanggal_selesai: '2025-09-20',
-            status: 'Menunggu',
-            bidang_id: 1,
-            bidang: 'IT Support',
-            motivasi: 'Ingin mengembangkan kemampuan troubleshooting dan maintenance hardware',
-            surat_pengantar: 'surat-pengantar/andi_prasetyo_surat_pengantar_1625356800.pdf',
-            cv: 'cv/andi_prasetyo_cv_1625356800.pdf',
-            linkedin: 'https://linkedin.com/in/andi-prasetyo',
-        },
-        {
-            id: 7,
-            nama: 'Dewi Sartika',
-            nim: '20104007',
-            universitas: 'Institut Teknologi Sumatera',
-            jurusan: 'Teknik Informatika',
-            email: 'dewi.sartika@example.com',
-            telepon: '08789012345',
-            tanggal_daftar: '2025-06-08',
-            tanggal_mulai: '2025-07-05',
-            tanggal_selesai: '2025-09-05',
-            status: 'Diterima',
-            bidang_id: 2,
-            bidang: 'Web Development',
-            motivasi: 'Passionate tentang frontend development dan ingin berkontribusi pada digitalisasi layanan publik',
-            surat_pengantar: 'surat-pengantar/dewi_sartika_surat_pengantar_1625270400.pdf',
-            cv: 'cv/dewi_sartika_cv_1625270400.pdf',
-            linkedin: 'https://linkedin.com/in/dewi-sartika',
-        },
-        {
-            id: 8,
-            nama: 'Rio Firmansyah',
-            nim: '19104008',
-            universitas: 'Universitas Bandar Lampung',
-            jurusan: 'Sistem Informasi',
-            email: 'rio.firmansyah@example.com',
-            telepon: '08890123456',
-            tanggal_daftar: '2025-05-25',
-            tanggal_mulai: '2025-06-25',
-            tanggal_selesai: '2025-08-25',
-            status: 'Sedang Magang',
-            bidang_id: 3,
-            bidang: 'Network Administration',
-            motivasi: 'Tertarik dengan infrastruktur jaringan dan keamanan sistem informasi',
-            surat_pengantar: 'surat-pengantar/rio_firmansyah_surat_pengantar_1621900800.pdf',
-            cv: 'cv/rio_firmansyah_cv_1621900800.pdf',
-            linkedin: 'https://linkedin.com/in/rio-firmansyah',
-        },
-        {
-            id: 9,
-            nama: 'Indah Permata',
-            nim: '20104009',
-            universitas: 'Universitas Lampung',
-            jurusan: 'Desain Komunikasi Visual',
-            email: 'indah.permata@example.com',
-            telepon: '08901234567',
-            tanggal_daftar: '2025-06-15',
-            tanggal_mulai: '2025-07-25',
-            tanggal_selesai: '2025-09-25',
-            status: 'Menunggu',
-            bidang_id: 4,
-            bidang: 'UI/UX Design',
-            motivasi: 'Ingin mengaplikasikan ilmu desain untuk meningkatkan user experience aplikasi pemerintah',
-            surat_pengantar: 'surat-pengantar/indah_permata_surat_pengantar_1625443200.pdf',
-            cv: 'cv/indah_permata_cv_1625443200.pdf',
-            linkedin: 'https://linkedin.com/in/indah-permata',
-        },
-        {
-            id: 10,
-            nama: 'Fajar Nugroho',
-            nim: '19104010',
-            universitas: 'Institut Teknologi Sumatera',
-            jurusan: 'Teknik Informatika',
-            email: 'fajar.nugroho@example.com',
-            telepon: '08012345678',
-            tanggal_daftar: '2025-05-30',
-            tanggal_mulai: '2025-06-30',
-            tanggal_selesai: '2025-08-30',
-            status: 'Selesai Magang',
-            bidang_id: 5,
-            bidang: 'Data Analysis',
-            motivasi: 'Ingin mendalami analisis data untuk mendukung pengambilan keputusan berbasis data',
-            surat_pengantar: 'surat-pengantar/fajar_nugroho_surat_pengantar_1622332800.pdf',
-            cv: 'cv/fajar_nugroho_cv_1622332800.pdf',
-            linkedin: 'https://linkedin.com/in/fajar-nugroho',
-        },
-        {
-            id: 11,
-            nama: 'Sari Wulandari',
-            nim: '20104011',
-            universitas: 'Universitas Lampung',
-            jurusan: 'Teknik Komputer',
-            email: 'sari.wulandari@example.com',
-            telepon: '08123456780',
-            tanggal_daftar: '2025-06-18',
-            tanggal_mulai: '2025-07-30',
-            tanggal_selesai: '2025-09-30',
-            status: 'Menunggu',
-            bidang_id: 1,
-            bidang: 'IT Support',
-            motivasi: 'Ingin belajar maintenance sistem dan hardware komputer di lingkungan pemerintahan',
-            surat_pengantar: 'surat-pengantar/sari_wulandari_surat_pengantar_1625702400.pdf',
-            cv: 'cv/sari_wulandari_cv_1625702400.pdf',
-            linkedin: 'https://linkedin.com/in/sari-wulandari',
-        },
-        {
-            id: 12,
-            nama: 'Dimas Setiawan',
-            nim: '19104012',
-            universitas: 'Universitas Bandar Lampung',
-            jurusan: 'Sistem Informasi',
-            email: 'dimas.setiawan@example.com',
-            telepon: '08234567891',
-            tanggal_daftar: '2025-06-20',
-            tanggal_mulai: '2025-08-01',
-            tanggal_selesai: '2025-10-01',
-            status: 'Diterima',
-            bidang_id: 2,
-            bidang: 'Web Development',
-            motivasi: 'Passionate dalam backend development dan ingin mengembangkan sistem informasi yang robust',
-            surat_pengantar: 'surat-pengantar/dimas_setiawan_surat_pengantar_1625875200.pdf',
-            cv: 'cv/dimas_setiawan_cv_1625875200.pdf',
-            linkedin: 'https://linkedin.com/in/dimas-setiawan',
-        },
-        {
-            id: 13,
-            nama: 'Putri Maharani',
-            nim: '20104013',
-            universitas: 'Institut Teknologi Sumatera',
-            jurusan: 'Teknik Informatika',
-            email: 'putri.maharani@example.com',
-            telepon: '08345678902',
-            tanggal_daftar: '2025-06-22',
-            tanggal_mulai: '2025-08-05',
-            tanggal_selesai: '2025-10-05',
-            status: 'Menunggu',
-            bidang_id: 5,
-            bidang: 'Data Analysis',
-            motivasi: 'Tertarik dengan machine learning dan data science untuk smart governance',
-            surat_pengantar: 'surat-pengantar/putri_maharani_surat_pengantar_1626048000.pdf',
-            cv: 'cv/putri_maharani_cv_1626048000.pdf',
-            linkedin: 'https://linkedin.com/in/putri-maharani',
-        },
-        {
-            id: 14,
-            nama: 'Agus Salim',
-            nim: '19104014',
-            universitas: 'Universitas Lampung',
-            jurusan: 'Teknik Elektro',
-            email: 'agus.salim@example.com',
-            telepon: '08456789013',
-            tanggal_daftar: '2025-06-25',
-            tanggal_mulai: '2025-08-10',
-            tanggal_selesai: '2025-10-10',
-            status: 'Ditolak',
-            bidang_id: 3,
-            bidang: 'Network Administration',
-            motivasi: 'Ingin mempelajari administrasi jaringan dan cybersecurity',
-            reject_reason: 'Dokumen persyaratan belum lengkap. Mohon melengkapi dokumen dan mendaftar kembali.',
-            surat_pengantar: 'surat-pengantar/agus_salim_surat_pengantar_1626307200.pdf',
-            linkedin: 'https://linkedin.com/in/agus-salim',
-        },
-        {
-            id: 15,
-            nama: 'Lina Handayani',
-            nim: '20104015',
-            universitas: 'Universitas Bandar Lampung',
-            jurusan: 'Desain Komunikasi Visual',
-            email: 'lina.handayani@example.com',
-            telepon: '08567890124',
-            tanggal_daftar: '2025-06-28',
-            tanggal_mulai: '2025-08-15',
-            tanggal_selesai: '2025-10-15',
-            status: 'Menunggu',
-            bidang_id: 4,
-            bidang: 'UI/UX Design',
-            motivasi: 'Ingin berkontribusi dalam pembuatan interface yang user-friendly untuk aplikasi pemerintah',
-            surat_pengantar: 'surat-pengantar/lina_handayani_surat_pengantar_1626566400.pdf',
-            cv: 'cv/lina_handayani_cv_1626566400.pdf',
-            linkedin: 'https://linkedin.com/in/lina-handayani',
-        },
-    ];
+    // ===== DATA PROCESSING =====
 
-    const data = mahasiswas.length > 0 ? mahasiswas : defaultData;
+    // Inisialisasi data mahasiswa (fallback ke array kosong jika tidak ada data)
+    const data: Mahasiswa[] = mahasiswas.length > 0 ? mahasiswas : [];
 
-    // Fungsi untuk mendapatkan data berdasarkan status dan search
+    /**
+     * Filter data mahasiswa berdasarkan status dan kata kunci pencarian
+     * @param status - Status mahasiswa yang ingin difilter
+     * @returns Array mahasiswa yang sesuai filter
+     */
     const getDataByStatus = (status: string) => {
         return data.filter((item) => {
+            // Filter berdasarkan pencarian (nama, NIM, universitas)
             const matchesSearch =
                 item.nama.toLowerCase().includes(searchTerm.toLowerCase()) ||
                 item.nim.includes(searchTerm) ||
                 item.universitas.toLowerCase().includes(searchTerm.toLowerCase());
 
+            // Filter berdasarkan status
             const matchesStatus = item.status === status;
 
             return matchesSearch && matchesStatus;
         });
     };
 
-    // Data untuk tab yang aktif
+    // Data untuk tab yang aktif saat ini
     const activeTabData = getDataByStatus(activeTab);
 
-    // Pagination logic
+    // ===== PAGINATION LOGIC =====
     const totalPages = Math.ceil(activeTabData.length / itemsPerPage);
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = startIndex + itemsPerPage;
     const paginatedData = activeTabData.slice(startIndex, endIndex);
 
+    /**
+     * Navigasi ke halaman selanjutnya
+     */
     const goToNextPage = () => {
         if (currentPage < totalPages) {
             setCurrentPage(currentPage + 1);
         }
     };
 
+    /**
+     * Navigasi ke halaman sebelumnya
+     */
     const goToPreviousPage = () => {
         if (currentPage > 1) {
             setCurrentPage(currentPage - 1);
         }
     };
 
+    /**
+     * Navigasi ke halaman tertentu
+     * @param page - Nomor halaman yang dituju
+     */
     const goToPage = (page: number) => {
         setCurrentPage(page);
     };
 
+    /**
+     * Menentukan warna badge berdasarkan status mahasiswa
+     * @param status - Status mahasiswa
+     * @returns Class CSS untuk styling badge
+     */
     const getStatusColor = (status: string) => {
         switch (status) {
             case 'Diterima':
@@ -461,20 +254,87 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
         }
     };
 
+    // ===== EVENT HANDLERS =====
+
+    /**
+     * Handle logout admin
+     */
     const handleLogout = () => {
         router.post(route('logout'));
     };
 
+    // ===== MODAL HANDLERS =====
+
+    /**
+     * Membuka modal detail mahasiswa
+     * @param mahasiswa - Data mahasiswa yang akan ditampilkan
+     */
     const openModal = (mahasiswa: Mahasiswa) => {
         setSelectedMahasiswa(mahasiswa);
         setShowModal(true);
     };
 
+    /**
+     * Menutup modal detail mahasiswa
+     */
     const closeModal = () => {
         setSelectedMahasiswa(null);
         setShowModal(false);
     };
 
+    /**
+     * Membuka modal untuk input alasan penolakan
+     */
+    const openRejectModal = () => {
+        setShowRejectModal(true);
+    };
+
+    /**
+     * Menutup modal penolakan dan reset form
+     */
+    const closeRejectModal = () => {
+        setShowRejectModal(false);
+        setRejectReason('');
+    };
+
+    /**
+     * Membuka modal edit status mahasiswa
+     */
+    const openEditModal = () => {
+        if (selectedMahasiswa) {
+            setEditStatus(selectedMahasiswa.status);
+            setShowEditModal(true);
+        }
+    };
+
+    /**
+     * Menutup modal edit status dan reset form
+     */
+    const closeEditModal = () => {
+        setShowEditModal(false);
+        setEditStatus('');
+    };
+
+    /**
+     * Membuka modal konfirmasi hapus data
+     */
+    const openDeleteModal = () => {
+        setShowDeleteModal(true);
+    };
+
+    /**
+     * Menutup modal konfirmasi hapus
+     */
+    const closeDeleteModal = () => {
+        setShowDeleteModal(false);
+    };
+
+    // ===== ACTION HANDLERS =====
+
+    /**
+     * Menyetujui pendaftaran mahasiswa (ubah status ke "Diterima")
+     * @param id - ID mahasiswa yang akan disetujui
+     */
     const handleApprove = (id: number) => {
         router.patch(
             route('admin.updateStatus', id),
@@ -494,6 +354,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
         );
     };
 
+    /**
+     * Menolak pendaftaran mahasiswa dengan alasan
+     * @param id - ID mahasiswa yang akan ditolak
+     * @param reason - Alasan penolakan
+     */
     const handleReject = (id: number, reason: string) => {
         router.patch(
             route('admin.updateStatus', id),
@@ -516,33 +381,18 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
         );
     };
 
-    const openRejectModal = () => {
-        setShowRejectModal(true);
-    };
-
-    const closeRejectModal = () => {
-        setShowRejectModal(false);
-        setRejectReason('');
-    };
-
+    /**
+     * Konfirmasi penolakan mahasiswa (dari modal)
+     */
     const confirmReject = () => {
         if (selectedMahasiswa && rejectReason.trim()) {
             handleReject(selectedMahasiswa.id, rejectReason);
         }
     };
 
-    const openEditModal = () => {
-        if (selectedMahasiswa) {
-            setEditStatus(selectedMahasiswa.status);
-            setShowEditModal(true);
-        }
-    };
-
-    const closeEditModal = () => {
-        setShowEditModal(false);
-        setEditStatus('');
-    };
-
+    /**
+     * Mengubah status mahasiswa (dari modal edit)
+     */
     const handleEditStatus = () => {
         if (selectedMahasiswa && editStatus.trim()) {
             router.patch(
@@ -565,14 +415,9 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
         }
     };
 
-    const openDeleteModal = () => {
-        setShowDeleteModal(true);
-    };
-
-    const closeDeleteModal = () => {
-        setShowDeleteModal(false);
-    };
-
+    /**
+     * Menghapus data mahasiswa
+     */
     const handleDeleteMahasiswa = () => {
         if (selectedMahasiswa) {
             router.delete(route('admin.deleteMahasiswa', selectedMahasiswa.id), {
@@ -589,6 +434,12 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
         }
     };
 
+    // ===== STATISTIK DATA =====
+
+    /**
+     * Menghitung statistik data mahasiswa berdasarkan status
+     * Digunakan untuk menampilkan cards statistik di dashboard
+     */
     const statistik = {
         total: data.length,
         diterima: data.filter((m) => m.status === 'Diterima').length,
@@ -600,10 +451,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
-            {/* Header */}
-            <header className="bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white shadow-2xl">
+            {/* ===== HEADER SECTION ===== */}
+            <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white shadow-2xl">
                 <div className="container mx-auto px-6 py-4">
                     <div className="flex items-center justify-between">
+                        {/* Logo dan Judul */}
                         <div className="flex items-center space-x-4">
                             <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg">
                                 <img src="/asset/Logo-Kominfo.png" alt="Logo Kominfo" className="h-10 w-10 object-contain" />
@@ -615,7 +467,10 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 <p className="text-sm font-medium opacity-90">Sistem Manajemen Magang - Kominfo</p>
                             </div>
                         </div>
+
+                        {/* Header Actions */}
                         <div className="flex items-center space-x-4">
+                            {/* Welcome Message */}
                             <div className="hidden items-center space-x-2 rounded-xl bg-white/20 px-4 py-2 backdrop-blur-sm md:flex">
                                 <span className="text-sm">👋 Selamat datang,</span>
                                 <span className="font-medium">{auth?.user?.name || 'Admin'}</span>
@@ -652,6 +507,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 <span>Sync Status</span>
                             </button>
 
+                            {/* Logout Button */}
                             <button
                                 onClick={handleLogout}
                                 className="rounded-xl bg-red-500 px-4 py-2 text-sm font-medium transition-colors hover:bg-red-600"
@@ -663,40 +519,51 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                 </div>
             </header>
 
-            {/* Dashboard Content */}
+            {/* ===== MAIN DASHBOARD CONTENT ===== */}
             <div className="container mx-auto px-6 py-8">
-                {/* Statistics Cards */}
+                {/* ===== STATISTICS CARDS ===== */}
                 <div className="mb-8 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-6">
+                    {/* Total Pendaftar */}
                     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
                         <div className="text-center">
                             <div className="text-3xl font-bold text-gray-800">{statistik.total}</div>
                             <div className="mt-1 text-sm text-gray-600">Total Pendaftar</div>
                         </div>
                     </div>
+
+                    {/* Diterima */}
                     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
                         <div className="text-center">
                             <div className="text-3xl font-bold text-green-600">{statistik.diterima}</div>
                             <div className="mt-1 text-sm text-gray-600">Diterima</div>
                         </div>
                     </div>
+
+                    {/* Menunggu */}
                     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
                         <div className="text-center">
                             <div className="text-3xl font-bold text-yellow-600">{statistik.menunggu}</div>
                             <div className="mt-1 text-sm text-gray-600">Menunggu</div>
                         </div>
                     </div>
+
+                    {/* Sedang Magang */}
                     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
                         <div className="text-center">
                             <div className="text-3xl font-bold text-purple-600">{statistik.sedangMagang}</div>
                             <div className="mt-1 text-sm text-gray-600">Sedang Magang</div>
                         </div>
                     </div>
+
+                    {/* Selesai */}
                     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
                         <div className="text-center">
                             <div className="text-3xl font-bold text-blue-600">{statistik.selesai}</div>
                             <div className="mt-1 text-sm text-gray-600">Selesai</div>
                         </div>
                     </div>
+
+                    {/* Ditolak */}
                     <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-xl">
                         <div className="text-center">
                             <div className="text-3xl font-bold text-red-600">{statistik.ditolak}</div>
@@ -705,19 +572,21 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                     </div>
                 </div>
 
-                {/* Automation Info */}
+                {/* ===== AUTOMATION INFO SECTION ===== */}
                 <div className="mb-8 rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 to-green-50 p-6 shadow-xl">
                     <div className="flex items-start space-x-4">
                         <div className="flex-1">
                             <h3 className="text-lg font-semibold text-gray-800">🤖 Otomatisasi Status Aktif</h3>
                             <p className="mt-1 text-sm text-gray-600">Sistem otomatis mengupdate status mahasiswa setiap hari berdasarkan tanggal:</p>
                             <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
+                                {/* Transisi Diterima ke Sedang Magang */}
                                 <div className="flex items-center space-x-2 rounded-lg bg-green-100 p-2">
                                     <span className="text-green-600">✅</span>
                                     <span className="text-sm text-green-800">
                                         <strong>Diterima → Sedang Magang</strong> (saat tanggal mulai tiba)
                                     </span>
                                 </div>
+                                {/* Transisi Sedang Magang ke Selesai */}
                                 <div className="flex items-center space-x-2 rounded-lg bg-blue-100 p-2">
                                     <span className="text-blue-600">🎯</span>
                                     <span className="text-sm text-blue-800">
@@ -729,8 +598,9 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                     </div>
                 </div>
 
-                {/* Search and Tab Navigation */}
+                {/* ===== SEARCH AND FILTER SECTION ===== */}
                 <div className="mb-8 rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
+                    {/* Search Input */}
                     <div className="mb-6">
                         <input
                             type="text"
@@ -741,7 +611,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                         />
                     </div>
 
-                    {/* Tab Navigation */}
+                    {/* Tab Navigation untuk Filter Status */}
                     <div className="flex flex-wrap gap-2 text-white">
                         {[
                             { status: 'Menunggu', count: statistik.menunggu, color: 'orange' },
@@ -772,19 +642,21 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                     </div>
                 </div>
 
-                {/* Data Table */}
+                {/* ===== DATA TABLE SECTION ===== */}
                 <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-xl">
+                    {/* Table Header */}
                     <div className="border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6">
                         <h3 className="text-xl font-bold text-gray-800">Data Mahasiswa - Status: {activeTab}</h3>
                         <p className="mt-1 text-sm text-gray-600">
-                            Menampilkan {activeTabData.length} mahasiswa dengan status "{activeTab}"
-                            {activeTabData.length !== getDataByStatus(activeTab).length &&
-                                ` (${getDataByStatus(activeTab).length} total, ${activeTabData.length} hasil pencarian)`}
+                            Menampilkan {paginatedData.length} dari {activeTabData.length} mahasiswa dengan status "{activeTab}"
+                            {searchTerm && <span className="ml-1 text-blue-600">(hasil pencarian: "{searchTerm}")</span>}
                         </p>
                     </div>
 
+                    {/* Table Content */}
                     <div className="overflow-x-auto">
                         <table className="w-full">
+                            {/* Table Header */}
                             <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
                                 <tr>
                                     <th className="px-6 py-4 text-left text-sm font-semibold">No</th>
@@ -797,28 +669,43 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                     <th className="px-6 py-4 text-left text-sm font-semibold">Detail</th>
                                 </tr>
                             </thead>
+
+                            {/* Table Body */}
                             <tbody className="divide-y divide-gray-200">
                                 {paginatedData.length > 0 ? (
                                     paginatedData.map((mahasiswa, index) => (
                                         <tr key={mahasiswa.id} className="transition-colors duration-200 hover:bg-gray-50">
+                                            {/* Nomor Urut */}
                                             <td className="px-6 py-4 text-sm font-medium text-gray-900">{startIndex + index + 1}</td>
+
+                                            {/* Nama dan Email */}
                                             <td className="px-6 py-4">
                                                 <div className="text-sm font-medium text-gray-900">{mahasiswa.nama}</div>
                                                 <div className="text-xs text-gray-500">{mahasiswa.email}</div>
                                             </td>
+
+                                            {/* NIM */}
                                             <td className="px-6 py-4 text-sm text-gray-600">{mahasiswa.nim}</td>
+
+                                            {/* Universitas */}
                                             <td className="px-6 py-4 text-sm text-gray-600">{mahasiswa.universitas}</td>
+
+                                            {/* Bidang */}
                                             <td className="px-6 py-4">
                                                 <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
                                                     {mahasiswa.bidang}
                                                 </span>
-                                            </td>{' '}
+                                            </td>
+
+                                            {/* Periode Magang */}
                                             <td className="px-6 py-4 text-sm text-gray-600">
                                                 <div>{new Date(mahasiswa.tanggal_mulai).toLocaleDateString('id-ID')}</div>
                                                 <div className="text-xs text-gray-500">
                                                     s/d {new Date(mahasiswa.tanggal_selesai).toLocaleDateString('id-ID')}
                                                 </div>
                                             </td>
+
+                                            {/* Status */}
                                             <td className="px-6 py-4">
                                                 <span
                                                     className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(mahasiswa.status)}`}
@@ -826,6 +713,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                                     {mahasiswa.status}
                                                 </span>
                                             </td>
+
+                                            {/* Action Button */}
                                             <td className="px-6 py-4">
                                                 <button
                                                     onClick={() => openModal(mahasiswa)}
@@ -851,6 +740,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                         </tr>
                                     ))
                                 ) : (
+                                    /* Empty State */
                                     <tr>
                                         <td colSpan={8} className="px-6 py-12 text-center text-gray-500">
                                             <div className="flex flex-col items-center">
@@ -872,10 +762,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                         </table>
                     </div>
 
-                    {/* Pagination */}
+                    {/* ===== PAGINATION SECTION ===== */}
                     {activeTabData.length > itemsPerPage && (
                         <div className="border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
                             <div className="flex items-center justify-between">
+                                {/* Mobile Pagination */}
                                 <div className="flex flex-1 justify-between sm:hidden">
                                     <button
                                         onClick={goToPreviousPage}
@@ -892,7 +783,10 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                         Next
                                     </button>
                                 </div>
+
+                                {/* Desktop Pagination */}
                                 <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+                                    {/* Pagination Info */}
                                     <div>
                                         <p className="text-sm text-gray-700">
                                             Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
@@ -900,8 +794,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                             <span className="font-medium">{activeTabData.length}</span> results
                                         </p>
                                     </div>
+
+                                    {/* Pagination Controls */}
                                     <div>
                                         <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+                                            {/* Previous Button */}
                                             <button
                                                 onClick={goToPreviousPage}
                                                 disabled={currentPage === 1}
@@ -945,6 +842,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                                 );
                                             })}
 
+                                            {/* Next Button */}
                                             <button
                                                 onClick={goToNextPage}
                                                 disabled={currentPage === totalPages}
@@ -968,13 +866,14 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                 </div>
             </div>
 
-            {/* Detail Modal */}
+            {/* ===== MODAL DETAIL MAHASISWA ===== */}
             {showModal && selectedMahasiswa && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm" onClick={closeModal}>
                     <div
                         className="modal-content-active scrollbar-hide max-h-[95vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white shadow-2xl"
                         onClick={(e) => e.stopPropagation()}
                     >
+                        {/* Modal Header */}
                         <div className="border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6">
                             <div className="flex items-center justify-between">
                                 <div>
@@ -990,7 +889,10 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Modal Content */}
                         <div className="space-y-4 p-6">
+                            {/* Informasi Dasar Mahasiswa */}
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                                 <div>
                                     <label className="block text-sm font-medium text-gray-700">Nama Lengkap</label>
@@ -1047,6 +949,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                     </p>
                                 </div>
                             </div>
+
+                            {/* Motivasi Mahasiswa */}
                             {selectedMahasiswa.motivasi && (
                                 <div className="col-span-2">
                                     <label className="block text-sm font-medium text-gray-700">Motivasi</label>
@@ -1056,7 +960,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 </div>
                             )}
 
-                            {/* File and Documents Section */}
+                            {/* ===== SECTION DOKUMEN DAN PROFILE ===== */}
                             <div className="col-span-2">
                                 <label className="mb-3 block text-sm font-medium text-gray-700">Dokumen dan Profile</label>
                                 <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -1127,7 +1031,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                         </div>
                                     )}
 
-                                    {/* CV */}
+                                    {/* Curriculum Vitae (CV) */}
                                     {selectedMahasiswa.cv ? (
                                         <div className="rounded-lg border border-gray-200 bg-green-50 p-4 transition-colors duration-200 hover:bg-green-100">
                                             <div className="flex flex-col space-y-3">
@@ -1218,7 +1122,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                                     <button
                                                         onClick={() => {
                                                             navigator.clipboard.writeText(selectedMahasiswa.linkedin || '');
-                                                            // Optional: Add toast notification here
+                                                            // TODO: Tambahkan notifikasi toast di sini jika diperlukan
                                                         }}
                                                         className="inline-flex flex-1 items-center justify-center rounded-lg bg-green-100 px-2 py-1 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200"
                                                         title="Copy Link"
@@ -1247,7 +1151,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                     )}
                                 </div>
 
-                                {/* File Info */}
+                                {/* Info Dokumentasi File */}
                                 <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 p-3">
                                     <div className="flex items-start space-x-2">
                                         <svg
@@ -1276,6 +1180,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                     </div>
                                 </div>
                             </div>
+
+                            {/* Alasan Penolakan (jika status ditolak) */}
                             {selectedMahasiswa.status === 'Ditolak' && selectedMahasiswa.reject_reason && (
                                 <div className="col-span-2">
                                     <label className="block text-sm font-medium text-red-700">Alasan Penolakan</label>
@@ -1285,8 +1191,12 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 </div>
                             )}
                         </div>
+
+                        {/* Modal Footer - Action Buttons */}
                         <div className="flex justify-between border-t border-gray-200 p-6">
+                            {/* Action Buttons untuk status tertentu */}
                             <div className="flex space-x-3">
+                                {/* Tombol Terima dan Tolak untuk status Menunggu */}
                                 {selectedMahasiswa.status === 'Menunggu' && (
                                     <>
                                         <button
@@ -1309,6 +1219,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                         </button>
                                     </>
                                 )}
+
+                                {/* Tombol Edit dan Hapus untuk status tertentu */}
                                 {(selectedMahasiswa.status === 'Menunggu' ||
                                     selectedMahasiswa.status === 'Diterima' ||
                                     selectedMahasiswa.status === 'Ditolak') && (
@@ -1344,6 +1256,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                     </>
                                 )}
                             </div>
+
+                            {/* Tombol Tutup Modal */}
                             <button
                                 onClick={closeModal}
                                 className="rounded-xl bg-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-400"
@@ -1355,10 +1269,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                 </div>
             )}
 
-            {/* Reject Reason Modal */}
+            {/* ===== MODAL PENOLAKAN MAHASISWA ===== */}
             {showRejectModal && selectedMahasiswa && (
                 <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4" onClick={closeRejectModal}>
                     <div className="modal-content-active w-full max-w-md rounded-3xl bg-white" onClick={(e) => e.stopPropagation()}>
+                        {/* Modal Header */}
                         <div className="border-b border-gray-200 p-6">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xl font-bold text-gray-800">Alasan Penolakan</h3>
@@ -1367,6 +1282,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Modal Content */}
                         <div className="p-6">
                             <div className="mb-4">
                                 <p className="mb-3 text-sm text-gray-600">
@@ -1381,6 +1298,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 />
                             </div>
                         </div>
+
+                        {/* Modal Footer */}
                         <div className="flex justify-between border-t border-gray-200 p-6">
                             <button
                                 onClick={closeRejectModal}
@@ -1400,10 +1319,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                 </div>
             )}
 
-            {/* Edit Status Modal */}
+            {/* ===== MODAL EDIT STATUS MAHASISWA ===== */}
             {showEditModal && selectedMahasiswa && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm" onClick={closeModal}>
                     <div className="modal-content-active w-full max-w-md rounded-3xl bg-white" onClick={(e) => e.stopPropagation()}>
+                        {/* Modal Header */}
                         <div className="border-b border-gray-200 p-6">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xl font-bold text-gray-800">Edit Status</h3>
@@ -1412,6 +1332,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Modal Content */}
                         <div className="p-6">
                             <div className="mb-4">
                                 <p className="mb-3 text-sm text-gray-600">
@@ -1431,6 +1353,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 </select>
                             </div>
                         </div>
+
+                        {/* Modal Footer */}
                         <div className="flex justify-between border-t border-gray-200 p-6">
                             <button
                                 onClick={closeEditModal}
@@ -1450,10 +1374,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                 </div>
             )}
 
-            {/* Delete Confirmation Modal */}
+            {/* ===== MODAL KONFIRMASI HAPUS DATA ===== */}
             {showDeleteModal && selectedMahasiswa && (
                 <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4" onClick={closeDeleteModal}>
                     <div className="modal-content-active w-full max-w-md rounded-3xl bg-white" onClick={(e) => e.stopPropagation()}>
+                        {/* Modal Header */}
                         <div className="border-b border-gray-200 p-6">
                             <div className="flex items-center justify-between">
                                 <h3 className="text-xl font-bold text-red-600">Konfirmasi Hapus</h3>
@@ -1462,8 +1387,11 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                 </button>
                             </div>
                         </div>
+
+                        {/* Modal Content */}
                         <div className="p-6">
                             <div className="mb-4">
+                                {/* Warning Icon */}
                                 <div className="mb-4 flex items-center justify-center">
                                     <div className="rounded-full bg-red-100 p-3">
                                         <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1476,12 +1404,16 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                         </svg>
                                     </div>
                                 </div>
+
+                                {/* Confirmation Message */}
                                 <p className="text-center text-sm text-gray-600">Apakah Anda yakin ingin menghapus data mahasiswa:</p>
                                 <p className="mt-2 text-center text-lg font-medium text-gray-900">{selectedMahasiswa.nama}</p>
                                 <p className="mt-1 text-center text-sm text-gray-500">NIM: {selectedMahasiswa.nim}</p>
                                 <p className="mt-4 text-center text-sm font-medium text-red-600">Tindakan ini tidak dapat dibatalkan!</p>
                             </div>
                         </div>
+
+                        {/* Modal Footer */}
                         <div className="flex justify-between border-t border-gray-200 p-6">
                             <button
                                 onClick={closeDeleteModal}
