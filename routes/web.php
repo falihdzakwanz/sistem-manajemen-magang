@@ -68,51 +68,59 @@ Route::get('/api/beranda-content', [BerandaController::class, 'getBerandaContent
 */
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    
+
     // Dashboard utama admin - menampilkan statistik dan daftar mahasiswa
     Route::get('/dashboard-admin', [AdminController::class, 'index'])
         ->name('admin.dashboard');
-    
+
     // Hapus data pendaftar (soft delete atau hard delete)
     Route::delete('/dashboard-admin/pendaftar/{user}', [UserController::class, 'destroy'])
         ->name('admin.destroy');
-    
+
     // Update status pendaftaran mahasiswa (Menunggu, Diterima, Ditolak, dll)
     Route::patch('/dashboard-admin/pendaftar/{id}/status', [AdminController::class, 'updateStatus'])
         ->name('admin.updateStatus');
-    
+
     // Update data lengkap mahasiswa
     Route::patch('/dashboard-admin/mahasiswa/{id}', [AdminController::class, 'updateMahasiswa'])
         ->name('admin.updateMahasiswa');
-    
+
     // Update data lengkap mahasiswa
     Route::patch('/dashboard-admin/mahasiswa/{id}', [AdminController::class, 'updateMahasiswa'])
         ->name('admin.updateMahasiswa');
-    
+
     // Hapus data mahasiswa secara permanen
     Route::delete('/dashboard-admin/mahasiswa/{id}', [AdminController::class, 'deleteMahasiswa'])
         ->name('admin.deleteMahasiswa');
-    
+
     // Update status magang secara otomatis berdasarkan tanggal
     // (Sedang Magang -> Selesai Magang)
     Route::post('/dashboard-admin/update-status-manual', [AdminController::class, 'updateStatusMagangManual'])
         ->name('admin.updateStatusManual');
 
     // ===== RUTE EDIT BERANDA =====
-    
+
     // Halaman edit beranda
     Route::get('/admin/edit-beranda', [BerandaController::class, 'adminEdit'])
         ->name('admin.edit-beranda');
-    
+
     // Update struktur organisasi
     Route::post('/admin/update-struktur-organisasi', [BerandaController::class, 'updateStrukturOrganisasi'])
         ->name('admin.update-struktur-organisasi');
-    
+
     // Update data bidang
     Route::post('/admin/update-bidang', [BerandaController::class, 'updateBidang'])
         ->name('admin.update-bidang');
-    
-    // Hapus foto struktur organisasi
+
+    // Upload foto sementara
+    Route::post('/admin/upload-temp-photo', [BerandaController::class, 'uploadTempPhoto'])
+        ->name('admin.upload-temp-photo');
+
+    // Reset foto sementara
+    Route::post('/admin/reset-temp-photo', [BerandaController::class, 'resetTempPhoto'])
+        ->name('admin.reset-temp-photo');
+
+    // Hapus foto struktur organisasi (baru - support temp photos)
     Route::delete('/admin/delete-photo', [BerandaController::class, 'deletePhoto'])
         ->name('admin.delete-photo');
 });

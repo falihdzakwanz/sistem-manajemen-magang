@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
 import React, { useState } from 'react';
+import ImageCropper from '../../components/ImageCropper';
 
 // Type untuk flash messages
 interface FlashMessages {
@@ -66,6 +67,11 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     const [loading, setLoading] = useState(false);
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
 
+    // Crop modal state
+    const [showCropModal, setShowCropModal] = useState(false);
+    const [imageToCrop, setImageToCrop] = useState<string | null>(null);
+    const [isEditingExistingPhoto, setIsEditingExistingPhoto] = useState(false);
+
     // Form data for struktur organisasi
     const [strukturForm, setStrukturForm] = useState({
         key: '',
@@ -89,12 +95,54 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
         },
     });
 
+    // Original data for change detection
+    const [originalStrukturData, setOriginalStrukturData] = useState<StrukturOrganisasi | null>(null);
+    const [originalBidangData, setOriginalBidangData] = useState<BidangData | null>(null);
+
+    // Function to detect changes in struktur form
+    const hasStrukturChanges = (): boolean => {
+        if (!originalStrukturData) return true; // Allow save if no original data (shouldn't happen in normal flow)
+
+        return (
+            strukturForm.title !== originalStrukturData.title ||
+            strukturForm.description !== originalStrukturData.description ||
+            strukturForm.photo !== null ||
+            // Check if photo was deleted (original had photo but current preview is null)
+            (originalStrukturData.photo_url !== null && photoPreview === null)
+        );
+    };
+
+    // Function to detect changes in bidang form
+    const hasBidangChanges = (): boolean => {
+        if (!originalBidangData) return true; // Allow save if no original data (shouldn't happen in normal flow)
+
+        return (
+            bidangForm.title !== originalBidangData.title ||
+            bidangForm.description !== originalBidangData.description ||
+            bidangForm.data.kepala !== originalBidangData.data.kepala ||
+            bidangForm.data.icon !== originalBidangData.data.icon ||
+            bidangForm.data.color !== originalBidangData.data.color ||
+            JSON.stringify(bidangForm.data.tugas) !== JSON.stringify(originalBidangData.data.tugas) ||
+            JSON.stringify(bidangForm.data.magangTasks) !== JSON.stringify(originalBidangData.data.magangTasks) ||
+            JSON.stringify(bidangForm.data.staffFungsional) !== JSON.stringify(originalBidangData.data.staffFungsional)
+        );
+    };
+
     const handleBack = () => {
         router.get('/dashboard-admin');
     };
 
+    const handleCancelEdit = () => {
+        // Reset photo preview to original state
+        if (originalStrukturData) {
+            setPhotoPreview(originalStrukturData.photo_url);
+        }
+        setShowModal(false);
+    };
+
     const openEditStruktur = (item: StrukturOrganisasi) => {
         setEditingItem(item);
+        setOriginalStrukturData(item); // Store original data for comparison
         setStrukturForm({
             key: item.key,
             title: item.title,
@@ -108,6 +156,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
 
     const openEditBidang = (item: BidangData) => {
         setEditingItem(item);
+        setOriginalBidangData(item); // Store original data for comparison
         setBidangForm({
             key: item.key,
             title: item.title,
@@ -128,48 +177,61 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
-            setStrukturForm((prev) => ({ ...prev, photo: file }));
-
-            // Create preview
+            // Create preview for cropping
             const reader = new FileReader();
             reader.onload = (e) => {
-                setPhotoPreview(e.target?.result as string);
+                const imageUrl = e.target?.result as string;
+                setImageToCrop(imageUrl);
+                setIsEditingExistingPhoto(false);
+                setShowCropModal(true);
             };
             reader.readAsDataURL(file);
+        }
+    };
+
+    const handleCropComplete = (croppedImageBlob: Blob) => {
+        // Convert blob to file
+        const croppedFile = new File([croppedImageBlob], 'cropped-image.jpg', {
+            type: 'image/jpeg',
+        });
+
+        // Update form with cropped image
+        setStrukturForm((prev) => ({ ...prev, photo: croppedFile }));
+
+        // Create preview URL for display
+        const previewUrl = URL.createObjectURL(croppedImageBlob);
+        setPhotoPreview(previewUrl);
+
+        // Close crop modal
+        setShowCropModal(false);
+        setImageToCrop(null);
+        setIsEditingExistingPhoto(false);
+    };
+
+    const handleCropCancel = () => {
+        setShowCropModal(false);
+        setImageToCrop(null);
+        setIsEditingExistingPhoto(false);
+    };
+
+    const handleEditPhoto = () => {
+        if (photoPreview) {
+            // Use existing photo preview for editing
+            setImageToCrop(photoPreview);
+            setIsEditingExistingPhoto(true);
+            setShowCropModal(true);
         }
     };
 
     const handleDeletePhoto = async () => {
         if (!editingItem) return;
 
-        setLoading(true);
+        // Instead of deleting from database immediately, just remove from preview
+        // The actual deletion will happen when user clicks "Simpan"
+        setPhotoPreview(null);
+        setStrukturForm((prev) => ({ ...prev, photo: null }));
 
-        // Use Inertia.js for better session handling
-        router.delete(`/admin/delete-photo`, {
-            data: { key: editingItem.key },
-            onSuccess: (page: InertiaPage) => {
-                setPhotoPreview(null);
-                setStrukturForm((prev) => ({ ...prev, photo: null }));
-                // Check for flash message
-                const flashSuccess = page.props?.flash?.success;
-                if (flashSuccess) {
-                    alert(`✅ ${flashSuccess}`);
-                } else {
-                    alert('✅ Foto berhasil dihapus!');
-                }
-                setLoading(false);
-            },
-            onError: (errors) => {
-                console.error('Delete photo errors:', errors);
-                // Check for error flash message
-                const errorMessage = errors?.error || 'Gagal menghapus foto! Silakan coba lagi.';
-                alert(`❌ ${errorMessage}`);
-                setLoading(false);
-            },
-            onFinish: () => {
-                setLoading(false);
-            },
-        });
+        alert('✅ Foto akan dihapus setelah Anda menekan tombol "Simpan"');
     };
 
     const handleSaveStruktur = async () => {
@@ -180,6 +242,9 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
 
         setLoading(true);
 
+        // Check if photo needs to be deleted
+        const shouldDeletePhoto = originalStrukturData?.photo_url && !photoPreview;
+
         // Alternative approach: Use Inertia.js for better session handling
         if (strukturForm.photo) {
             // Use Inertia for file uploads with automatic CSRF handling
@@ -188,6 +253,11 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             formData.append('title', strukturForm.title);
             formData.append('description', strukturForm.description);
             formData.append('photo', strukturForm.photo);
+
+            // Add delete_photo parameter if needed
+            if (shouldDeletePhoto) {
+                formData.append('delete_photo', '1');
+            }
 
             router.post('/admin/update-struktur-organisasi', Object.fromEntries(formData), {
                 forceFormData: true,
@@ -217,6 +287,13 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
         try {
             const csrfToken = getCsrfToken();
 
+            const requestData = {
+                key: strukturForm.key,
+                title: strukturForm.title,
+                description: strukturForm.description,
+                ...(shouldDeletePhoto && { delete_photo: true }),
+            };
+
             const response = await fetch('/admin/update-struktur-organisasi', {
                 method: 'POST',
                 headers: {
@@ -225,11 +302,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                     Accept: 'application/json',
                 },
                 credentials: 'same-origin',
-                body: JSON.stringify({
-                    key: strukturForm.key,
-                    title: strukturForm.title,
-                    description: strukturForm.description,
-                }),
+                body: JSON.stringify(requestData),
             });
 
             if (response.ok) {
@@ -730,7 +803,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                 <h3 className="text-xl font-bold text-gray-800">
                                     {activeTab === 'struktur' ? 'Edit Struktur Organisasi' : 'Edit Data Bidang'}
                                 </h3>
-                                <button onClick={() => setShowModal(false)} className="text-2xl text-gray-500 hover:text-gray-700">
+                                <button onClick={handleCancelEdit} className="text-2xl text-gray-500 hover:text-gray-700">
                                     ×
                                 </button>
                             </div>
@@ -765,19 +838,64 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                         <label className="block text-sm font-medium text-gray-700">Foto</label>
                                         <div className="mt-2 space-y-4">
                                             {photoPreview && (
-                                                <div className="flex items-center space-x-4">
-                                                    <img src={photoPreview} alt="Preview" className="h-24 w-24 rounded-full object-cover" />
-                                                    <button
-                                                        onClick={handleDeletePhoto}
-                                                        className="rounded-xl bg-red-500 px-6 py-2 text-white hover:bg-red-600 disabled:opacity-50"
-                                                        disabled={loading}
-                                                    >
-                                                        Hapus Foto
-                                                    </button>
+                                                <div className="space-y-4">
+                                                    <div className="flex items-center space-x-4">
+                                                        <img
+                                                            src={photoPreview}
+                                                            alt="Preview"
+                                                            className="h-24 w-24 rounded-full border-2 border-gray-200 object-cover"
+                                                        />
+                                                        <div className="flex space-x-2">
+                                                            <button
+                                                                onClick={handleEditPhoto}
+                                                                className="inline-flex items-center rounded-xl bg-green-500 px-6 py-2 text-white hover:bg-green-600 disabled:opacity-50"
+                                                                disabled={loading}
+                                                            >
+                                                                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth={2}
+                                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                                    />
+                                                                </svg>
+                                                                Edit Foto
+                                                            </button>
+                                                            <button
+                                                                onClick={handleDeletePhoto}
+                                                                className="inline-flex items-center rounded-xl bg-red-500 px-6 py-2 text-white hover:bg-red-600 disabled:opacity-50"
+                                                                disabled={loading}
+                                                            >
+                                                                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path
+                                                                        strokeLinecap="round"
+                                                                        strokeLinejoin="round"
+                                                                        strokeWidth={2}
+                                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                                    />
+                                                                </svg>
+                                                                Hapus Foto
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                    <div className="mt-2 text-sm text-gray-500">
+                                                        <p>
+                                                            💡 Klik "Edit Foto" untuk mengubah crop foto yang sudah ada, atau "Ganti Foto" untuk
+                                                            mengunggah foto baru.
+                                                        </p>
+                                                    </div>
                                                 </div>
                                             )}
                                             <div>
-                                                <label className="cursor-pointer rounded-xl bg-blue-500 px-6 py-2 text-white hover:bg-blue-600 disabled:opacity-50">
+                                                <label className="inline-flex cursor-pointer items-center rounded-xl bg-blue-500 px-6 py-2 text-white hover:bg-blue-600 disabled:opacity-50">
+                                                    <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth={2}
+                                                            d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                                                        />
+                                                    </svg>
                                                     {photoPreview ? 'Ganti Foto' : 'Upload Foto'}
                                                     <input
                                                         type="file"
@@ -978,7 +1096,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                         <div className="border-t border-gray-200 p-6">
                             <div className="flex justify-end space-x-4">
                                 <button
-                                    onClick={() => setShowModal(false)}
+                                    onClick={handleCancelEdit}
                                     className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-400"
                                     disabled={loading}
                                 >
@@ -986,8 +1104,25 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                 </button>
                                 <button
                                     onClick={activeTab === 'struktur' ? handleSaveStruktur : handleSaveBidang}
-                                    className="rounded-xl bg-blue-500 px-6 py-2 text-white hover:bg-blue-600 disabled:opacity-50"
-                                    disabled={loading}
+                                    className={`rounded-xl px-6 py-2 text-white ${
+                                        loading ||
+                                        (activeTab === 'struktur' && !hasStrukturChanges()) ||
+                                        (activeTab === 'bidang' && !hasBidangChanges())
+                                            ? 'cursor-not-allowed bg-gray-400 opacity-50'
+                                            : 'bg-blue-500 hover:bg-blue-600'
+                                    }`}
+                                    disabled={
+                                        loading ||
+                                        (activeTab === 'struktur' && !hasStrukturChanges()) ||
+                                        (activeTab === 'bidang' && !hasBidangChanges())
+                                    }
+                                    title={
+                                        loading
+                                            ? 'Sedang menyimpan...'
+                                            : (activeTab === 'struktur' && !hasStrukturChanges()) || (activeTab === 'bidang' && !hasBidangChanges())
+                                              ? 'Tidak ada perubahan untuk disimpan'
+                                              : 'Simpan perubahan'
+                                    }
                                 >
                                     {loading ? 'Menyimpan...' : 'Simpan'}
                                 </button>
@@ -995,6 +1130,19 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                         </div>
                     </div>
                 </div>
+            )}
+
+            {/* Crop Modal */}
+            {showCropModal && imageToCrop && (
+                <ImageCropper
+                    src={imageToCrop}
+                    onCropComplete={handleCropComplete}
+                    onCancel={handleCropCancel}
+                    aspectRatio={1}
+                    cropWidth={300}
+                    cropHeight={300}
+                    title={isEditingExistingPhoto ? 'Edit Foto' : 'Crop Foto Baru'}
+                />
             )}
         </div>
     );

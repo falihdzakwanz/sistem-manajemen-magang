@@ -1,13 +1,10 @@
 @import 'tailwindcss';
+@import 'react-image-crop/dist/ReactCrop.css';
 
-@plugin 'tailwindcss-animate';
 
-@source '../views';
-@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
 
-@custom-variant dark (&:is(.dark *));
 
-@theme {
+:root {
     --font-sans:
         'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
 
@@ -150,11 +147,12 @@
 
 @layer base {
     * {
-        @apply border-border;
+        border-color: var(--color-border);
     }
 
     body {
-        @apply bg-background text-foreground;
+        background-color: var(--color-background);
+        color: var(--color-foreground);
     }
 }
 
@@ -169,5 +167,25 @@
     .scrollbar-hide::-webkit-scrollbar {
         /* Hide scrollbar for Chrome, Safari and Opera */
         display: none;
+    }
+}
+
+/* Custom styles for image crop modal */
+@layer components {
+    .ReactCrop__crop-selection {
+        border: 2px solid rgb(59 130 246) !important;
+        border-radius: 8px;
+    }
+
+    .ReactCrop__drag-handle {
+        background-color: rgb(59 130 246) !important;
+        border: 2px solid white !important;
+        border-radius: 50% !important;
+        width: 12px !important;
+        height: 12px !important;
+    }
+
+    .ReactCrop__drag-handle::after {
+        background-color: transparent !important;
     }
 }
