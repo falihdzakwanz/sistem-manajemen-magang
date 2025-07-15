@@ -93,6 +93,13 @@ const Beranda = () => {
 
     const kepalaDinas = getStrukturData('kepala_dinas');
     const sekretaris = getStrukturData('sekretaris');
+    const kasubagUmum = getStrukturData('kasubag_umum');
+    const kasubagKeuangan = getStrukturData('kasubag_keuangan');
+    const perencanaAhliMuda = getStrukturData('perencana_ahli_muda');
+    const kabidInformasi = getStrukturData('kabid_informasi');
+    const kabidEgovernment = getStrukturData('kabid_egovernment');
+    const kabidKeamanan = getStrukturData('kabid_keamanan');
+    const kabidStatistik = getStrukturData('kabid_statistik');
 
     const openModal = (bidangId: number) => {
         setSelectedBidang(bidangId);
@@ -219,6 +226,211 @@ const Beranda = () => {
                                         <h4 className="mb-2 text-xl font-bold text-gray-800">{sekretaris?.title || 'Arienge Rahman, S.Kom., M.M'}</h4>
                                         <p className="font-medium text-gray-600">
                                             {sekretaris?.description || 'Sekretaris Dinas Komunikasi dan Informatika'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Sub Bagian dan Jabatan Fungsional */}
+                        <div className="mb-16">
+                            <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Sub Bagian dan Jabatan Fungsional</h4>
+
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                                {/* Kasubbag Umum Dan Kepegawaian */}
+                                <div className="mx-auto flex max-w-xs justify-center">
+                                    <div className="rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white to-green-50 p-6 text-center shadow-lg">
+                                        {kasubagUmum?.photo_url && (
+                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                <img src={kasubagUmum.photo_url} alt={kasubagUmum.title} className="h-full w-full object-cover" />
+                                            </div>
+                                        )}
+                                        {!kasubagUmum?.photo_url && (
+                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
+                                                <span className="text-2xl text-white">👩‍💼</span>
+                                            </div>
+                                        )}
+                                        <div className="mb-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
+                                            Sub Bagian
+                                        </div>
+                                        <h4 className="mb-1 text-lg font-bold text-gray-800">{kasubagUmum?.title || 'Yoranda Tiara Sati, S.STP'}</h4>
+                                        <p className="text-sm font-medium text-gray-600">
+                                            {kasubagUmum?.description || 'Kasubbag Umum Dan Kepegawaian'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Kasubbag Keuangan Dan Aset */}
+                                <div className="mx-auto flex max-w-xs justify-center">
+                                    <div className="rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white to-green-50 p-6 text-center shadow-lg">
+                                        {kasubagKeuangan?.photo_url && (
+                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                <img
+                                                    src={kasubagKeuangan.photo_url}
+                                                    alt={kasubagKeuangan.title}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </div>
+                                        )}
+                                        {!kasubagKeuangan?.photo_url && (
+                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
+                                                <span className="text-2xl text-white">👩‍💼</span>
+                                            </div>
+                                        )}
+                                        <div className="mb-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
+                                            Sub Bagian
+                                        </div>
+                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
+                                            {kasubagKeuangan?.title || 'Asha Astriani, S.I.Kom, M.M.'}
+                                        </h4>
+                                        <p className="text-sm font-medium text-gray-600">
+                                            {kasubagKeuangan?.description || 'Kasubbag Keuangan Dan Aset'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Jabatan Fungsional Perencana Ahli Muda */}
+                                <div className="mx-auto flex max-w-xs justify-center">
+                                    <div className="rounded-2xl border-2 border-teal-100 bg-gradient-to-br from-white to-teal-50 p-6 text-center shadow-lg">
+                                        {perencanaAhliMuda?.photo_url && (
+                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                <img
+                                                    src={perencanaAhliMuda.photo_url}
+                                                    alt={perencanaAhliMuda.title}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </div>
+                                        )}
+                                        {!perencanaAhliMuda?.photo_url && (
+                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 shadow-md">
+                                                <span className="text-2xl text-white">👩‍💼</span>
+                                            </div>
+                                        )}
+                                        <div className="mb-2 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
+                                            Jabatan Fungsional
+                                        </div>
+                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
+                                            {perencanaAhliMuda?.title || 'Yesi Herawati, S.Sos, MM.'}
+                                        </h4>
+                                        <p className="text-sm font-medium text-gray-600">
+                                            {perencanaAhliMuda?.description || 'Jabatan Fungsional Perencana Ahli Muda'}
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Kepala Bidang */}
+                        <div className="mb-16">
+                            <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Kepala Bidang</h4>
+
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+                                {/* Kabid Informasi dan Komunikasi Publik */}
+                                <div className="mx-auto flex max-w-xs justify-center">
+                                    <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50 p-6 text-center shadow-lg">
+                                        {kabidInformasi?.photo_url && (
+                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                <img
+                                                    src={kabidInformasi.photo_url}
+                                                    alt={kabidInformasi.title}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </div>
+                                        )}
+                                        {!kabidInformasi?.photo_url && (
+                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-md">
+                                                <span className="text-2xl text-white">📢</span>
+                                            </div>
+                                        )}
+                                        <div className="mb-2 inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-600">
+                                            Bidang 1
+                                        </div>
+                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
+                                            {kabidInformasi?.title || 'Rudhy Hartono, SE., M.Si.'}
+                                        </h4>
+                                        <p className="text-sm font-medium text-gray-600">
+                                            {kabidInformasi?.description || 'Kepala Bidang Informasi dan Komunikasi Publik'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Kabid Pemberdayaan E-Government */}
+                                <div className="mx-auto flex max-w-xs justify-center">
+                                    <div className="rounded-2xl border-2 border-purple-100 bg-gradient-to-br from-white to-purple-50 p-6 text-center shadow-lg">
+                                        {kabidEgovernment?.photo_url && (
+                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                <img
+                                                    src={kabidEgovernment.photo_url}
+                                                    alt={kabidEgovernment.title}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </div>
+                                        )}
+                                        {!kabidEgovernment?.photo_url && (
+                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-purple-600 shadow-md">
+                                                <span className="text-2xl text-white">🏛️</span>
+                                            </div>
+                                        )}
+                                        <div className="mb-2 inline-block rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-600">
+                                            Bidang 2
+                                        </div>
+                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
+                                            {kabidEgovernment?.title || 'Fachrizal, S.Kom, M.Kom.'}
+                                        </h4>
+                                        <p className="text-sm font-medium text-gray-600">
+                                            {kabidEgovernment?.description || 'Kepala Bidang Pemberdayaan E-Government'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Kabid Persandian, Keamanan Informasi dan Siber */}
+                                <div className="mx-auto flex max-w-xs justify-center">
+                                    <div className="rounded-2xl border-2 border-red-100 bg-gradient-to-br from-white to-red-50 p-6 text-center shadow-lg">
+                                        {kabidKeamanan?.photo_url && (
+                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                <img src={kabidKeamanan.photo_url} alt={kabidKeamanan.title} className="h-full w-full object-cover" />
+                                            </div>
+                                        )}
+                                        {!kabidKeamanan?.photo_url && (
+                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 shadow-md">
+                                                <span className="text-2xl text-white">🔒</span>
+                                            </div>
+                                        )}
+                                        <div className="mb-2 inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">
+                                            Bidang 3
+                                        </div>
+                                        <h4 className="mb-1 text-lg font-bold text-gray-800">{kabidKeamanan?.title || 'Nursari, S.Sos., MM'}</h4>
+                                        <p className="text-sm font-medium text-gray-600">
+                                            {kabidKeamanan?.description || 'Kepala Bidang Persandian, Keamanan Informasi dan Siber'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Kabid Statistik dan Data Elektronik */}
+                                <div className="mx-auto flex max-w-xs justify-center">
+                                    <div className="rounded-2xl border-2 border-teal-100 bg-gradient-to-br from-white to-teal-50 p-6 text-center shadow-lg">
+                                        {kabidStatistik?.photo_url && (
+                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                <img
+                                                    src={kabidStatistik.photo_url}
+                                                    alt={kabidStatistik.title}
+                                                    className="h-full w-full object-cover"
+                                                />
+                                            </div>
+                                        )}
+                                        {!kabidStatistik?.photo_url && (
+                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-600 shadow-md">
+                                                <span className="text-2xl text-white">📊</span>
+                                            </div>
+                                        )}
+                                        <div className="mb-2 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
+                                            Bidang 4
+                                        </div>
+                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
+                                            {kabidStatistik?.title || 'Donny Diaz Rizaldy Praja, SH., MH.'}
+                                        </h4>
+                                        <p className="text-sm font-medium text-gray-600">
+                                            {kabidStatistik?.description || 'Kepala Bidang Statistik dan Data Elektronik'}
                                         </p>
                                     </div>
                                 </div>

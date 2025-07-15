@@ -28,6 +28,55 @@ class BerandaContentSeeder extends Seeder
                 'title' => 'Arienge Rahman, S.Kom., M.M',
                 'description' => 'Sekretaris Dinas Komunikasi dan Informatika',
                 'photo_url' => '/asset/foto-sekretaris.jpg'
+            ],
+            'kasubag_umum' => [
+                'content_type' => 'struktur_organisasi',
+                'key' => 'kasubag_umum',
+                'title' => 'Yoranda Tiara Sati, S.STP',
+                'description' => 'Kasubbag Umum Dan Kepegawaian',
+                'photo_url' => null
+            ],
+            'kasubag_keuangan' => [
+                'content_type' => 'struktur_organisasi',
+                'key' => 'kasubag_keuangan',
+                'title' => 'Asha Astriani, S.I.Kom, M.M.',
+                'description' => 'Kasubbag Keuangan Dan Aset',
+                'photo_url' => null
+            ],
+            'perencana_ahli_muda' => [
+                'content_type' => 'struktur_organisasi',
+                'key' => 'perencana_ahli_muda',
+                'title' => 'Yesi Herawati, S.Sos, MM.',
+                'description' => 'Jabatan Fungsional Perencana Ahli Muda',
+                'photo_url' => null
+            ],
+            'kabid_informasi' => [
+                'content_type' => 'struktur_organisasi',
+                'key' => 'kabid_informasi',
+                'title' => 'Rudhy Hartono, SE., M.Si.',
+                'description' => 'Kepala Bidang Informasi dan Komunikasi Publik',
+                'photo_url' => null
+            ],
+            'kabid_egovernment' => [
+                'content_type' => 'struktur_organisasi',
+                'key' => 'kabid_egovernment',
+                'title' => 'Fachrizal, S.Kom, M.Kom.',
+                'description' => 'Kepala Bidang Pemberdayaan E-Government',
+                'photo_url' => null
+            ],
+            'kabid_keamanan' => [
+                'content_type' => 'struktur_organisasi',
+                'key' => 'kabid_keamanan',
+                'title' => 'Nursari, S.Sos., MM',
+                'description' => 'Kepala Bidang Persandian, Keamanan Informasi dan Siber',
+                'photo_url' => null
+            ],
+            'kabid_statistik' => [
+                'content_type' => 'struktur_organisasi',
+                'key' => 'kabid_statistik',
+                'title' => 'Donny Diaz Rizaldy Praja, SH., MH.',
+                'description' => 'Kepala Bidang Statistik dan Data Elektronik',
+                'photo_url' => null
             ]
         ];
 
