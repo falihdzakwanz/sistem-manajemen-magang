@@ -12,7 +12,12 @@ class UserController extends Controller
 {
     public function create()
     {
-        return Inertia::render('user/DaftarMagang');
+        // Ambil data bidang untuk dropdown di form
+        $bidangs = \App\Models\Bidang::select('id', 'nama_bidang', 'deskripsi')->get();
+        
+        return Inertia::render('user/DaftarMagang', [
+            'bidangs' => $bidangs
+        ]);
     }
 
     public function store(Request $request)

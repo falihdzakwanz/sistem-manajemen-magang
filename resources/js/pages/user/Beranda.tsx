@@ -124,6 +124,33 @@ const Beranda = () => {
                 'Nurqadryah, S.H., M.H. - Jabatan Fungsional Statistisi Ahli Muda',
             ],
         },
+        5: {
+            title: 'Kesekretariatan',
+            kepala: 'Arienge Rahman, S.Kom., M.M',
+            icon: '🏢',
+            color: 'indigo',
+            description:
+                'Bagian yang mengelola administrasi, koordinasi, dan layanan kesekretariatan untuk mendukung operasional dinas serta pelayanan kepada masyarakat.',
+            tugas: [
+                'Administrasi dan tata usaha',
+                'Koordinasi kegiatan antar bidang',
+                'Pengelolaan arsip dan dokumen',
+                'Pelayanan administrasi kepegawaian',
+                'Pengelolaan keuangan dan aset',
+                'Koordinasi dengan instansi lain',
+            ],
+            magangTasks: [
+                'Membantu administrasi surat menyurat',
+                'Pengarsipan dokumen dan berkas',
+                'Entry data administrasi',
+                'Membantu pelayanan publik',
+                'Dokumentasi kegiatan dinas',
+                'Koordinasi rapat dan acara',
+                'Pembuatan laporan administratif',
+                'Bantuan dalam pengelolaan inventaris',
+            ],
+            staffFungsional: ['Tim Sub Bagian Umum dan Kepegawaian', 'Tim Sub Bagian Keuangan', 'Tim Sub Bagian Program', 'Staff Administrasi'],
+        },
     };
 
     const openModal = (bidangId: number) => {
@@ -326,7 +353,45 @@ const Beranda = () => {
                         <p className="mt-4 text-lg text-gray-600">Temukan peluang magang yang sesuai dengan minat dan keahlian Anda</p>
                     </div>
 
-                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
+                        {/* Kesekretariatan */}
+                        <div className="group hover:shadow-3xl relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105">
+                            <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
+                            <div className="relative z-10">
+                                <div className="mb-6 text-6xl">🏢</div>
+                                <h4 className="mb-4 text-2xl font-bold">Kesekretariatan</h4>
+                                <p className="mb-4 text-lg opacity-90">Sekretaris: Arienge Rahman, S.Kom., M.M</p>
+                                <div className="mb-6">
+                                    <h5 className="mb-3 text-lg font-semibold">Fokus Kerja:</h5>
+                                    <ul className="space-y-2 text-sm">
+                                        <li className="flex items-center">
+                                            <span className="mr-2">📋</span> Administrasi & Tata Usaha
+                                        </li>
+                                        <li className="flex items-center">
+                                            <span className="mr-2">📋</span> Koordinasi Kegiatan
+                                        </li>
+                                        <li className="flex items-center">
+                                            <span className="mr-2">📋</span> Pelayanan Publik
+                                        </li>
+                                    </ul>
+                                </div>
+                                <button
+                                    onClick={() => openModal(5)}
+                                    className="group/btn inline-flex items-center rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30"
+                                >
+                                    <span>Lihat Peluang Magang</span>
+                                    <svg
+                                        className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        viewBox="0 0 24 24"
+                                    >
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+
                         {/* Bidang 1 */}
                         <div className="group hover:shadow-3xl relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105">
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
@@ -504,7 +569,9 @@ const Beranda = () => {
                                           ? 'from-purple-500 to-indigo-600'
                                           : selectedBidang === 3
                                             ? 'from-orange-500 to-red-500'
-                                            : 'from-teal-500 to-cyan-600'
+                                            : selectedBidang === 4
+                                              ? 'from-teal-500 to-cyan-600'
+                                              : 'from-indigo-500 to-purple-600'
                                 } p-8 text-white`}
                             >
                                 <button

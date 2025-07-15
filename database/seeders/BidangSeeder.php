@@ -33,6 +33,11 @@ class BidangSeeder extends Seeder
                 'nama_bidang' => 'Bidang Statistik dan Data Elektronik',
                 'kepala_bidang' => 'Donny Diaz Rizaldy Praja, SH., MH.',
                 'deskripsi' => 'Mengelola dan menganalisis data serta statistik untuk mendukung pengambilan keputusan.'
+            ],
+            [
+                'nama_bidang' => 'Kesekretariatan',
+                'kepala_bidang' => 'Arienge Rahman, S.Kom., M.M',
+                'deskripsi' => 'Mengelola administrasi, koordinasi, dan layanan kesekretariatan untuk mendukung operasional dinas.'
             ]
         ];
 

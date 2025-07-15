@@ -19,6 +19,13 @@ class Kernel extends ConsoleKernel
             ->emailOutputOnFailure(config('mail.admin_email', 'admin@example.com'))
             ->appendOutputTo(storage_path('logs/magang-status-update.log'));
             
+        // Jalankan cleanup data ditolak setiap hari jam 02:00
+        $schedule->command('magang:cleanup-rejected --no-interaction')
+            ->dailyAt('02:00')
+            ->name('cleanup-rejected-data')
+            ->emailOutputOnFailure(config('mail.admin_email', 'admin@example.com'))
+            ->appendOutputTo(storage_path('logs/magang-cleanup.log'));
+            
         // Alternative: Jalankan setiap 6 jam untuk update yang lebih real-time
         // $schedule->command('magang:update-status')
         //     ->everySixHours()

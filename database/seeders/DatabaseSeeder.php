@@ -15,7 +15,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             BidangSeeder::class,
             AdminSeeder::class,
-            UserSeeder::class,
+            // UserSeeder::class, // Removed dummy data - only use real user registrations
         ]);
     }
 }

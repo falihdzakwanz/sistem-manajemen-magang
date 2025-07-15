@@ -5,11 +5,17 @@ import React, { useEffect, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-// interface IndexProps {
-//     mahasiswas: Mahasiswa[];
-// }
+interface Bidang {
+    id: number;
+    nama_bidang: string;
+    deskripsi: string;
+}
 
-export default function DaftarMagang() {
+interface DaftarMagangProps {
+    bidangs: Bidang[];
+}
+
+export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
     const { data, setData, reset, errors } = useForm({
         nama: '',
         nim: '',
@@ -351,10 +357,12 @@ export default function DaftarMagang() {
                                 error={errors.bidang_id}
                                 options={[
                                     { value: '', label: 'Pilih bidang yang diminati' },
-                                    { value: '1', label: 'Bidang Informasi dan Komunikasi Publik' },
-                                    { value: '2', label: 'Bidang Pemberdayaan E-Government' },
-                                    { value: '3', label: 'Bidang Persandian, Keamanan Informasi dan Siber' },
-                                    { value: '4', label: 'Bidang Statistik dan Data Elektronik' },
+                                    ...bidangs
+                                        .filter((bidang, index, self) => index === self.findIndex((b) => b.id === bidang.id))
+                                        .map((bidang) => ({
+                                            value: bidang.id.toString(),
+                                            label: bidang.nama_bidang,
+                                        })),
                                 ]}
                                 required
                             />
@@ -503,8 +511,8 @@ function Select({ label, value, onChange, error, required = false, options }: Se
                 required={required}
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
-                {options.map((option) => (
-                    <option key={option.value} value={option.value}>
+                {options.map((option, index) => (
+                    <option key={`${option.value}-${index}`} value={option.value}>
                         {option.label}
                     </option>
                 ))}

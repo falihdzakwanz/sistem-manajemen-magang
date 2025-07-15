@@ -27,6 +27,16 @@ class User extends Model
         'linkedin',
         'motivasi',
         'reject_reason',
+        'rejected_at',
+    ];
+    
+    protected $dates = [
+        'tanggal_daftar',
+        'tanggal_mulai', 
+        'tanggal_selesai',
+        'rejected_at',
+        'created_at',
+        'updated_at',
     ];
     
     public function bidang()
