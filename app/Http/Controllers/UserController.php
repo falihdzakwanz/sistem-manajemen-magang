@@ -24,10 +24,10 @@ class UserController extends Controller
     {
         $validated = $request->validate([
             'nama'             => 'required|string|max:255',
-            'nim'              => 'required|string|unique:pesertas,nim',
+            'nim'              => 'required|string',
             'universitas'      => 'required|string|max:255',
             'jurusan'          => 'required|string|max:255',
-            'email'            => 'required|email|unique:pesertas,email',
+            'email'            => 'required|email',
             'telepon'          => 'required|string|max:20',
             'tanggal_daftar'   => 'required|date',
             'tanggal_mulai'    => 'required|date',

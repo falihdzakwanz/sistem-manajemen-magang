@@ -195,7 +195,6 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                                                 </td>
                                                 <td className="px-6 py-4 text-sm text-gray-600">
                                                     <div>{mhs.email}</div>
-                                                    <div className="text-xs text-gray-500">{mhs.telepon}</div>
                                                 </td>
                                             </tr>
                                         ))

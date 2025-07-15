@@ -14,10 +14,10 @@ return new class extends Migration
         Schema::create('pesertas', function (Blueprint $table) {
             $table->id(); // BIGINT UNSIGNED AUTO_INCREMENT, PRIMARY KEY
             $table->string('nama'); // VARCHAR(255)
-            $table->string('nim')->unique(); // VARCHAR(255), UNIQUE
+            $table->string('nim'); // VARCHAR(255)
             $table->string('universitas'); // VARCHAR(255)
             $table->string('jurusan'); // VARCHAR(255)
-            $table->string('email')->unique(); // VARCHAR(255), UNIQUE
+            $table->string('email'); // VARCHAR(255)
             $table->string('telepon', 20); // VARCHAR(20)
             $table->date('tanggal_daftar'); // DATE
             $table->date('tanggal_mulai'); // DATE
@@ -29,7 +29,6 @@ return new class extends Migration
             $table->string('linkedin')->nullable(); // VARCHAR(255), NULLABLE
             $table->text('motivasi'); // TEXT
             $table->timestamps(); // created_at, updated_at
-            $table->unique(['nim', 'email']); // UNIQUE KEY for nim and email
         });
     }
 
