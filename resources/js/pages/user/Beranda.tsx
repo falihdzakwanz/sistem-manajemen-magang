@@ -36,12 +36,18 @@ const Beranda = () => {
         const fetchBerandaContent = async () => {
             try {
                 const response = await fetch('/api/beranda-content');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch beranda content');
+                }
                 const data = await response.json();
                 setBerandaContent(data);
             } catch (error) {
                 console.error('Error fetching beranda content:', error);
-                // Fallback to default static data if API fails
-                setBerandaContent(getDefaultBerandaData());
+                // Set empty content instead of fallback
+                setBerandaContent({
+                    strukturOrganisasi: [],
+                    bidangData: [],
+                });
             } finally {
                 setLoading(false);
             }
@@ -49,103 +55,6 @@ const Beranda = () => {
 
         fetchBerandaContent();
     }, []);
-
-    // Default static data sebagai fallback
-    const getDefaultBerandaData = (): BerandaContentData => ({
-        strukturOrganisasi: [
-            {
-                id: 1,
-                key: 'kepala_dinas',
-                title: 'Rizky Agung Arisanto, S.T.',
-                description: 'Kepala Dinas Komunikasi dan Informatika',
-                photo_url: null,
-            },
-            {
-                id: 2,
-                key: 'sekretaris',
-                title: 'Arienge Rahman, S.Kom., M.M',
-                description: 'Sekretaris Dinas Komunikasi dan Informatika',
-                photo_url: null,
-            },
-        ],
-        bidangData: [
-            {
-                id: 1,
-                key: 'bidang_informasi',
-                title: 'Bidang Informasi dan Komunikasi Publik',
-                description:
-                    'Bidang yang merumuskan dan melaksanakan kebijakan serta kewenangan Pemerintah Kota di bidang Informasi dan Komunikasi Publik, bertanggung jawab kepada Kepala Dinas.',
-                data: {
-                    kepala: 'Rudhy Hartono, SE., M.Si.',
-                    icon: '📢',
-                    color: 'blue',
-                    tugas: [
-                        'Perumusan kebijakan di bidang Informasi dan Komunikasi Publik',
-                        'Menyusun program dan model pelayanan informasi dan kehumasan',
-                        'Menganalisis konten media terpilih dan isu publik',
-                        'Memberikan konsultasi, advokasi, dan negosiasi pelayanan informasi',
-                        'Mengevaluasi penyelenggaraan konferensi pers dan seminar',
-                        'Mengembangkan standar dan sistem layanan informasi dan kehumasan',
-                        'Pengawasan, pembinaan, dan pengendalian kegiatan Informasi dan Komunikasi Publik',
-                        'Pelaksanaan koordinasi dan kerjasama antar lembaga/instansi',
-                        'Mengelola Laporan Masyarakat melalui SP4N LAPOR',
-                    ],
-                    magangTasks: [
-                        'Membantu pembuatan konten media sosial dan publikasi',
-                        'Dokumentasi kegiatan dan acara dinas',
-                        'Penulisan artikel dan berita untuk website',
-                        'Desain grafis untuk publikasi dan media',
-                        'Editing video dan foto dokumentasi',
-                        'Riset dan analisis media serta isu publik',
-                        'Membantu pengelolaan pengaduan masyarakat melalui SP4N LAPOR',
-                        'Bantuan dalam persiapan konferensi pers dan seminar',
-                    ],
-                    staffFungsional: [
-                        'Farida Herawati, S.E. - Jabatan Fungsional Pranata Hubungan Masyarakat',
-                        'DRS. Joko Pratikno, M.M. - Jabatan Fungsional Pranata Hubungan Masyarakat',
-                        'Mirda Novitasari, SH, MH - Jabatan Fungsional Pranata Hubungan Masyarakat',
-                    ],
-                },
-            },
-            {
-                id: 2,
-                key: 'bidang_egovernment',
-                title: 'Bidang Pemberdayaan E-Government',
-                description:
-                    'Bidang yang merumuskan dan melaksanakan kebijakan serta kewenangan Pemerintah Kota di bidang Pemberdayaan E-Government, bertanggung jawab kepada Kepala Dinas.',
-                data: {
-                    kepala: 'Fachrizal, S.Kom, M.Kom.',
-                    icon: '🏛️',
-                    color: 'purple',
-                    tugas: [
-                        'Perumusan kebijakan di bidang Pemberdayaan E-Government',
-                        'Menyusun pedoman dan standar operasional prosedur E-Government',
-                        'Mengembangkan sistem informasi dan aplikasi pemerintahan',
-                        'Memberikan konsultasi dan bimbingan teknis E-Government',
-                        'Melakukan pengawasan dan evaluasi implementasi E-Government',
-                        'Koordinasi integrasi sistem informasi antar SKPD',
-                        'Pengembangan infrastruktur teknologi informasi pemerintahan',
-                        'Pelaksanaan kebijakan serta kewenangan di bidang E-Government',
-                        'Pengawasan, pembinaan dan pengendalian E-Government',
-                    ],
-                    magangTasks: [
-                        'Pengembangan aplikasi web dan mobile government',
-                        'Testing dan quality assurance sistem informasi',
-                        'Dokumentasi sistem dan user manual',
-                        'Membantu maintenance dan update aplikasi',
-                        'Riset teknologi baru untuk E-Government',
-                        'Pembuatan dashboard dan reporting sistem',
-                        'Integrasi API antar sistem pemerintahan',
-                        'Backup dan recovery data sistem',
-                    ],
-                    staffFungsional: [
-                        'Dimas Indra Kusuma, S.Kom - Jabatan Fungsional Pranata Komputer Ahli Muda',
-                        'Ridho Pratama, S.T. - Jabatan Fungsional Pranata Komputer Ahli Muda',
-                    ],
-                },
-            },
-        ],
-    });
 
     // Convert beranda content to the format expected by the rest of the component
     const bidangData: Record<

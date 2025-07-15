@@ -45,7 +45,15 @@ class AdminController extends Controller
             ];
         });
 
-        $bidangs = Bidang::all();
+        // Urutkan bidang dengan Kesekretariatan di posisi pertama
+        $bidangs = Bidang::all()
+            ->sortBy(function ($bidang) {
+                if ($bidang->nama_bidang === 'Kesekretariatan') {
+                    return 0; // Kesekretariatan di urutan pertama
+                }
+                return 1; // Bidang lainnya di urutan berikutnya
+            })
+            ->values(); // Reset index array
 
         return Inertia::render('admin/DashboardAdmin', [
             'mahasiswas' => $users,

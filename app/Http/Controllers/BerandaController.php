@@ -15,7 +15,17 @@ class BerandaController extends Controller
     public function adminEdit()
     {
         $strukturOrganisasi = BerandaContent::where('content_type', 'struktur_organisasi')->get();
-        $bidangData = BerandaContent::where('content_type', 'bidang')->get();
+        
+        // Urutkan bidang data dengan Kesekretariatan di posisi pertama
+        $bidangData = BerandaContent::where('content_type', 'bidang')
+            ->get()
+            ->sortBy(function ($bidang) {
+                if ($bidang->key === 'kesekretariatan') {
+                    return 0; // Kesekretariatan di urutan pertama
+                }
+                return 1; // Bidang lainnya di urutan berikutnya
+            })
+            ->values(); // Reset index array
 
         return Inertia::render('admin/EditBeranda', [
             'strukturOrganisasi' => $strukturOrganisasi,
@@ -29,7 +39,17 @@ class BerandaController extends Controller
     public function getBerandaContent()
     {
         $strukturOrganisasi = BerandaContent::where('content_type', 'struktur_organisasi')->get();
-        $bidangData = BerandaContent::where('content_type', 'bidang')->get();
+        
+        // Urutkan bidang data dengan Kesekretariatan di posisi pertama
+        $bidangData = BerandaContent::where('content_type', 'bidang')
+            ->get()
+            ->sortBy(function ($bidang) {
+                if ($bidang->key === 'kesekretariatan') {
+                    return 0; // Kesekretariatan di urutan pertama
+                }
+                return 1; // Bidang lainnya di urutan berikutnya
+            })
+            ->values(); // Reset index array
 
         return response()->json([
             'strukturOrganisasi' => $strukturOrganisasi,

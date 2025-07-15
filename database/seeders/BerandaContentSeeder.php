@@ -101,22 +101,21 @@ class BerandaContentSeeder extends Seeder
                         'Backup dan recovery data sistem',
                     ],
                     'staffFungsional' => [
-                        'Dimas Indra Kusuma, S.Kom - Jabatan Fungsional Pranata Komputer Ahli Muda',
-                        'Ridho Pratama, S.T. - Jabatan Fungsional Pranata Komputer Ahli Muda',
+                        'Hemalinda Suri, S.STP, M.Si - Jabatan Fungsional Pranata Komputer Ahli Muda',
                     ]
                 ]
             ],
             'bidang_keamanan' => [
                 'content_type' => 'bidang',
                 'key' => 'bidang_keamanan',
-                'title' => 'Bidang Keamanan Informasi',
-                'description' => 'Bidang yang bertanggung jawab dalam perumusan dan pelaksanaan kebijakan keamanan informasi, melindungi aset digital pemerintah dan masyarakat dari ancaman siber.',
+                'title' => 'Bidang Persandian, Keamanan Informasi dan Siber',
+                'description' => 'Bidang yang bertanggung jawab dalam perumusan dan pelaksanaan kebijakan persandian, keamanan informasi, dan siber, melindungi aset digital pemerintah dan masyarakat dari ancaman siber.',
                 'data' => [
-                    'kepala' => 'Ahmad Rizki, S.T., M.Kom.',
+                    'kepala' => 'Nursari, S.Sos., MM',
                     'icon' => '🔒',
                     'color' => 'red',
                     'tugas' => [
-                        'Perumusan kebijakan keamanan informasi dan siber',
+                        'Perumusan kebijakan persandian, keamanan informasi dan siber',
                         'Implementasi standar keamanan informasi ISO 27001',
                         'Monitoring dan deteksi ancaman keamanan siber',
                         'Pengembangan sistem keamanan jaringan dan infrastruktur',
@@ -124,7 +123,7 @@ class BerandaContentSeeder extends Seeder
                         'Incident response dan forensik digital',
                         'Edukasi dan sosialisasi keamanan informasi',
                         'Koordinasi dengan BSSN dan instansi keamanan siber',
-                        'Penetration testing dan vulnerability assessment',
+                        'Pengelolaan sistem persandian pemerintah daerah',
                     ],
                     'magangTasks' => [
                         'Audit keamanan sistem informasi dan infrastruktur siber',
@@ -134,6 +133,8 @@ class BerandaContentSeeder extends Seeder
                         'Testing vulnerability dan penetration testing sistem',
                         'Penelitian teknologi kriptografi dan keamanan siber terbaru',
                         'Pembuatan laporan insiden keamanan dan analisis forensik digital',
+                        'Membantu implementasi standar keamanan informasi ISO 27001',
+                        'Riset dan analisis tren ancaman siber global',
                         'Membantu pelatihan awareness keamanan informasi untuk pegawai',
                     ],
                     'staffFungsional' => [

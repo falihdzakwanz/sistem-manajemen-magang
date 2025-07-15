@@ -12,8 +12,16 @@ class UserController extends Controller
 {
     public function create()
     {
-        // Ambil data bidang untuk dropdown di form
-        $bidangs = \App\Models\Bidang::select('id', 'nama_bidang', 'deskripsi')->get();
+        // Ambil data bidang untuk dropdown di form, dengan Kesekretariatan di urutan pertama
+        $bidangs = \App\Models\Bidang::select('id', 'nama_bidang', 'deskripsi')
+            ->get()
+            ->sortBy(function ($bidang) {
+                if ($bidang->nama_bidang === 'Kesekretariatan') {
+                    return 0; // Kesekretariatan di urutan pertama
+                }
+                return 1; // Bidang lainnya di urutan berikutnya
+            })
+            ->values(); // Reset index array
         
         return Inertia::render('user/DaftarMagang', [
             'bidangs' => $bidangs
