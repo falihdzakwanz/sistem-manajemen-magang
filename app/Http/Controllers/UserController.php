@@ -92,7 +92,8 @@ class UserController extends Controller
             'status',
             'bidang_id',
             'linkedin',
-            'motivasi'
+            'motivasi',
+            'reject_reason'
         ])->whereIn('status', $allowedStatuses)
             ->orderBy('tanggal_daftar', 'desc')
             ->get();

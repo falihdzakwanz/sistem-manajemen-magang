@@ -439,7 +439,7 @@ const Beranda = () => {
 
                         {/* Bidang */}
                         <div className="mb-16">
-                            <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Bidang</h4>
+                            <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Bidang Penempatan</h4>
 
                             <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
                                 {Object.entries(bidangData).map(([bidangId, bidang]) => {
@@ -458,6 +458,7 @@ const Beranda = () => {
                                         <div key={bidangId} className="group relative">
                                             <div
                                                 className={`cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br ${colorClass} hover:shadow-3xl p-8 text-white shadow-2xl transition-all duration-300 hover:scale-105`}
+                                                onClick={() => openModal(parseInt(bidangId))}
                                             >
                                                 <div className="text-center">
                                                     <div className="mb-4 text-5xl">{bidang.icon}</div>
@@ -474,13 +475,7 @@ const Beranda = () => {
                                                             ))}
                                                         </ul>
                                                     </div>
-                                                    <button
-                                                        onClick={(e) => {
-                                                            e.stopPropagation();
-                                                            openModal(parseInt(bidangId));
-                                                        }}
-                                                        className="group/btn inline-flex items-center rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30"
-                                                    >
+                                                    <div className="group/btn inline-flex items-center rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30">
                                                         <span>Lihat Peluang Magang</span>
                                                         <svg
                                                             className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1"
@@ -490,7 +485,7 @@ const Beranda = () => {
                                                         >
                                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                                                         </svg>
-                                                    </button>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>

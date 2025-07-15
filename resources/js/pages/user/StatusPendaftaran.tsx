@@ -23,6 +23,7 @@ interface Pendaftar {
     };
     linkedin?: string;
     motivasi: string;
+    reject_reason?: string;
 }
 
 interface StatusPendaftaranProps {
@@ -33,6 +34,9 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [statusFilter, setStatusFilter] = useState('all');
     const [currentPage, setCurrentPage] = useState(1);
+    const [showRejectModal, setShowRejectModal] = useState(false);
+    const [selectedRejectReason, setSelectedRejectReason] = useState('');
+    const [selectedPendaftar, setSelectedPendaftar] = useState<Pendaftar | null>(null);
     const itemsPerPage = 10;
 
     // Fungsi untuk mendapatkan warna berdasarkan status
@@ -132,6 +136,22 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
         resetToFirstPage();
     }, [searchTerm, statusFilter]);
 
+    // Function to handle clicking "Ditolak" status
+    const handleRejectStatusClick = (pendaftar: Pendaftar) => {
+        if (pendaftar.status === 'Ditolak' && pendaftar.reject_reason) {
+            setSelectedPendaftar(pendaftar);
+            setSelectedRejectReason(pendaftar.reject_reason);
+            setShowRejectModal(true);
+        }
+    };
+
+    // Function to close reject modal
+    const closeRejectModal = () => {
+        setShowRejectModal(false);
+        setSelectedPendaftar(null);
+        setSelectedRejectReason('');
+    };
+
     return (
         <Layout currentPage="cek-status">
             {/* Hero Section */}
@@ -208,6 +228,22 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                                 </select>
                             </div>
                         </div>
+
+                        {/* Info Note */}
+                        <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
+                            <div className="flex items-start space-x-2">
+                                <svg className="mt-0.5 h-5 w-5 flex-shrink-0 text-blue-500" fill="currentColor" viewBox="0 0 20 20">
+                                    <path
+                                        fillRule="evenodd"
+                                        d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                                        clipRule="evenodd"
+                                    />
+                                </svg>
+                                <p className="text-sm text-blue-700">
+                                    <strong>Tip:</strong> Klik pada status "Ditolak" untuk melihat alasan penolakan dari admin.
+                                </p>
+                            </div>
+                        </div>
                     </div>
 
                     {/* Statistik Cards */}
@@ -278,11 +314,21 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                                                     <div>{item.email}</div>
                                                 </td>
                                                 <td className="px-6 py-4">
-                                                    <span
-                                                        className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(item.status)}`}
-                                                    >
-                                                        {item.status}
-                                                    </span>
+                                                    {item.status === 'Ditolak' && item.reject_reason ? (
+                                                        <button
+                                                            onClick={() => handleRejectStatusClick(item)}
+                                                            className={`inline-flex cursor-pointer rounded-full px-3 py-1 text-xs font-medium transition-all duration-200 hover:opacity-80 ${getStatusColor(item.status)}`}
+                                                            title="Klik untuk melihat alasan penolakan"
+                                                        >
+                                                            {item.status}
+                                                        </button>
+                                                    ) : (
+                                                        <span
+                                                            className={`inline-flex rounded-full px-3 py-1 text-xs font-medium ${getStatusColor(item.status)}`}
+                                                        >
+                                                            {item.status}
+                                                        </span>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))
@@ -398,11 +444,64 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
                                     Ditolak ({statusStats['Ditolak']})
                                 </span>
                                 <span className="text-sm text-gray-600">Tidak memenuhi syarat</span>
+                                <span className="text-xs font-medium text-blue-600">(Klik untuk melihat alasan)</span>
                             </div>
                         </div>
                     </div>
                 </div>
             </section>
+
+            {/* Modal Alasan Penolakan */}
+            {showRejectModal && selectedPendaftar && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4" onClick={closeRejectModal}>
+                    <div className="w-full max-w-md rounded-3xl bg-white shadow-xl" onClick={(e) => e.stopPropagation()}>
+                        {/* Modal Header */}
+                        <div className="border-b border-gray-200 p-6">
+                            <div className="flex items-center justify-between">
+                                <h3 className="text-xl font-bold text-red-600">Alasan Penolakan</h3>
+                                <button onClick={closeRejectModal} className="text-2xl text-gray-500 transition-colors hover:text-gray-700">
+                                    ×
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Modal Content */}
+                        <div className="p-6">
+                            <div className="mb-4">
+                                <h4 className="mb-2 font-semibold text-gray-800">Pendaftar:</h4>
+                                <div className="text-sm text-gray-600">
+                                    <p>
+                                        <strong>Nama:</strong> {selectedPendaftar.nama}
+                                    </p>
+                                    <p>
+                                        <strong>NIM:</strong> {selectedPendaftar.nim}
+                                    </p>
+                                    <p>
+                                        <strong>Universitas:</strong> {selectedPendaftar.universitas}
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="border-t border-gray-200 pt-4">
+                                <h4 className="mb-2 font-semibold text-red-700">Alasan Penolakan:</h4>
+                                <div className="rounded-lg border border-red-200 bg-red-50 p-3">
+                                    <p className="text-sm leading-relaxed text-red-800">{selectedRejectReason}</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Modal Footer */}
+                        <div className="border-t border-gray-200 p-6 text-center">
+                            <button
+                                onClick={closeRejectModal}
+                                className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
+                            >
+                                Tutup
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </Layout>
     );
 };
