@@ -353,8 +353,8 @@ export default function DaftarMagang() {
                                     { value: '', label: 'Pilih bidang yang diminati' },
                                     { value: '1', label: 'Bidang Informasi dan Komunikasi Publik' },
                                     { value: '2', label: 'Bidang Pemberdayaan E-Government' },
-                                    { value: '3', label: 'Bidang Persandian, Pos dan Telekomunikasi' },
-                                    { value: '4', label: 'Bidang Data dan Statistik' },
+                                    { value: '3', label: 'Bidang Persandian, Keamanan Informasi dan Siber' },
+                                    { value: '4', label: 'Bidang Statistik dan Data Elektronik' },
                                 ]}
                                 required
                             />

@@ -25,13 +25,13 @@ class BidangSeeder extends Seeder
                 'deskripsi' => 'Mengembangkan dan memberdayakan sistem e-government untuk pelayanan publik yang lebih efisien.'
             ],
             [
-                'nama_bidang' => 'Bidang Persandian, Pos dan Telekomunikasi',
+                'nama_bidang' => 'Bidang Persandian, Keamanan Informasi dan Siber',
                 'kepala_bidang' => 'Nursari, S.Sos., MM',
-                'deskripsi' => 'Mengelola sistem persandian, layanan pos, dan infrastruktur telekomunikasi.'
+                'deskripsi' => 'Mengelola sistem persandian, keamanan informasi, dan infrastruktur siber.'
             ],
             [
-                'nama_bidang' => 'Bidang Data dan Statistik',
-                'kepala_bidang' => 'Donny, S.H',
+                'nama_bidang' => 'Bidang Statistik dan Data Elektronik',
+                'kepala_bidang' => 'Donny Diaz Rizaldy Praja, SH., MH.',
                 'deskripsi' => 'Mengelola dan menganalisis data serta statistik untuk mendukung pengambilan keputusan.'
             ]
         ];

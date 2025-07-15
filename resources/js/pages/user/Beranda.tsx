@@ -41,9 +41,9 @@ const Beranda = () => {
                 'Riset dan analisis media',
             ],
             staffFungsional: [
-                'Farida Herawati, S.E. - Pranata Hubungan Masyarakat',
-                'DRS. Joko Pratikno, M.M. - Pranata Hubungan Masyarakat',
-                'Mirda Novitasari, SH, MH - Pranata Hubungan Masyarakat',
+                'Farida Herawati, S.E. - Jabatan Fungsional Pranata Hubungan Masyarakat',
+                'DRS. Joko Pratikno, M.M. - Jabatan Fungsional Pranata Hubungan Masyarakat',
+                'Mirda Novitasari, SH, MH - Jabatan Fungsional Pranata Hubungan Masyarakat',
             ],
         },
         2: {
@@ -71,32 +71,35 @@ const Beranda = () => {
             staffFungsional: ['Tim Programmer dan Developer', 'Tim Network Administrator', 'Tim Database Administrator', 'Tim System Analyst'],
         },
         3: {
-            title: 'Bidang Persandian, Pos dan Telekomunikasi',
+            title: 'Bidang Persandian, Keamanan Informasi dan Siber',
             kepala: 'Nursari, S.Sos., MM',
             icon: '📱',
             color: 'orange',
             description:
-                'Bidang yang mengelola keamanan informasi, layanan pos, dan infrastruktur telekomunikasi untuk mendukung komunikasi yang aman dan terpercaya.',
+                'Bidang yang mengelola keamanan informasi, persandian, dan infrastruktur siber untuk mendukung komunikasi yang aman dan terpercaya.',
             tugas: [
                 'Pengelolaan sistem keamanan informasi',
                 'Implementasi kebijakan persandian',
-                'Koordinasi layanan pos dan telekomunikasi',
-                'Pengawasan frekuensi radio',
+                'Koordinasi keamanan siber',
+                'Pengawasan dan monitoring ancaman siber',
                 'Sertifikasi keamanan sistem',
             ],
             magangTasks: [
                 'Audit keamanan sistem informasi',
                 'Implementasi protokol keamanan',
-                'Monitoring jaringan telekomunikasi',
+                'Monitoring jaringan dan keamanan siber',
                 'Dokumentasi kebijakan keamanan',
                 'Testing vulnerability sistem',
-                'Penelitian teknologi keamanan terbaru',
+                'Penelitian teknologi keamanan siber terbaru',
             ],
-            staffFungsional: ['Helman Fatria Gautama, S.E. - Sandiman Ahli Muda', 'M. Ihsan Arisandi, S.H. - Sandiman Ahli Muda'],
+            staffFungsional: [
+                'Helman Fatria Gautama, S.E. - Jabatan Fungsional Sandiman Ahli Muda',
+                'M. Ihsan Arisandi, S.H. - Jabatan Fungsional Sandiman Ahli Muda',
+            ],
         },
         4: {
-            title: 'Bidang Data dan Statistik',
-            kepala: 'Donny, S.H',
+            title: 'Bidang Statistik dan Data Elektronik',
+            kepala: 'Donny Diaz Rizaldy Praja, SH., MH.',
             icon: '📊',
             color: 'teal',
             description:
@@ -116,7 +119,10 @@ const Beranda = () => {
                 'Pembuatan laporan statistik',
                 'Machine learning dan predictive analytics',
             ],
-            staffFungsional: ['Isma Dewi, S.H., M.H. - Statistisi Ahli Muda', 'Nurqadryah, S.H., M.H. - Statistisi Ahli Muda'],
+            staffFungsional: [
+                'Lisma Dewi, S.H., M.H. - Jabatan Fungsional Statistisi Ahli Muda',
+                'Nurqadryah, S.H., M.H. - Jabatan Fungsional Statistisi Ahli Muda',
+            ],
         },
     };
 
@@ -148,10 +154,10 @@ const Beranda = () => {
                                 <br />
                                 Dinas Komunikasi dan
                                 <br />
-                                Digital Kota Bandar Lampung
+                                Informatika Kota Bandar Lampung
                             </h2>
                             <p className="mb-8 text-lg leading-relaxed opacity-90">
-                                Dinas Komunikasi dan Digital Kota Bandar Lampung berkomitmen untuk memberikan pelayanan terbaik dalam bidang
+                                Dinas Komunikasi dan Informatika Kota Bandar Lampung berkomitmen untuk memberikan pelayanan terbaik dalam bidang
                                 komunikasi dan teknologi informasi.
                             </p>
                             <a
@@ -181,55 +187,51 @@ const Beranda = () => {
                         <p className="mt-4 text-lg text-gray-600">Pimpinan dan Struktur Organisasi Dinas Kominfo Kota Bandar Lampung</p>
                     </div>
 
-                    {/* Walikota - Posisi Teratas dan Menonjol */}
-                    <div className="mb-20">
-                        <div className="mx-auto flex max-w-lg justify-center">
-                            <div className="group shadow-3xl hover:shadow-4xl rounded-3xl border-4 border-amber-200 bg-gradient-to-br from-white via-amber-50 to-amber-100 p-12 text-center transition-all duration-500 hover:scale-105">
-                                <div className="mx-auto mb-8 flex h-32 w-32 items-center justify-center rounded-full bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 shadow-2xl">
-                                    <span className="text-5xl text-white">👑</span>
-                                </div>
-                                <div className="mb-4 inline-block rounded-full bg-amber-200 px-6 py-3 text-lg font-bold text-amber-700 shadow-lg">
-                                    Walikota Bandar Lampung
-                                </div>
-                                <h4 className="mb-4 text-3xl font-bold text-gray-800">Hj. Eva Dwiana</h4>
-                                <p className="text-xl font-semibold text-gray-600">Pimpinan Tertinggi Kota Bandar Lampung</p>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Leadership - Pimpinan */}
                     <div className="mb-16">
                         <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Pimpinan Dinas</h4>
-                        <div className="mx-auto grid max-w-4xl grid-cols-1 gap-8 md:grid-cols-2">
-                            {/* Kepala Dinas */}
-                            <div className="group rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50 p-8 text-center shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                                <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
-                                    <span className="text-3xl text-white">👨‍💼</span>
+
+                        {/* Kepala Dinas - Posisi Utama */}
+                        <div className="mb-12">
+                            <div className="mx-auto flex max-w-md justify-center">
+                                <div className="group hover:shadow-3xl rounded-3xl border-4 border-blue-200 bg-gradient-to-br from-white via-blue-50 to-blue-100 p-10 text-center shadow-2xl transition-all duration-300 hover:scale-105">
+                                    <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-xl">
+                                        <span className="text-4xl text-white">👨‍💼</span>
+                                    </div>
+                                    <div className="mb-3 inline-block rounded-full bg-blue-200 px-6 py-2 text-base font-bold text-blue-700 shadow-md">
+                                        Kepala Dinas
+                                    </div>
+                                    <h4 className="mb-3 text-2xl font-bold text-gray-800">Rizky Agung Arisanto, S.T.</h4>
+                                    <p className="text-lg font-semibold text-gray-600">Kepala Dinas Komunikasi dan Informatika</p>
                                 </div>
-                                <div className="mb-2 inline-block rounded-full bg-blue-100 px-4 py-1 text-sm font-semibold text-blue-600">
-                                    Kepala Dinas
-                                </div>
-                                <h4 className="mb-2 text-xl font-bold text-gray-800">Rizky Agung Arisanto, S.T.</h4>
-                                <p className="font-medium text-gray-600">Kepala Dinas Komunikasi dan Digital</p>
                             </div>
-                            {/* Sekretaris */}
-                            <div className="group rounded-2xl border-2 border-purple-100 bg-gradient-to-br from-white to-purple-50 p-8 text-center shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
-                                <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
-                                    <span className="text-3xl text-white">👨‍💼</span>
+                        </div>
+
+                        {/* Kesekretariatan */}
+                        <div className="mb-16">
+                            <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Kesekretariatan</h4>
+
+                            {/* Sekretaris - Posisi Bawahan */}
+                            <div>
+                                <div className="mx-auto flex max-w-sm justify-center">
+                                    <div className="group rounded-2xl border-2 border-purple-100 bg-gradient-to-br from-white to-purple-50 p-8 text-center shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                                        <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
+                                            <span className="text-3xl text-white">👨‍💼</span>
+                                        </div>
+                                        <div className="mb-2 inline-block rounded-full bg-purple-100 px-4 py-1 text-sm font-semibold text-purple-600">
+                                            Sekretaris
+                                        </div>
+                                        <h4 className="mb-2 text-xl font-bold text-gray-800">Arienge Rahman, S.Kom., M.M</h4>
+                                        <p className="font-medium text-gray-600">Sekretaris Dinas Komunikasi dan Informatika</p>
+                                    </div>
                                 </div>
-                                <div className="mb-2 inline-block rounded-full bg-purple-100 px-4 py-1 text-sm font-semibold text-purple-600">
-                                    Sekretaris
-                                </div>
-                                <h4 className="mb-2 text-xl font-bold text-gray-800">Arienge Rahman, S.Kom., M.M</h4>
-                                <p className="font-medium text-gray-600">Sekretaris Dinas</p>
                             </div>
                         </div>
                     </div>
 
                     {/* Sub Bagian Sekretariat dan Keuangan */}
                     <div className="mb-16">
-                        <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Sub Bagian Sekretariat dan Keuangan</h4>
-                        <div className="mx-auto grid max-w-3xl grid-cols-1 gap-6 md:grid-cols-2">
+                        <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3">
                             {/* Sub Bagian Sekretariat */}
                             <div className="group rounded-xl border-2 border-rose-100 bg-gradient-to-br from-white to-rose-50 p-4 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
                                 <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-pink-600 shadow-md">
@@ -238,7 +240,7 @@ const Beranda = () => {
                                 <div className="mb-2 inline-block rounded-full bg-rose-100 px-2 py-1 text-xs font-semibold text-rose-600">
                                     Kasubbag Umum & Kepegawaian
                                 </div>
-                                <h5 className="mb-2 text-base font-bold text-gray-800">Saputra Tirta Mega, S.Kom, M.M.</h5>
+                                <h5 className="mb-2 text-base font-bold text-gray-800">Yoranda Tiara Sati, S.STP</h5>
                                 <p className="text-xs leading-relaxed text-gray-600">Kepala Sub Bagian Umum dan Kepegawaian</p>
                             </div>
                             {/* Sub Bagian Keuangan */}
@@ -251,6 +253,17 @@ const Beranda = () => {
                                 </div>
                                 <h5 className="mb-2 text-base font-bold text-gray-800">Asha Astriani, S.I.Kom, M.M.</h5>
                                 <p className="text-xs leading-relaxed text-gray-600">Kepala Sub Bagian Keuangan dan Asset</p>
+                            </div>
+                            {/* Jabatan Fungsional Perencana */}
+                            <div className="group rounded-xl border-2 border-emerald-100 bg-gradient-to-br from-white to-emerald-50 p-4 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                                <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-green-600 shadow-md">
+                                    <span className="text-xl text-white">📋</span>
+                                </div>
+                                <div className="mb-2 inline-block rounded-full bg-emerald-100 px-2 py-1 text-xs font-semibold text-emerald-600">
+                                    Perencana Ahli Muda
+                                </div>
+                                <h5 className="mb-2 text-base font-bold text-gray-800">Yesi Herawati, S.Sos, MM.</h5>
+                                <p className="text-xs leading-relaxed text-gray-600">Jabatan Fungsional Perencana Ahli Muda</p>
                             </div>
                         </div>
                     </div>
@@ -284,10 +297,10 @@ const Beranda = () => {
                                     <span className="text-2xl text-white">📱</span>
                                 </div>
                                 <div className="mb-2 inline-block rounded-full bg-orange-100 px-3 py-1 text-xs font-semibold text-orange-600">
-                                    Persandian & Telkom
+                                    Persandian & Keamanan Siber
                                 </div>
                                 <h5 className="mb-3 text-lg font-bold text-gray-800">Nursari, S.Sos., MM</h5>
-                                <p className="text-sm leading-relaxed text-gray-600">Kepala Bidang Persandian, Pos dan Telekomunikasi</p>
+                                <p className="text-sm leading-relaxed text-gray-600">Kepala Bidang Persandian, Keamanan Informasi dan Siber</p>
                             </div>
                             <div className="group rounded-2xl border-2 border-cyan-100 bg-gradient-to-br from-white to-cyan-50 p-6 text-center shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
                                 <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 shadow-lg">
@@ -296,8 +309,8 @@ const Beranda = () => {
                                 <div className="mb-2 inline-block rounded-full bg-cyan-100 px-3 py-1 text-xs font-semibold text-cyan-600">
                                     Data & Statistik
                                 </div>
-                                <h5 className="mb-3 text-lg font-bold text-gray-800">Donny, S.H</h5>
-                                <p className="text-sm leading-relaxed text-gray-600">Kepala Bidang Data dan Statistik</p>
+                                <h5 className="mb-3 text-lg font-bold text-gray-800">Donny Diaz Rizaldy Praja, SH., MH.</h5>
+                                <p className="text-sm leading-relaxed text-gray-600">Kepala Bidang Statistik dan Data Elektronik</p>
                             </div>
                         </div>
                     </div>
@@ -395,7 +408,7 @@ const Beranda = () => {
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                             <div className="relative z-10">
                                 <div className="mb-6 text-6xl">📱</div>
-                                <h4 className="mb-4 text-2xl font-bold">Bidang Persandian, Pos dan Telekomunikasi</h4>
+                                <h4 className="mb-4 text-2xl font-bold">Bidang Persandian, Keamanan Informasi dan Siber</h4>
                                 <p className="mb-4 text-lg opacity-90">Kepala Bidang: Nursari, S.Sos., MM</p>
                                 <div className="mb-6">
                                     <h5 className="mb-3 text-lg font-semibold">Fokus Kerja:</h5>
@@ -407,7 +420,7 @@ const Beranda = () => {
                                             <span className="mr-2">🔒</span> Persandian & Enkripsi
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">🔒</span> Telekomunikasi
+                                            <span className="mr-2">🔒</span> Keamanan Siber
                                         </li>
                                     </ul>
                                 </div>
@@ -433,8 +446,8 @@ const Beranda = () => {
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                             <div className="relative z-10">
                                 <div className="mb-6 text-6xl">📊</div>
-                                <h4 className="mb-4 text-2xl font-bold">Bidang Data dan Statistik</h4>
-                                <p className="mb-4 text-lg opacity-90">Kepala Bidang: Donny, S.H</p>
+                                <h4 className="mb-4 text-2xl font-bold">Bidang Statistik dan Data Elektronik</h4>
+                                <p className="mb-4 text-lg opacity-90">Kepala Bidang: Donny Diaz Rizaldy Praja, SH., MH.</p>
                                 <div className="mb-6">
                                     <h5 className="mb-3 text-lg font-semibold">Fokus Kerja:</h5>
                                     <ul className="space-y-2 text-sm">
