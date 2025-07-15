@@ -3,6 +3,8 @@
 namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -15,7 +17,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             BidangSeeder::class,
             AdminSeeder::class,
-            // UserSeeder::class, // Removed dummy data - only use real user registrations
+            BerandaContentSeeder::class,
         ]);
     }
 }
