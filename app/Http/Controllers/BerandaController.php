@@ -93,10 +93,7 @@ class BerandaController extends Controller
 
         BerandaContent::updateOrCreateByKey($request->key, $data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Struktur organisasi berhasil diupdate!'
-        ]);
+        return redirect()->back()->with('success', 'Struktur organisasi berhasil diupdate!');
     }
 
     /**
@@ -130,10 +127,7 @@ class BerandaController extends Controller
 
         BerandaContent::updateOrCreateByKey($request->key, $data);
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Data bidang berhasil diupdate!'
-        ]);
+        return redirect()->back()->with('success', 'Data bidang berhasil diupdate!');
     }
 
     /**
@@ -155,15 +149,9 @@ class BerandaController extends Controller
             // Update database
             $content->update(['photo_url' => null]);
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Foto berhasil dihapus!'
-            ]);
+            return redirect()->back()->with('success', 'Foto berhasil dihapus!');
         }
 
-        return response()->json([
-            'success' => false,
-            'message' => 'Foto tidak ditemukan!'
-        ], 404);
+        return redirect()->back()->withErrors(['error' => 'Foto tidak ditemukan!']);
     }
 }
