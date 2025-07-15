@@ -265,7 +265,7 @@ const Beranda = () => {
                         {/* Kepala Dinas - Posisi Utama */}
                         <div className="mb-12">
                             <div className="mx-auto flex max-w-md justify-center">
-                                <div className="group hover:shadow-3xl rounded-3xl border-4 border-blue-200 bg-gradient-to-br from-white via-blue-50 to-blue-100 p-10 text-center shadow-2xl transition-all duration-300 hover:scale-105">
+                                <div className="rounded-3xl border-4 border-blue-200 bg-gradient-to-br from-white via-blue-50 to-blue-100 p-10 text-center shadow-2xl">
                                     <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-xl">
                                         <span className="text-4xl text-white">👨‍💼</span>
                                     </div>
@@ -285,7 +285,7 @@ const Beranda = () => {
                             {/* Sekretaris - Posisi Bawahan */}
                             <div>
                                 <div className="mx-auto flex max-w-sm justify-center">
-                                    <div className="group rounded-2xl border-2 border-purple-100 bg-gradient-to-br from-white to-purple-50 p-8 text-center shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                                    <div className="rounded-2xl border-2 border-purple-100 bg-gradient-to-br from-white to-purple-50 p-8 text-center shadow-xl">
                                         <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
                                             <span className="text-3xl text-white">👨‍💼</span>
                                         </div>
@@ -304,7 +304,7 @@ const Beranda = () => {
                     <div className="mb-16">
                         <div className="mx-auto grid max-w-5xl grid-cols-1 gap-6 md:grid-cols-3">
                             {/* Sub Bagian Sekretariat */}
-                            <div className="group rounded-xl border-2 border-rose-100 bg-gradient-to-br from-white to-rose-50 p-4 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                            <div className="rounded-xl border-2 border-rose-100 bg-gradient-to-br from-white to-rose-50 p-4 text-center shadow-lg">
                                 <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-rose-500 to-pink-600 shadow-md">
                                     <span className="text-xl text-white">👥</span>
                                 </div>
@@ -315,7 +315,7 @@ const Beranda = () => {
                                 <p className="text-xs leading-relaxed text-gray-600">Kepala Sub Bagian Umum dan Kepegawaian</p>
                             </div>
                             {/* Sub Bagian Keuangan */}
-                            <div className="group rounded-xl border-2 border-violet-100 bg-gradient-to-br from-white to-violet-50 p-4 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                            <div className="rounded-xl border-2 border-violet-100 bg-gradient-to-br from-white to-violet-50 p-4 text-center shadow-lg">
                                 <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-purple-600 shadow-md">
                                     <span className="text-xl text-white">💰</span>
                                 </div>
@@ -326,7 +326,7 @@ const Beranda = () => {
                                 <p className="text-xs leading-relaxed text-gray-600">Kepala Sub Bagian Keuangan dan Asset</p>
                             </div>
                             {/* Jabatan Fungsional Perencana */}
-                            <div className="group rounded-xl border-2 border-emerald-100 bg-gradient-to-br from-white to-emerald-50 p-4 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl">
+                            <div className="rounded-xl border-2 border-emerald-100 bg-gradient-to-br from-white to-emerald-50 p-4 text-center shadow-lg">
                                 <div className="mx-auto mb-3 flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-emerald-500 to-green-600 shadow-md">
                                     <span className="text-xl text-white">📋</span>
                                 </div>
@@ -343,7 +343,7 @@ const Beranda = () => {
                     <div>
                         <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Kepala Bidang</h4>
                         <div className="mx-auto grid max-w-7xl grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-4">
-                            <div className="group rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white to-green-50 p-6 text-center shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                            <div className="rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white to-green-50 p-6 text-center shadow-xl">
                                 <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
                                     <span className="text-2xl text-white">📢</span>
                                 </div>
@@ -353,7 +353,7 @@ const Beranda = () => {
                                 <h5 className="mb-3 text-lg font-bold text-gray-800">Rudhy Hartono, SE., M.Si.</h5>
                                 <p className="text-sm leading-relaxed text-gray-600">Kepala Bidang Informasi dan Komunikasi Publik</p>
                             </div>
-                            <div className="group rounded-2xl border-2 border-indigo-100 bg-gradient-to-br from-white to-indigo-50 p-6 text-center shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                            <div className="rounded-2xl border-2 border-indigo-100 bg-gradient-to-br from-white to-indigo-50 p-6 text-center shadow-xl">
                                 <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 shadow-lg">
                                     <span className="text-2xl text-white">🏛️</span>
                                 </div>
@@ -363,7 +363,7 @@ const Beranda = () => {
                                 <h5 className="mb-3 text-lg font-bold text-gray-800">Fachrizal, S.Kom, M.Kom.</h5>
                                 <p className="text-sm leading-relaxed text-gray-600">Kepala Bidang Pemberdayaan E-Government</p>
                             </div>
-                            <div className="group rounded-2xl border-2 border-orange-100 bg-gradient-to-br from-white to-orange-50 p-6 text-center shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                            <div className="rounded-2xl border-2 border-orange-100 bg-gradient-to-br from-white to-orange-50 p-6 text-center shadow-xl">
                                 <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-orange-500 to-red-500 shadow-lg">
                                     <span className="text-2xl text-white">📱</span>
                                 </div>
@@ -373,7 +373,7 @@ const Beranda = () => {
                                 <h5 className="mb-3 text-lg font-bold text-gray-800">Nursari, S.Sos., MM</h5>
                                 <p className="text-sm leading-relaxed text-gray-600">Kepala Bidang Persandian, Keamanan Informasi dan Siber</p>
                             </div>
-                            <div className="group rounded-2xl border-2 border-cyan-100 bg-gradient-to-br from-white to-cyan-50 p-6 text-center shadow-xl transition-all duration-300 hover:scale-105 hover:shadow-2xl">
+                            <div className="rounded-2xl border-2 border-cyan-100 bg-gradient-to-br from-white to-cyan-50 p-6 text-center shadow-xl">
                                 <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-cyan-500 to-teal-600 shadow-lg">
                                     <span className="text-2xl text-white">📊</span>
                                 </div>
@@ -399,7 +399,10 @@ const Beranda = () => {
 
                     <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3">
                         {/* Kesekretariatan */}
-                        <div className="group hover:shadow-3xl relative overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105">
+                        <div
+                            onClick={() => openModal(5)}
+                            className="group hover:shadow-3xl relative cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br from-indigo-500 via-purple-600 to-blue-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105"
+                        >
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                             <div className="relative z-10">
                                 <div className="mb-6 text-6xl">🏢</div>
@@ -420,7 +423,10 @@ const Beranda = () => {
                                     </ul>
                                 </div>
                                 <button
-                                    onClick={() => openModal(5)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        openModal(5);
+                                    }}
                                     className="group/btn inline-flex items-center rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30"
                                 >
                                     <span>Lihat Peluang Magang</span>
@@ -437,7 +443,10 @@ const Beranda = () => {
                         </div>
 
                         {/* Bidang 1 */}
-                        <div className="group hover:shadow-3xl relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105">
+                        <div
+                            onClick={() => openModal(1)}
+                            className="group hover:shadow-3xl relative cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br from-blue-500 via-blue-600 to-purple-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105"
+                        >
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                             <div className="relative z-10">
                                 <div className="mb-6 text-6xl">📢</div>
@@ -458,7 +467,10 @@ const Beranda = () => {
                                     </ul>
                                 </div>
                                 <button
-                                    onClick={() => openModal(1)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        openModal(1);
+                                    }}
                                     className="group/btn inline-flex items-center rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30"
                                 >
                                     <span>Lihat Peluang Magang</span>
@@ -475,7 +487,10 @@ const Beranda = () => {
                         </div>
 
                         {/* Bidang 2 */}
-                        <div className="group hover:shadow-3xl relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105">
+                        <div
+                            onClick={() => openModal(2)}
+                            className="group hover:shadow-3xl relative cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br from-purple-500 via-purple-600 to-indigo-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105"
+                        >
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                             <div className="relative z-10">
                                 <div className="mb-6 text-6xl">🏛️</div>
@@ -496,7 +511,10 @@ const Beranda = () => {
                                     </ul>
                                 </div>
                                 <button
-                                    onClick={() => openModal(2)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        openModal(2);
+                                    }}
                                     className="group/btn inline-flex items-center rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30"
                                 >
                                     <span>Lihat Peluang Magang</span>
@@ -513,7 +531,10 @@ const Beranda = () => {
                         </div>
 
                         {/* Bidang 3 */}
-                        <div className="group hover:shadow-3xl relative overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105">
+                        <div
+                            onClick={() => openModal(3)}
+                            className="group hover:shadow-3xl relative cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br from-orange-500 via-red-500 to-pink-600 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105"
+                        >
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                             <div className="relative z-10">
                                 <div className="mb-6 text-6xl">📱</div>
@@ -534,7 +555,10 @@ const Beranda = () => {
                                     </ul>
                                 </div>
                                 <button
-                                    onClick={() => openModal(3)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        openModal(3);
+                                    }}
                                     className="group/btn inline-flex items-center rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30"
                                 >
                                     <span>Lihat Peluang Magang</span>
@@ -551,7 +575,10 @@ const Beranda = () => {
                         </div>
 
                         {/* Bidang 4 */}
-                        <div className="group hover:shadow-3xl relative overflow-hidden rounded-3xl bg-gradient-to-br from-teal-500 via-cyan-600 to-blue-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105">
+                        <div
+                            onClick={() => openModal(4)}
+                            className="group hover:shadow-3xl relative cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br from-teal-500 via-cyan-600 to-blue-700 p-8 text-white shadow-2xl transition-all duration-500 hover:scale-105"
+                        >
                             <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"></div>
                             <div className="relative z-10">
                                 <div className="mb-6 text-6xl">📊</div>
@@ -572,7 +599,10 @@ const Beranda = () => {
                                     </ul>
                                 </div>
                                 <button
-                                    onClick={() => openModal(4)}
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        openModal(4);
+                                    }}
                                     className="group/btn inline-flex items-center rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30"
                                 >
                                     <span>Lihat Peluang Magang</span>
