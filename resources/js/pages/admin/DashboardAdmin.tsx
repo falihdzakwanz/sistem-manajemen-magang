@@ -449,6 +449,81 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
         sedangMagang: data.filter((m) => m.status === 'Sedang Magang').length,
     };
 
+    // ===== DISTRIBUSI DATA MAHASISWA SEDANG MAGANG =====
+
+    /**
+     * Menghitung distribusi bidang untuk mahasiswa yang sedang magang
+     */
+    const sedangMagangData = data.filter((m) => m.status === 'Sedang Magang');
+
+    const distribusiBidang = sedangMagangData.reduce(
+        (acc, mahasiswa) => {
+            const bidang = mahasiswa.bidang;
+            acc[bidang] = (acc[bidang] || 0) + 1;
+            return acc;
+        },
+        {} as Record<string, number>,
+    );
+
+    /**
+     * Menghitung distribusi universitas untuk mahasiswa yang sedang magang
+     */
+    const distribusiUniversitas = sedangMagangData.reduce(
+        (acc, mahasiswa) => {
+            const universitas = mahasiswa.universitas;
+            acc[universitas] = (acc[universitas] || 0) + 1;
+            return acc;
+        },
+        {} as Record<string, number>,
+    );
+
+    /**
+     * Menghitung distribusi periode untuk mahasiswa yang sedang magang
+     */
+    const distribusiPeriode = sedangMagangData.reduce(
+        (acc, mahasiswa) => {
+            const tanggalMulai = new Date(mahasiswa.tanggal_mulai);
+            const bulan = tanggalMulai.toLocaleDateString('id-ID', { month: 'long', year: 'numeric' });
+            acc[bulan] = (acc[bulan] || 0) + 1;
+            return acc;
+        },
+        {} as Record<string, number>,
+    );
+
+    /**
+     * Convert distribusi ke array dan sort berdasarkan jumlah (descending)
+     */
+    const bidangList = Object.entries(distribusiBidang)
+        .map(([bidang, count]) => ({ bidang, count }))
+        .sort((a, b) => b.count - a.count);
+
+    const universitasList = Object.entries(distribusiUniversitas)
+        .map(([universitas, count]) => ({ universitas, count }))
+        .sort((a, b) => b.count - a.count);
+
+    const periodeList = Object.entries(distribusiPeriode)
+        .map(([periode, count]) => ({ periode, count }))
+        .sort((a, b) => b.count - a.count);
+
+    /**
+     * Mendapatkan text color untuk chart berdasarkan index
+     */
+    const getChartTextColor = (index: number) => {
+        const colors = [
+            'text-blue-600',
+            'text-green-600',
+            'text-purple-600',
+            'text-yellow-600',
+            'text-red-600',
+            'text-indigo-600',
+            'text-pink-600',
+            'text-orange-600',
+            'text-teal-600',
+            'text-cyan-600',
+        ];
+        return colors[index % colors.length];
+    };
+
     return (
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
             {/* ===== HEADER SECTION ===== */}
@@ -864,6 +939,131 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                         </div>
                     )}
                 </div>
+
+                {/* ===== DISTRIBUSI MAHASISWA SEDANG MAGANG ===== */}
+                {sedangMagangData.length > 0 && (
+                    <div className="mt-12 mb-8 grid grid-cols-1 gap-6 lg:grid-cols-3">
+                        {/* Distribusi Bidang */}
+                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
+                            <div className="mb-6">
+                                <h3 className="flex items-center text-lg font-semibold text-gray-800">
+                                    <span className="mr-2">📊</span>
+                                    Distribusi Bidang Magang
+                                </h3>
+                                <p className="mt-1 text-sm text-gray-600">
+                                    Sebaran mahasiswa yang sedang magang berdasarkan bidang ({sedangMagangData.length} mahasiswa)
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                {bidangList.slice(0, 6).map((item, index) => {
+                                    return (
+                                        <div
+                                            key={item.bidang}
+                                            className="flex items-center justify-between rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
+                                        >
+                                            <span className="text-sm font-medium text-gray-700">{item.bidang}</span>
+                                            <span className={`rounded-full px-3 py-1 text-sm font-semibold ${getChartTextColor(index)} bg-gray-100`}>
+                                                {item.count} mahasiswa
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+
+                                {bidangList.length > 6 && (
+                                    <div className="border-t border-gray-100 pt-2">
+                                        <p className="text-center text-xs text-gray-500">+{bidangList.length - 6} bidang lainnya</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Distribusi Universitas */}
+                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
+                            <div className="mb-6">
+                                <h3 className="flex items-center text-lg font-semibold text-gray-800">
+                                    <span className="mr-2">🏫</span>
+                                    Distribusi Universitas Asal
+                                </h3>
+                                <p className="mt-1 text-sm text-gray-600">
+                                    Sebaran mahasiswa yang sedang magang berdasarkan universitas asal ({universitasList.length} universitas)
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                {universitasList.slice(0, 6).map((item, index) => {
+                                    return (
+                                        <div
+                                            key={item.universitas}
+                                            className="flex items-center justify-between rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
+                                        >
+                                            <span className="text-sm font-medium text-gray-700" title={item.universitas}>
+                                                {item.universitas.length > 30 ? `${item.universitas.substring(0, 30)}...` : item.universitas}
+                                            </span>
+                                            <span className={`rounded-full px-3 py-1 text-sm font-semibold ${getChartTextColor(index)} bg-gray-100`}>
+                                                {item.count} mahasiswa
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+
+                                {universitasList.length > 6 && (
+                                    <div className="border-t border-gray-100 pt-2">
+                                        <p className="text-center text-xs text-gray-500">+{universitasList.length - 6} universitas lainnya</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+
+                        {/* Distribusi Periode Mulai Magang */}
+                        <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
+                            <div className="mb-6">
+                                <h3 className="flex items-center text-lg font-semibold text-gray-800">
+                                    <span className="mr-2">📅</span>
+                                    Distribusi Periode Mulai Magang
+                                </h3>
+                                <p className="mt-1 text-sm text-gray-600">
+                                    Sebaran mahasiswa yang sedang magang berdasarkan bulan mulai magang ({periodeList.length} periode)
+                                </p>
+                            </div>
+
+                            <div className="space-y-4">
+                                {periodeList.slice(0, 6).map((item, index) => {
+                                    return (
+                                        <div
+                                            key={item.periode}
+                                            className="flex items-center justify-between rounded-lg border border-gray-200 p-3 hover:bg-gray-50"
+                                        >
+                                            <span className="text-sm font-medium text-gray-700">{item.periode}</span>
+                                            <span className={`rounded-full px-3 py-1 text-sm font-semibold ${getChartTextColor(index)} bg-gray-100`}>
+                                                {item.count} mahasiswa
+                                            </span>
+                                        </div>
+                                    );
+                                })}
+
+                                {periodeList.length > 6 && (
+                                    <div className="border-t border-gray-100 pt-2">
+                                        <p className="text-center text-xs text-gray-500">+{periodeList.length - 6} periode lainnya</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </div>
+                )}
+
+                {/* Info jika tidak ada mahasiswa yang sedang magang */}
+                {sedangMagangData.length === 0 && (
+                    <div className="mt-12 mb-8 rounded-3xl border border-gray-200 bg-gray-50 p-6 text-center">
+                        <div className="flex flex-col items-center">
+                            <span className="mb-3 text-4xl">📊</span>
+                            <h3 className="text-lg font-semibold text-gray-700">Belum Ada Mahasiswa yang Sedang Magang</h3>
+                            <p className="mt-1 text-sm text-gray-500">
+                                Distribusi bidang, universitas, dan periode akan muncul ketika ada mahasiswa dengan status "Sedang Magang"
+                            </p>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* ===== MODAL DETAIL MAHASISWA ===== */}
