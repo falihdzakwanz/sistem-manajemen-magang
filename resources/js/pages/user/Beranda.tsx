@@ -24,21 +24,27 @@ const Beranda = () => {
             icon: '📢',
             color: 'blue',
             description:
-                'Bidang yang bertanggung jawab atas pengelolaan informasi dan komunikasi publik untuk membangun transparansi dan keterbukaan informasi kepada masyarakat.',
+                'Bidang yang merumuskan dan melaksanakan kebijakan serta kewenangan Pemerintah Kota di bidang Informasi dan Komunikasi Publik, bertanggung jawab kepada Kepala Dinas.',
             tugas: [
-                'Pengelolaan hubungan media dan pers',
-                'Publikasi informasi kegiatan pemerintah',
-                'Dokumentasi dan arsip kegiatan',
-                'Pengelolaan website dan media sosial',
-                'Pembuatan konten kreatif dan informatif',
+                'Perumusan kebijakan di bidang Informasi dan Komunikasi Publik',
+                'Menyusun program dan model pelayanan informasi dan kehumasan',
+                'Menganalisis konten media terpilih dan isu publik',
+                'Memberikan konsultasi, advokasi, dan negosiasi pelayanan informasi',
+                'Mengevaluasi penyelenggaraan konferensi pers dan seminar',
+                'Mengembangkan standar dan sistem layanan informasi dan kehumasan',
+                'Pengawasan, pembinaan, dan pengendalian kegiatan Informasi dan Komunikasi Publik',
+                'Pelaksanaan koordinasi dan kerjasama antar lembaga/instansi',
+                'Mengelola Laporan Masyarakat melalui SP4N LAPOR',
             ],
             magangTasks: [
-                'Membantu pembuatan konten media sosial',
-                'Dokumentasi kegiatan dan acara',
-                'Penulisan artikel dan berita',
-                'Desain grafis untuk publikasi',
-                'Editing video dan foto',
-                'Riset dan analisis media',
+                'Membantu pembuatan konten media sosial dan publikasi',
+                'Dokumentasi kegiatan dan acara dinas',
+                'Penulisan artikel dan berita untuk website',
+                'Desain grafis untuk publikasi dan media',
+                'Editing video dan foto dokumentasi',
+                'Riset dan analisis media serta isu publik',
+                'Membantu pengelolaan pengaduan masyarakat melalui SP4N LAPOR',
+                'Bantuan dalam persiapan konferensi pers dan seminar',
             ],
             staffFungsional: [
                 'Farida Herawati, S.E. - Jabatan Fungsional Pranata Hubungan Masyarakat',
@@ -52,23 +58,34 @@ const Beranda = () => {
             icon: '🏛️',
             color: 'purple',
             description:
-                'Bidang yang mengembangkan dan mengelola sistem teknologi informasi untuk mendukung pelayanan pemerintahan digital yang efisien dan terintegrasi.',
+                'Bidang yang merumuskan dan melaksanakan kebijakan serta kewenangan Pemerintah Kota di bidang Pemberdayaan E-Government, meliputi penyelenggaraan sistem dan layanan pemerintahan secara elektronik berbasis Teknologi Informasi dan Komunikasi.',
             tugas: [
-                'Pengembangan sistem informasi pemerintahan',
-                'Pengelolaan infrastruktur TI',
-                'Integrasi sistem antar SKPD',
-                'Pemeliharaan jaringan komputer',
-                'Pengembangan aplikasi pelayanan publik',
+                'Perumusan kebijakan di bidang pemberdayaan E-Government',
+                'Analisis dampak teknologi informasi dan tren perubahan strategi pemerintah',
+                'Menyusun kerangka kerja strategi teknologi informasi',
+                'Analisis kesenjangan dan roadmap enterprise architecture',
+                'Menyusun dan mengkaji tata kelola teknologi informasi',
+                'Menyusun SOP untuk information technology service management',
+                'Monitoring dan evaluasi ketersediaan layanan teknologi informasi',
+                'Menyusun kebijakan data, standar data, dan prosedur pengelolaan data',
+                'Menyusun arsitektur integrasi data dan kebijakan keamanan data',
+                'Analisis data dan evaluasi audit teknologi informasi',
+                'Perancangan dan pengembangan E-Government untuk Smart City Bandar Lampung',
+                'Melaksanakan Tata Kelola SPBE (Sistem Pemerintahan Berbasis Elektronik)',
             ],
             magangTasks: [
-                'Pengembangan website dan aplikasi',
-                'Testing dan quality assurance sistem',
-                'Dokumentasi sistem dan database',
-                'Pemeliharaan hardware dan software',
-                'Backup dan recovery data',
-                'Monitoring sistem dan jaringan',
+                'Pengembangan website dan aplikasi pemerintahan',
+                'Testing dan quality assurance sistem E-Government',
+                'Dokumentasi sistem dan database pemerintahan',
+                'Pemeliharaan hardware dan software SPBE',
+                'Backup dan recovery data pemerintahan',
+                'Monitoring sistem dan jaringan E-Government',
+                'Membantu analisis enterprise architecture',
+                'Riset teknologi untuk Smart City Bandar Lampung',
+                'Dokumentasi SOP dan tata kelola TI',
+                'Membantu audit teknologi informasi',
             ],
-            staffFungsional: ['Tim Programmer dan Developer', 'Tim Network Administrator', 'Tim Database Administrator', 'Tim System Analyst'],
+            staffFungsional: ['Hemalinda Suri, S.STP, M.Si - Jabatan Fungsional Pranata Komputer Ahli Muda'],
         },
         3: {
             title: 'Bidang Persandian, Keamanan Informasi dan Siber',
@@ -76,21 +93,32 @@ const Beranda = () => {
             icon: '📱',
             color: 'orange',
             description:
-                'Bidang yang mengelola keamanan informasi, persandian, dan infrastruktur siber untuk mendukung komunikasi yang aman dan terpercaya.',
+                'Bidang yang merumuskan dan melaksanakan kebijakan serta kewenangan Pemerintah Kota di bidang Persandian, Keamanan Informasi dan Siber, bertanggung jawab kepada Kepala Dinas dalam mengamankan informasi rahasia dan infrastruktur siber.',
             tugas: [
-                'Pengelolaan sistem keamanan informasi',
-                'Implementasi kebijakan persandian',
-                'Koordinasi keamanan siber',
-                'Pengawasan dan monitoring ancaman siber',
-                'Sertifikasi keamanan sistem',
+                'Perumusan kebijakan di bidang Persandian, Keamanan Informasi dan Siber',
+                'Analisis tren Persandian, Keamanan Informasi dan Siber',
+                'Kajian kebijakan Persandian, Keamanan Informasi dan Siber',
+                'Evaluasi norma, standar, prosedur, kriteria (NSPK) di bidang Persandian',
+                'Evaluasi penanggulangan dan pemulihan insiden Keamanan Siber',
+                'Evaluasi implementasi Persandian, Keamanan Informasi dan Siber',
+                'Desain algoritma kriptografi dan manajemen kunci kriptografi',
+                'Pengkajian aspek kriptografis/manajemen kunci perangkat keamanan',
+                'Pelaksanaan kebijakan persandian, Keamanan Siber dan Keamanan Informasi',
+                'Penentuan standar Persandian dan Keamanan Informasi di Pemerintah Kota',
+                'Pengawasan, pembinaan, dan pengendalian kegiatan Persandian dan Keamanan Siber',
+                'Koordinasi dan kerjasama antar lembaga terkait Persandian dan Keamanan Siber',
             ],
             magangTasks: [
-                'Audit keamanan sistem informasi',
-                'Implementasi protokol keamanan',
-                'Monitoring jaringan dan keamanan siber',
-                'Dokumentasi kebijakan keamanan',
-                'Testing vulnerability sistem',
-                'Penelitian teknologi keamanan siber terbaru',
+                'Audit keamanan sistem informasi dan infrastruktur siber',
+                'Implementasi protokol keamanan dan enkripsi data',
+                'Monitoring jaringan dan deteksi ancaman siber',
+                'Dokumentasi kebijakan keamanan informasi dan prosedur NSPK',
+                'Testing vulnerability dan penetration testing sistem',
+                'Penelitian teknologi kriptografi dan keamanan siber terbaru',
+                'Pembuatan laporan insiden keamanan dan analisis forensik digital',
+                'Membantu implementasi standar keamanan informasi ISO 27001',
+                'Riset dan analisis tren ancaman siber global',
+                'Membantu pelatihan awareness keamanan informasi untuk pegawai',
             ],
             staffFungsional: [
                 'Helman Fatria Gautama, S.E. - Jabatan Fungsional Sandiman Ahli Muda',
@@ -103,21 +131,33 @@ const Beranda = () => {
             icon: '📊',
             color: 'teal',
             description:
-                'Bidang yang mengelola, menganalisis, dan menyajikan data statistik untuk mendukung pengambilan keputusan berbasis data dalam pemerintahan.',
+                'Bidang yang merumuskan dan melaksanakan kebijakan serta kewenangan Pemerintah Kota di bidang Data dan Statistik, bertanggung jawab kepada Kepala Dinas dalam menghasilkan data yang akurat, mutakhir, terpadu, dan dapat dipertanggungjawabkan.',
             tugas: [
-                'Pengumpulan dan validasi data',
-                'Analisis statistik dan big data',
-                'Pembuatan dashboard dan visualisasi',
-                'Riset dan survei masyarakat',
-                'Pengelolaan data warehouse',
+                'Perumusan kebijakan di bidang Data dan Statistik',
+                'Merancang dan membuat pedoman pengolahan kegiatan statistik untuk validitas data',
+                'Memeriksa tabel/grafik hasil kegiatan statistik tingkat nasional',
+                'Menyusun publikasi dan ringkasan eksekutif statistik tingkat nasional',
+                'Memberikan konsultasi statistik dan pengarahan penyusunan statistik kelembagaan',
+                'Melakukan penyebarluasan hasil pengumpulan data statistik',
+                'Memberikan bimbingan penuh kader statistisi sampai tingkat pascasarjana',
+                'Pelaksanaan kebijakan serta kewenangan di bidang Data dan Statistik',
+                'Pengawasan, pembinaan dan pengendalian Data dan Statistik',
+                'Koordinasi dan kerjasama antar lembaga/instansi terkait Data dan Statistik',
+                'Menangani Statistik Sektoral bidang komunikasi dan informatika',
+                'Melaksanakan Satu Data Indonesia (SDI)',
+                'Monitoring, evaluasi, dan pelaporan terhadap tugas dan fungsi bidang',
             ],
             magangTasks: [
-                'Analisis data dengan tools seperti Excel, Python, R',
-                'Pembuatan dashboard dan visualisasi data',
-                'Data cleaning dan preprocessing',
-                'Riset dan survei lapangan',
-                'Pembuatan laporan statistik',
-                'Machine learning dan predictive analytics',
+                'Analisis data dengan tools seperti Excel, SPSS, Python, dan R',
+                'Pembuatan dashboard dan visualisasi data statistik',
+                'Data cleaning, preprocessing, dan validasi data',
+                'Riset dan survei lapangan untuk pengumpulan data',
+                'Pembuatan laporan statistik dan ringkasan eksekutif',
+                'Machine learning dan predictive analytics untuk analisis data',
+                'Dokumentasi metodologi pengolahan statistik',
+                'Membantu implementasi Satu Data Indonesia (SDI)',
+                'Pengembangan sistem informasi statistik sektoral',
+                'Membantu penyusunan publikasi dan infografis statistik',
             ],
             staffFungsional: [
                 'Lisma Dewi, S.H., M.H. - Jabatan Fungsional Statistisi Ahli Muda',
@@ -130,7 +170,7 @@ const Beranda = () => {
             icon: '🏢',
             color: 'indigo',
             description:
-                'Bagian yang mengelola administrasi, koordinasi, dan layanan kesekretariatan untuk mendukung operasional dinas serta pelayanan kepada masyarakat.',
+                'Bagian yang melaksanakan tugas kesekretariatan dinas, mengelola administrasi, koordinasi antar bidang, serta pengelolaan keuangan dan aset.',
             tugas: [
                 'Administrasi dan tata usaha',
                 'Koordinasi kegiatan antar bidang',
@@ -149,7 +189,11 @@ const Beranda = () => {
                 'Pembuatan laporan administratif',
                 'Bantuan dalam pengelolaan inventaris',
             ],
-            staffFungsional: ['Tim Sub Bagian Umum dan Kepegawaian', 'Tim Sub Bagian Keuangan', 'Tim Sub Bagian Program', 'Staff Administrasi'],
+            staffFungsional: [
+                'Yoranda Tiara Sati, S.STP - Kepala Sub Bagian Umum dan Kepegawaian',
+                'Asha Astriani, S.I.Kom, M.M. - Kepala Sub Bagian Keuangan dan Aset',
+                'Yesi Herawati, S.Sos, MM. - Jabatan Fungsional Perencana Ahli Muda',
+            ],
         },
     };
 
@@ -368,10 +412,10 @@ const Beranda = () => {
                                             <span className="mr-2">📋</span> Administrasi & Tata Usaha
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">📋</span> Koordinasi Kegiatan
+                                            <span className="mr-2">🤝</span> Koordinasi Antar Bidang
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">📋</span> Pelayanan Publik
+                                            <span className="mr-2">�</span> Pengelolaan Keuangan & Aset
                                         </li>
                                     </ul>
                                 </div>
@@ -403,13 +447,13 @@ const Beranda = () => {
                                     <h5 className="mb-3 text-lg font-semibold">Fokus Kerja:</h5>
                                     <ul className="space-y-2 text-sm">
                                         <li className="flex items-center">
-                                            <span className="mr-2">✨</span> Hubungan Media & Pers
+                                            <span className="mr-2">📋</span> Perumusan Kebijakan
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">✨</span> Publikasi & Dokumentasi
+                                            <span className="mr-2">📺</span> Analisis Media & Isu Publik
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">✨</span> Konten Kreatif
+                                            <span className="mr-2">📞</span> Layanan Informasi & Kehumasan
                                         </li>
                                     </ul>
                                 </div>
@@ -441,13 +485,13 @@ const Beranda = () => {
                                     <h5 className="mb-3 text-lg font-semibold">Fokus Kerja:</h5>
                                     <ul className="space-y-2 text-sm">
                                         <li className="flex items-center">
-                                            <span className="mr-2">🚀</span> Pengembangan Sistem
+                                            <span className="mr-2">🏛️</span> SPBE dan Smart City
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">🚀</span> Infrastruktur TI
+                                            <span className="mr-2">�</span> Layanan Digital
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">🚀</span> Aplikasi Digital
+                                            <span className="mr-2">⚡</span> Inovasi Teknologi
                                         </li>
                                     </ul>
                                 </div>
@@ -479,13 +523,13 @@ const Beranda = () => {
                                     <h5 className="mb-3 text-lg font-semibold">Fokus Kerja:</h5>
                                     <ul className="space-y-2 text-sm">
                                         <li className="flex items-center">
-                                            <span className="mr-2">🔒</span> Keamanan Informasi
+                                            <span className="mr-2">�</span> Persandian & Kriptografi
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">🔒</span> Persandian & Enkripsi
+                                            <span className="mr-2">�️</span> Keamanan Informasi
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">🔒</span> Keamanan Siber
+                                            <span className="mr-2">⚡</span> Keamanan Siber
                                         </li>
                                     </ul>
                                 </div>
@@ -517,13 +561,13 @@ const Beranda = () => {
                                     <h5 className="mb-3 text-lg font-semibold">Fokus Kerja:</h5>
                                     <ul className="space-y-2 text-sm">
                                         <li className="flex items-center">
-                                            <span className="mr-2">📈</span> Analisis Big Data
+                                            <span className="mr-2">�</span> Statistik Sektoral
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">📈</span> Visualisasi Data
+                                            <span className="mr-2">�️</span> Satu Data Indonesia
                                         </li>
                                         <li className="flex items-center">
-                                            <span className="mr-2">📈</span> Machine Learning
+                                            <span className="mr-2">📈</span> Analisis Data
                                         </li>
                                     </ul>
                                 </div>
