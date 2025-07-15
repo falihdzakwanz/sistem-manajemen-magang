@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\BerandaController;
 
 /*
 |--------------------------------------------------------------------------
@@ -51,6 +52,10 @@ Route::get('/status-pendaftaran', [UserController::class, 'getStatusPendaftaran'
 // API endpoint untuk mengambil data mahasiswa (untuk keperluan frontend)
 Route::get('/data-mahasiswa', [UserController::class, 'getDataMahasiswa'])
     ->name('data-mahasiswa');
+
+// API endpoint untuk mengambil konten beranda
+Route::get('/api/beranda-content', [BerandaController::class, 'getBerandaContent'])
+    ->name('beranda.content');
 
 /*
 |--------------------------------------------------------------------------
@@ -92,6 +97,24 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // (Sedang Magang -> Selesai Magang)
     Route::post('/dashboard-admin/update-status-manual', [AdminController::class, 'updateStatusMagangManual'])
         ->name('admin.updateStatusManual');
+
+    // ===== RUTE EDIT BERANDA =====
+    
+    // Halaman edit beranda
+    Route::get('/admin/edit-beranda', [BerandaController::class, 'adminEdit'])
+        ->name('admin.edit-beranda');
+    
+    // Update struktur organisasi
+    Route::post('/admin/update-struktur-organisasi', [BerandaController::class, 'updateStrukturOrganisasi'])
+        ->name('admin.update-struktur-organisasi');
+    
+    // Update data bidang
+    Route::post('/admin/update-bidang', [BerandaController::class, 'updateBidang'])
+        ->name('admin.update-bidang');
+    
+    // Hapus foto struktur organisasi
+    Route::delete('/admin/delete-photo', [BerandaController::class, 'deletePhoto'])
+        ->name('admin.delete-photo');
 });
 
 /*
