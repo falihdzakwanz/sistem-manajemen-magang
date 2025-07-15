@@ -2,6 +2,16 @@ import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
 /**
+ * Interface untuk data bidang magang
+ */
+interface Bidang {
+    id: number;
+    nama_bidang: string;
+    kepala_bidang: string;
+    deskripsi?: string;
+}
+
+/**
  * Interface untuk data mahasiswa yang mendaftar magang
  * Berisi semua informasi yang diperlukan untuk proses pendaftaran
  */
@@ -32,6 +42,7 @@ interface Mahasiswa {
  */
 interface AdminProps {
     mahasiswas?: Mahasiswa[];
+    bidangs?: Bidang[];
     auth?: {
         user?: {
             name: string;
@@ -52,7 +63,7 @@ interface AdminProps {
  * - Preview dan download dokumen pendaftar
  * - Update status otomatis berdasarkan tanggal
  */
-export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
+export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: AdminProps) {
     // ===== STATE MANAGEMENT =====
     // State untuk pencarian dan filter
     const [searchTerm, setSearchTerm] = useState('');
@@ -67,7 +78,9 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
 
     // State untuk form input
     const [rejectReason, setRejectReason] = useState('');
-    const [editStatus, setEditStatus] = useState('');
+
+    // State untuk edit form data
+    const [editData, setEditData] = useState<Partial<Mahasiswa>>({});
 
     // State untuk pagination
     const [currentPage, setCurrentPage] = useState(1);
@@ -76,21 +89,37 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
     // ===== EFFECT HOOKS =====
 
     /**
-     * Effect untuk menangani scroll delegation dari overlay modal ke modal content
-     * Berguna untuk memungkinkan scroll di dalam modal tanpa scroll halaman utama
+     * Effect untuk menangani scroll delegation ke modal edit
+     * Ketika modal edit terbuka, semua scroll akan diarahkan ke modal edit
      */
     useEffect(() => {
         const handleOverlayScroll = (e: WheelEvent) => {
-            if (showModal || showRejectModal || showEditModal || showDeleteModal) {
-                // Cari modal content yang sedang aktif
+            // Jika modal edit terbuka, arahkan semua scroll ke modal edit
+            if (showEditModal) {
+                const modalScrollArea = document.querySelector('.modal-edit-scroll-area');
+                if (modalScrollArea) {
+                    modalScrollArea.scrollTop += e.deltaY;
+                    e.preventDefault();
+                }
+            }
+            // Untuk modal lain, gunakan logic lama
+            else if (showModal || showRejectModal || showDeleteModal) {
+                const target = e.target as Element;
                 const modalContent = document.querySelector('.modal-content-active');
-                if (modalContent) {
-                    // Delegate scroll event ke modal content
+
+                if (modalContent && !modalContent.contains(target)) {
                     modalContent.scrollTop += e.deltaY;
                     e.preventDefault();
                 }
             }
         };
+
+        // Prevent body scroll ketika modal edit terbuka
+        if (showEditModal) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
 
         if (showModal || showRejectModal || showEditModal || showDeleteModal) {
             // Add event listener untuk wheel event pada document
@@ -100,6 +129,8 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
         // Cleanup function untuk remove event listener
         return () => {
             document.removeEventListener('wheel', handleOverlayScroll);
+            // Reset body overflow ketika component unmount atau modal ditutup
+            document.body.style.overflow = 'unset';
         };
     }, [showModal, showRejectModal, showEditModal, showDeleteModal]);
 
@@ -298,21 +329,44 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
     };
 
     /**
-     * Membuka modal edit status mahasiswa
+     * Membuka modal edit untuk mengedit semua data mahasiswa
      */
     const openEditModal = () => {
         if (selectedMahasiswa) {
-            setEditStatus(selectedMahasiswa.status);
+            setEditData({
+                nama: selectedMahasiswa.nama,
+                nim: selectedMahasiswa.nim,
+                universitas: selectedMahasiswa.universitas,
+                jurusan: selectedMahasiswa.jurusan,
+                email: selectedMahasiswa.email,
+                telepon: selectedMahasiswa.telepon,
+                tanggal_mulai: selectedMahasiswa.tanggal_mulai,
+                tanggal_selesai: selectedMahasiswa.tanggal_selesai,
+                status: selectedMahasiswa.status,
+                bidang_id: selectedMahasiswa.bidang_id,
+                motivasi: selectedMahasiswa.motivasi || '',
+                linkedin: selectedMahasiswa.linkedin || '',
+            });
             setShowEditModal(true);
         }
     };
 
     /**
-     * Menutup modal edit status dan reset form
+     * Menutup modal edit dan reset form
      */
     const closeEditModal = () => {
         setShowEditModal(false);
-        setEditStatus('');
+        setEditData({});
+    };
+
+    /**
+     * Mengupdate field tertentu di editData
+     */
+    const updateEditData = (field: keyof Mahasiswa, value: string | number) => {
+        setEditData((prev) => ({
+            ...prev,
+            [field]: value,
+        }));
     };
 
     /**
@@ -391,27 +445,21 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
     };
 
     /**
-     * Mengubah status mahasiswa (dari modal edit)
+     * Menyimpan perubahan data mahasiswa (dari modal edit)
      */
     const handleEditStatus = () => {
-        if (selectedMahasiswa && editStatus.trim()) {
-            router.patch(
-                route('admin.updateStatus', selectedMahasiswa.id),
-                {
-                    status: editStatus,
+        if (selectedMahasiswa && editData) {
+            router.patch(route('admin.updateMahasiswa', selectedMahasiswa.id), editData, {
+                preserveScroll: true,
+                onSuccess: () => {
+                    console.log('Data mahasiswa berhasil diupdate');
+                    closeEditModal();
+                    closeModal();
                 },
-                {
-                    preserveScroll: true,
-                    onSuccess: () => {
-                        console.log('Status berhasil diubah');
-                        closeEditModal();
-                        closeModal();
-                    },
-                    onError: (errors) => {
-                        console.error('Gagal mengubah status:', errors);
-                    },
+                onError: (errors) => {
+                    console.error('Gagal mengupdate data mahasiswa:', errors);
                 },
-            );
+            });
         }
     };
 
@@ -653,7 +701,7 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                         <div className="flex-1">
                             <h3 className="text-lg font-semibold text-gray-800">🤖 Otomatisasi Status Aktif</h3>
                             <p className="mt-1 text-sm text-gray-600">Sistem otomatis mengupdate status mahasiswa setiap hari berdasarkan tanggal:</p>
-                            <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2">
+                            <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
                                 {/* Transisi Diterima ke Sedang Magang */}
                                 <div className="flex items-center space-x-2 rounded-lg bg-green-100 p-2">
                                     <span className="text-green-600">✅</span>
@@ -666,6 +714,13 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                     <span className="text-blue-600">🎯</span>
                                     <span className="text-sm text-blue-800">
                                         <strong>Sedang Magang → Selesai</strong> (saat tanggal selesai tiba)
+                                    </span>
+                                </div>
+                                {/* Penghapusan Data Ditolak */}
+                                <div className="flex items-center space-x-2 rounded-lg bg-red-100 p-2">
+                                    <span className="text-red-600">🗑️</span>
+                                    <span className="text-sm text-red-800">
+                                        <strong>Hapus Data Ditolak</strong> (setelah 30 hari)
                                     </span>
                                 </div>
                             </div>
@@ -1420,10 +1475,12 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                                     </>
                                 )}
 
-                                {/* Tombol Edit dan Hapus untuk status tertentu */}
+                                {/* Tombol Edit dan Hapus untuk semua status kecuali yang tidak diperlukan */}
                                 {(selectedMahasiswa.status === 'Menunggu' ||
                                     selectedMahasiswa.status === 'Diterima' ||
-                                    selectedMahasiswa.status === 'Ditolak') && (
+                                    selectedMahasiswa.status === 'Ditolak' ||
+                                    selectedMahasiswa.status === 'Sedang Magang' ||
+                                    selectedMahasiswa.status === 'Selesai Magang') && (
                                     <>
                                         <button
                                             onClick={openEditModal}
@@ -1519,53 +1576,193 @@ export default function DashboardAdmin({ mahasiswas = [], auth }: AdminProps) {
                 </div>
             )}
 
-            {/* ===== MODAL EDIT STATUS MAHASISWA ===== */}
+            {/* ===== MODAL EDIT DATA MAHASISWA ===== */}
             {showEditModal && selectedMahasiswa && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm" onClick={closeModal}>
-                    <div className="modal-content-active w-full max-w-md rounded-3xl bg-white" onClick={(e) => e.stopPropagation()}>
-                        {/* Modal Header */}
-                        <div className="border-b border-gray-200 p-6">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm" onClick={closeEditModal}>
+                    <div
+                        className="modal-content-active relative max-h-[90vh] w-full max-w-4xl overflow-hidden rounded-3xl bg-white shadow-2xl"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Modal Header - Fixed */}
+                        <div className="sticky top-0 z-10 border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-xl font-bold text-gray-800">Edit Status</h3>
-                                <button onClick={closeEditModal} className="text-2xl text-gray-500 hover:text-gray-700">
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-800">Edit Data Mahasiswa</h3>
+                                    <p className="mt-1 text-sm text-gray-600">Edit informasi lengkap mahasiswa</p>
+                                </div>
+                                <button
+                                    onClick={closeEditModal}
+                                    className="rounded-full p-2 text-2xl text-gray-500 transition-colors duration-200 hover:bg-gray-100 hover:text-gray-700"
+                                    title="Tutup Modal"
+                                >
                                     ×
                                 </button>
                             </div>
                         </div>
 
-                        {/* Modal Content */}
-                        <div className="p-6">
-                            <div className="mb-4">
-                                <p className="mb-3 text-sm text-gray-600">
-                                    Ubah status untuk <strong>{selectedMahasiswa.nama}</strong>:
-                                </p>
-                                <select
-                                    value={editStatus}
-                                    onChange={(e) => setEditStatus(e.target.value)}
-                                    className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                >
-                                    <option value="">Pilih Status</option>
-                                    <option value="Menunggu">Menunggu</option>
-                                    <option value="Diterima">Diterima</option>
-                                    <option value="Ditolak">Ditolak</option>
-                                    <option value="Sedang Magang">Sedang Magang</option>
-                                    <option value="Selesai Magang">Selesai Magang</option>
-                                </select>
+                        {/* Modal Content - Scrollable */}
+                        <div
+                            className="modal-edit-scroll-area max-h-[calc(90vh-180px)] overflow-y-auto p-6"
+                            style={{
+                                scrollbarWidth: 'none',
+                                msOverflowStyle: 'none',
+                            }}
+                        >
+                            <style>{`
+                                .modal-edit-scroll-area::-webkit-scrollbar {
+                                    display: none;
+                                }
+                            `}</style>
+                            <div className="space-y-6">
+                                {/* Informasi Dasar Mahasiswa */}
+                                <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Nama Lengkap</label>
+                                        <input
+                                            type="text"
+                                            value={editData.nama || ''}
+                                            onChange={(e) => updateEditData('nama', e.target.value)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Masukkan nama lengkap"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">NIM</label>
+                                        <input
+                                            type="text"
+                                            value={editData.nim || ''}
+                                            onChange={(e) => updateEditData('nim', e.target.value)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Masukkan NIM"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Universitas</label>
+                                        <input
+                                            type="text"
+                                            value={editData.universitas || ''}
+                                            onChange={(e) => updateEditData('universitas', e.target.value)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Masukkan nama universitas"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Jurusan</label>
+                                        <input
+                                            type="text"
+                                            value={editData.jurusan || ''}
+                                            onChange={(e) => updateEditData('jurusan', e.target.value)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Masukkan jurusan"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Email</label>
+                                        <input
+                                            type="email"
+                                            value={editData.email || ''}
+                                            onChange={(e) => updateEditData('email', e.target.value)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Masukkan email"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Telepon</label>
+                                        <input
+                                            type="tel"
+                                            value={editData.telepon || ''}
+                                            onChange={(e) => updateEditData('telepon', e.target.value)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Masukkan nomor telepon"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Bidang Magang</label>
+                                        <select
+                                            value={editData.bidang_id || ''}
+                                            onChange={(e) => updateEditData('bidang_id', e.target.value ? parseInt(e.target.value) : 0)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="">Pilih Bidang</option>
+                                            {bidangs.map((bidang) => (
+                                                <option key={bidang.id} value={bidang.id}>
+                                                    {bidang.nama_bidang}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Status</label>
+                                        <select
+                                            value={editData.status || ''}
+                                            onChange={(e) => updateEditData('status', e.target.value)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                        >
+                                            <option value="">Pilih Status</option>
+                                            <option value="Menunggu">Menunggu</option>
+                                            <option value="Diterima">Diterima</option>
+                                            <option value="Ditolak">Ditolak</option>
+                                            <option value="Sedang Magang">Sedang Magang</option>
+                                            <option value="Selesai Magang">Selesai Magang</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Tanggal Mulai</label>
+                                        <input
+                                            type="date"
+                                            value={editData.tanggal_mulai || ''}
+                                            onChange={(e) => updateEditData('tanggal_mulai', e.target.value)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Tanggal Selesai</label>
+                                        <input
+                                            type="date"
+                                            value={editData.tanggal_selesai || ''}
+                                            onChange={(e) => updateEditData('tanggal_selesai', e.target.value)}
+                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                        />
+                                    </div>
+                                </div>
+
+                                {/* LinkedIn Profile */}
+                                <div>
+                                    <label className="mb-2 block text-sm font-medium text-gray-700">LinkedIn Profile (Opsional)</label>
+                                    <input
+                                        type="url"
+                                        value={editData.linkedin || ''}
+                                        onChange={(e) => updateEditData('linkedin', e.target.value)}
+                                        className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                        placeholder="https://linkedin.com/in/username"
+                                    />
+                                </div>
+
+                                {/* Motivasi Mahasiswa */}
+                                <div>
+                                    <label className="mb-2 block text-sm font-medium text-gray-700">Motivasi</label>
+                                    <textarea
+                                        value={editData.motivasi || ''}
+                                        onChange={(e) => updateEditData('motivasi', e.target.value)}
+                                        className="w-full resize-none rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                        rows={4}
+                                        placeholder="Masukkan motivasi magang..."
+                                    />
+                                </div>
                             </div>
                         </div>
 
-                        {/* Modal Footer */}
-                        <div className="flex justify-between border-t border-gray-200 p-6">
+                        {/* Modal Footer - Fixed */}
+                        <div className="sticky bottom-0 flex justify-between border-t border-gray-200 bg-white p-6">
                             <button
                                 onClick={closeEditModal}
-                                className="rounded-xl bg-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-400"
+                                className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={handleEditStatus}
-                                disabled={!editStatus.trim()}
-                                className="rounded-xl bg-blue-500 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:bg-gray-300"
+                                className="rounded-xl bg-blue-500 px-6 py-2 font-medium text-white transition-colors hover:bg-blue-600"
                             >
                                 Simpan Perubahan
                             </button>

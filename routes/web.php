@@ -76,6 +76,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/dashboard-admin/pendaftar/{id}/status', [AdminController::class, 'updateStatus'])
         ->name('admin.updateStatus');
     
+    // Update data lengkap mahasiswa
+    Route::patch('/dashboard-admin/mahasiswa/{id}', [AdminController::class, 'updateMahasiswa'])
+        ->name('admin.updateMahasiswa');
+    
+    // Update data lengkap mahasiswa
+    Route::patch('/dashboard-admin/mahasiswa/{id}', [AdminController::class, 'updateMahasiswa'])
+        ->name('admin.updateMahasiswa');
+    
     // Hapus data mahasiswa secara permanen
     Route::delete('/dashboard-admin/mahasiswa/{id}', [AdminController::class, 'deleteMahasiswa'])
         ->name('admin.deleteMahasiswa');

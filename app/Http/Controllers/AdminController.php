@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\User;
+use App\Models\Bidang;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -44,8 +45,11 @@ class AdminController extends Controller
             ];
         });
 
+        $bidangs = Bidang::all();
+
         return Inertia::render('admin/DashboardAdmin', [
-            'mahasiswas' => $users
+            'mahasiswas' => $users,
+            'bidangs' => $bidangs
         ]);
     }
 
@@ -92,6 +96,74 @@ class AdminController extends Controller
 
         return redirect()->back()->with('success', 'Status user berhasil diupdate');
     }
+
+    public function updateMahasiswa(Request $request, $id): RedirectResponse
+    {
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'nim' => 'required|string|max:20',
+            'universitas' => 'required|string|max:255',
+            'jurusan' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'telepon' => 'required|string|max:20',
+            'tanggal_mulai' => 'required|date',
+            'tanggal_selesai' => 'required|date|after:tanggal_mulai',
+            'status' => 'required|in:Menunggu,Diterima,Ditolak,Sedang Magang,Selesai Magang',
+            'bidang_id' => 'required|exists:bidangs,id',
+            'motivasi' => 'nullable|string',
+            'linkedin' => 'nullable|url',
+        ]);
+
+        $user = User::findOrFail($id);
+        $oldStatus = $user->status;
+
+        $updateData = [
+            'nama' => $request->nama,
+            'nim' => $request->nim,
+            'universitas' => $request->universitas,
+            'jurusan' => $request->jurusan,
+            'email' => $request->email,
+            'telepon' => $request->telepon,
+            'tanggal_mulai' => $request->tanggal_mulai,
+            'tanggal_selesai' => $request->tanggal_selesai,
+            'status' => $request->status,
+            'bidang_id' => $request->bidang_id,
+            'motivasi' => $request->motivasi,
+            'linkedin' => $request->linkedin,
+        ];
+
+        // Jika status ditolak, simpan alasan penolakan jika ada
+        if ($request->status === 'Ditolak' && $request->reject_reason) {
+            $updateData['reject_reason'] = $request->reject_reason;
+        }
+
+        // Jika status bukan ditolak, hapus alasan penolakan jika ada
+        if ($request->status !== 'Ditolak') {
+            $updateData['reject_reason'] = null;
+        }
+
+        $user->update($updateData);
+
+        // Kirim email notifikasi jika status berubah dari Menunggu ke Diterima atau Ditolak
+        if ($oldStatus === 'Menunggu' && in_array($request->status, ['Diterima', 'Ditolak'])) {
+            try {
+                $rejectReason = $request->status === 'Ditolak' ? $request->reject_reason : null;
+                Mail::to($user->email)->send(new StatusMagangNotification($user, $request->status, $rejectReason));
+
+                $emailMessage = $request->status === 'Diterima'
+                    ? 'Data mahasiswa berhasil diupdate dan email pemberitahuan telah dikirim'
+                    : 'Data mahasiswa berhasil diupdate dan email pemberitahuan penolakan telah dikirim';
+
+                return redirect()->back()->with('success', $emailMessage);
+            } catch (\Exception $e) {
+                Log::error('Failed to send email notification: ' . $e->getMessage());
+                return redirect()->back()->with('success', 'Data mahasiswa berhasil diupdate, namun email notifikasi gagal dikirim');
+            }
+        }
+
+        return redirect()->back()->with('success', 'Data mahasiswa berhasil diupdate');
+    }
+
     public function destroy(User $users)
     {
         try {
