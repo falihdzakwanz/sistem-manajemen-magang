@@ -1,5 +1,7 @@
+import { IconDisplay } from '@/components/IconPicker';
 import Layout from '@/components/Layout';
-import { useEffect, useRef, useState } from 'react';
+import { BarChart3, Building2, Megaphone, Rocket, Shield, Target, User, Users, X } from 'lucide-react';
+import React, { useEffect, useRef, useState } from 'react';
 
 interface BerandaContentData {
     strukturOrganisasi: Array<{
@@ -188,7 +190,7 @@ const Beranda = () => {
                                     )}
                                     {!kepalaDinas?.photo_url && (
                                         <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-purple-600 shadow-xl">
-                                            <span className="text-4xl text-white">👨‍💼</span>
+                                            <User className="h-12 w-12 text-white" />
                                         </div>
                                     )}
                                     <div className="mb-3 inline-block rounded-full bg-blue-200 px-6 py-2 text-base font-bold text-blue-700 shadow-md">
@@ -217,7 +219,7 @@ const Beranda = () => {
                                         )}
                                         {!sekretaris?.photo_url && (
                                             <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-blue-600 shadow-lg">
-                                                <span className="text-3xl text-white">👨‍💼</span>
+                                                <User className="h-10 w-10 text-white" />
                                             </div>
                                         )}
                                         <div className="mb-2 inline-block rounded-full bg-purple-100 px-4 py-1 text-sm font-semibold text-purple-600">
@@ -247,7 +249,7 @@ const Beranda = () => {
                                         )}
                                         {!kasubagUmum?.photo_url && (
                                             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
-                                                <span className="text-2xl text-white">👩‍💼</span>
+                                                <User className="h-8 w-8 text-white" />
                                             </div>
                                         )}
                                         <div className="mb-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
@@ -274,7 +276,7 @@ const Beranda = () => {
                                         )}
                                         {!kasubagKeuangan?.photo_url && (
                                             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
-                                                <span className="text-2xl text-white">👩‍💼</span>
+                                                <User className="h-8 w-8 text-white" />
                                             </div>
                                         )}
                                         <div className="mb-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
@@ -303,7 +305,7 @@ const Beranda = () => {
                                         )}
                                         {!perencanaAhliMuda?.photo_url && (
                                             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 shadow-md">
-                                                <span className="text-2xl text-white">👩‍💼</span>
+                                                <User className="h-8 w-8 text-white" />
                                             </div>
                                         )}
                                         <div className="mb-2 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
@@ -339,7 +341,7 @@ const Beranda = () => {
                                         )}
                                         {!kabidInformasi?.photo_url && (
                                             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-md">
-                                                <span className="text-2xl text-white">📢</span>
+                                                <Megaphone className="h-10 w-10 text-white" />
                                             </div>
                                         )}
                                         <div className="mb-2 inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-600">
@@ -368,7 +370,7 @@ const Beranda = () => {
                                         )}
                                         {!kabidEgovernment?.photo_url && (
                                             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-purple-600 shadow-md">
-                                                <span className="text-2xl text-white">🏛️</span>
+                                                <Building2 className="h-10 w-10 text-white" />
                                             </div>
                                         )}
                                         <div className="mb-2 inline-block rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-600">
@@ -393,7 +395,7 @@ const Beranda = () => {
                                         )}
                                         {!kabidKeamanan?.photo_url && (
                                             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 shadow-md">
-                                                <span className="text-2xl text-white">🔒</span>
+                                                <Shield className="h-10 w-10 text-white" />
                                             </div>
                                         )}
                                         <div className="mb-2 inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">
@@ -420,7 +422,7 @@ const Beranda = () => {
                                         )}
                                         {!kabidStatistik?.photo_url && (
                                             <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-600 shadow-md">
-                                                <span className="text-2xl text-white">📊</span>
+                                                <BarChart3 className="h-10 w-10 text-white" />
                                             </div>
                                         )}
                                         <div className="mb-2 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
@@ -461,7 +463,9 @@ const Beranda = () => {
                                                 onClick={() => openModal(parseInt(bidangId))}
                                             >
                                                 <div className="text-center">
-                                                    <div className="mb-4 text-5xl">{bidang.icon}</div>
+                                                    <div className="mb-4">
+                                                        <IconDisplay iconName={bidang.icon} className="mx-auto h-12 w-12 text-white" />
+                                                    </div>
                                                     <h4 className="mb-4 text-2xl font-bold">{bidang.title}</h4>
                                                     <p className="mb-4 text-lg opacity-90">Kepala Bidang: {bidang.kepala}</p>
                                                     <div className="mb-6">
@@ -469,7 +473,7 @@ const Beranda = () => {
                                                         <ul className="space-y-2 text-sm">
                                                             {bidang.tugas.slice(0, 3).map((tugas: string, index: number) => (
                                                                 <li key={index} className="flex items-center">
-                                                                    <span className="mr-2">🎯</span> {tugas.substring(0, 50)}
+                                                                    <Target className="mr-2 h-4 w-4 text-white/80" /> {tugas.substring(0, 50)}
                                                                     {tugas.length > 50 ? '...' : ''}
                                                                 </li>
                                                             ))}
@@ -522,11 +526,16 @@ const Beranda = () => {
                                 }[bidangData[selectedBidang]?.color] || 'from-blue-500 to-blue-600'
                             } p-8 text-white`}
                         >
-                            <button onClick={closeModal} className="absolute top-6 right-6 text-3xl text-white/80 transition-colors hover:text-white">
-                                ×
+                            <button
+                                onClick={closeModal}
+                                className="absolute top-6 right-6 rounded-full bg-white/20 p-2 text-white/80 transition-colors hover:bg-white/30 hover:text-white"
+                            >
+                                <X className="h-6 w-6" />
                             </button>
                             <div className="text-center">
-                                <div className="mb-4 text-6xl">{bidangData[selectedBidang]?.icon}</div>
+                                <div className="mb-4">
+                                    <IconDisplay iconName={bidangData[selectedBidang]?.icon || ''} className="mx-auto h-16 w-16 text-white" />
+                                </div>
                                 <h2 className="text-3xl font-bold">{bidangData[selectedBidang]?.title}</h2>
                                 <p className="mt-2 text-xl opacity-90">Kepala Bidang: {bidangData[selectedBidang]?.kepala}</p>
                             </div>
@@ -544,7 +553,7 @@ const Beranda = () => {
                                 {/* Tugas dan Tanggung Jawab */}
                                 <div className="rounded-2xl bg-gray-50 p-6">
                                     <h4 className="mb-4 flex items-center text-xl font-bold text-gray-800">
-                                        <span className="mr-3 text-2xl">🎯</span>
+                                        <Target className="mr-3 h-6 w-6 text-blue-600" />
                                         Tugas dan Tanggung Jawab
                                     </h4>
                                     <ul className="space-y-3">
@@ -562,7 +571,7 @@ const Beranda = () => {
                                 {/* Staff Fungsional */}
                                 <div className="rounded-2xl bg-gradient-to-br from-yellow-50 to-amber-50 p-6">
                                     <h4 className="mb-4 flex items-center text-xl font-bold text-gray-800">
-                                        <span className="mr-3 text-2xl">👥</span>
+                                        <Users className="mr-3 h-6 w-6 text-amber-600" />
                                         Staff Fungsional
                                     </h4>
                                     <ul className="space-y-3">
@@ -580,7 +589,7 @@ const Beranda = () => {
                                 {/* Kegiatan Magang */}
                                 <div className="rounded-2xl bg-gradient-to-br from-green-50 to-emerald-50 p-6">
                                     <h4 className="mb-4 flex items-center text-xl font-bold text-gray-800">
-                                        <span className="mr-3 text-2xl">🚀</span>
+                                        <Rocket className="mr-3 h-6 w-6 text-green-600" />
                                         Kegiatan Magang
                                     </h4>
                                     <ul className="space-y-3">

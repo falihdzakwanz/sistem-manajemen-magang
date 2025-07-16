@@ -1,5 +1,6 @@
 import { router } from '@inertiajs/react';
 import React, { useState } from 'react';
+import { IconDisplay, IconPickerWithLabel } from '../../components/IconPicker';
 import ImageCropper from '../../components/ImageCropper';
 
 // Type untuk flash messages
@@ -38,6 +39,7 @@ interface StrukturOrganisasi {
     title: string;
     description: string;
     photo_url: string | null;
+    original_photo_url?: string | null;
 }
 
 interface BidangData {
@@ -71,6 +73,8 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     const [showCropModal, setShowCropModal] = useState(false);
     const [imageToCrop, setImageToCrop] = useState<string | null>(null);
     const [isEditingExistingPhoto, setIsEditingExistingPhoto] = useState(false);
+    const [originalImageFile, setOriginalImageFile] = useState<File | null>(null);
+    const [originalImageUrl, setOriginalImageUrl] = useState<string | null>(null);
 
     // Form data for struktur organisasi
     const [strukturForm, setStrukturForm] = useState({
@@ -137,6 +141,14 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
         if (originalStrukturData) {
             setPhotoPreview(originalStrukturData.photo_url);
         }
+
+        // Reset crop states
+        setOriginalImageFile(null);
+        setOriginalImageUrl(null);
+        setImageToCrop(null);
+        setIsEditingExistingPhoto(false);
+        setShowCropModal(false);
+
         setShowModal(false);
     };
 
@@ -150,6 +162,19 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             photo: null,
         });
         setPhotoPreview(item.photo_url);
+
+        // If there's an existing photo, store original photo URL for future edits
+        if (item.original_photo_url) {
+            // Use original photo URL if available (for re-cropping)
+            setOriginalImageUrl(item.original_photo_url);
+        } else if (item.photo_url) {
+            // Fallback to current photo if no original photo URL
+            setOriginalImageUrl(item.photo_url);
+        } else {
+            setOriginalImageUrl(null);
+        }
+        setOriginalImageFile(null); // Reset original file
+
         setActiveTab('struktur');
         setShowModal(true);
     };
@@ -177,10 +202,16 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (file) {
+            console.log('handlePhotoChange: storing original file', file.name, file.size);
+            // Store original file for future edit crops
+            setOriginalImageFile(file);
+
             // Create preview for cropping
             const reader = new FileReader();
             reader.onload = (e) => {
                 const imageUrl = e.target?.result as string;
+                console.log('handlePhotoChange: storing original image URL');
+                setOriginalImageUrl(imageUrl); // Store original image URL
                 setImageToCrop(imageUrl);
                 setIsEditingExistingPhoto(false);
                 setShowCropModal(true);
@@ -190,6 +221,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     };
 
     const handleCropComplete = (croppedImageBlob: Blob) => {
+        console.log('handleCropComplete: crop completed');
         // Convert blob to file
         const croppedFile = new File([croppedImageBlob], 'cropped-image.jpg', {
             type: 'image/jpeg',
@@ -206,6 +238,10 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
         setShowCropModal(false);
         setImageToCrop(null);
         setIsEditingExistingPhoto(false);
+
+        // IMPORTANT: Do NOT reset originalImageFile and originalImageUrl here
+        // They should be preserved for future edit operations
+        console.log('handleCropComplete: preserving original file/url for future edits');
     };
 
     const handleCropCancel = () => {
@@ -215,8 +251,33 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     };
 
     const handleEditPhoto = () => {
-        if (photoPreview) {
-            // Use existing photo preview for editing
+        console.log('handleEditPhoto called:', {
+            originalImageFile: originalImageFile ? 'exists' : 'null',
+            originalImageUrl: originalImageUrl ? 'exists' : 'null',
+            photoPreview: photoPreview ? 'exists' : 'null',
+        });
+
+        // Priority: originalImageFile (dari upload baru) > originalImageUrl (dari foto existing)
+        if (originalImageFile) {
+            console.log('Using originalImageFile for edit');
+            // Use original file for editing (untuk foto yang baru di-upload)
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const imageUrl = e.target?.result as string;
+                setImageToCrop(imageUrl);
+                setIsEditingExistingPhoto(true);
+                setShowCropModal(true);
+            };
+            reader.readAsDataURL(originalImageFile);
+        } else if (originalImageUrl) {
+            console.log('Using originalImageUrl for edit');
+            // Use original image URL for editing (untuk foto existing dari database)
+            setImageToCrop(originalImageUrl);
+            setIsEditingExistingPhoto(true);
+            setShowCropModal(true);
+        } else if (photoPreview) {
+            console.log('Using photoPreview as fallback');
+            // Fallback to preview if no original is available
             setImageToCrop(photoPreview);
             setIsEditingExistingPhoto(true);
             setShowCropModal(true);
@@ -247,39 +308,72 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
 
         // Alternative approach: Use Inertia.js for better session handling
         if (strukturForm.photo) {
-            // Use Inertia for file uploads with automatic CSRF handling
-            const formData = new FormData();
-            formData.append('key', strukturForm.key);
-            formData.append('title', strukturForm.title);
-            formData.append('description', strukturForm.description);
-            formData.append('photo', strukturForm.photo);
+            // First, upload the photo to temporary storage with original photo info
+            const uploadFormData = new FormData();
+            uploadFormData.append('key', strukturForm.key);
+            uploadFormData.append('photo', strukturForm.photo);
 
-            // Add delete_photo parameter if needed
-            if (shouldDeletePhoto) {
-                formData.append('delete_photo', '1');
+            // Add original photo if available (prioritize originalImageFile, then originalImageUrl)
+            if (originalImageFile) {
+                uploadFormData.append('original_photo', originalImageFile);
+            } else if (originalImageUrl) {
+                // Convert original image URL to blob and append
+                try {
+                    const response = await fetch(originalImageUrl);
+                    const blob = await response.blob();
+                    const originalFile = new File([blob], 'original-photo.jpg', { type: 'image/jpeg' });
+                    uploadFormData.append('original_photo', originalFile);
+                } catch (error) {
+                    console.warn('Failed to fetch original image, will use current photo as original:', error);
+                }
             }
 
-            router.post('/admin/update-struktur-organisasi', Object.fromEntries(formData), {
-                forceFormData: true,
-                onSuccess: (page: InertiaPage) => {
-                    const flashSuccess = page.props?.flash?.success;
-                    if (flashSuccess) {
-                        alert(`✅ ${flashSuccess}\n\nPerubahan akan langsung terlihat di halaman beranda user.`);
-                    } else {
-                        alert('✅ Struktur organisasi berhasil diperbarui!\n\nPerubahan akan langsung terlihat di halaman beranda user.');
-                    }
-                    setShowModal(false);
-                    setLoading(false);
-                },
-                onError: (errors) => {
-                    console.error('Validation errors:', errors);
-                    alert('❌ Gagal memperbarui struktur organisasi!\n\nSilakan periksa input Anda.');
-                    setLoading(false);
-                },
-                onFinish: () => {
-                    setLoading(false);
+            // Upload to temporary storage first
+            const uploadResponse = await fetch('/admin/upload-temp-photo', {
+                method: 'POST',
+                body: uploadFormData,
+                headers: {
+                    'X-CSRF-TOKEN': getCsrfToken(),
                 },
             });
+
+            if (uploadResponse.ok) {
+                // Now save with the temporary photo reference
+                const formData = new FormData();
+                formData.append('key', strukturForm.key);
+                formData.append('title', strukturForm.title);
+                formData.append('description', strukturForm.description);
+
+                // Add delete_photo parameter if needed
+                if (shouldDeletePhoto) {
+                    formData.append('delete_photo', '1');
+                }
+
+                router.post('/admin/update-struktur-organisasi', Object.fromEntries(formData), {
+                    forceFormData: true,
+                    onSuccess: (page: InertiaPage) => {
+                        const flashSuccess = page.props?.flash?.success;
+                        if (flashSuccess) {
+                            alert(`✅ ${flashSuccess}\n\nPerubahan akan langsung terlihat di halaman beranda user.`);
+                        } else {
+                            alert('✅ Struktur organisasi berhasil diperbarui!\n\nPerubahan akan langsung terlihat di halaman beranda user.');
+                        }
+                        setShowModal(false);
+                        setLoading(false);
+                    },
+                    onError: (errors) => {
+                        console.error('Validation errors:', errors);
+                        alert('❌ Gagal memperbarui struktur organisasi!\n\nSilakan periksa input Anda.');
+                        setLoading(false);
+                    },
+                    onFinish: () => {
+                        setLoading(false);
+                    },
+                });
+            } else {
+                alert('❌ Gagal mengupload foto!\n\nSilakan coba lagi.');
+                setLoading(false);
+            }
             return;
         }
 
@@ -705,7 +799,9 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                 >
                                     <div className="mb-4 flex items-center justify-between">
                                         <div className="flex items-center space-x-3">
-                                            <span className="text-3xl">{item.data?.icon || '🏢'}</span>
+                                            <div className="flex items-center justify-center">
+                                                <IconDisplay iconName={item.data?.icon || 'building2'} className="h-8 w-8 text-gray-600" />
+                                            </div>
                                             <div>
                                                 <h3 className={`text-lg font-bold ${colorConfig.text}`}>{item.title || 'Belum diisi'}</h3>
                                                 <span
@@ -846,21 +942,28 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                                             className="h-24 w-24 rounded-full border-2 border-gray-200 object-cover"
                                                         />
                                                         <div className="flex space-x-2">
-                                                            <button
-                                                                onClick={handleEditPhoto}
-                                                                className="inline-flex items-center rounded-xl bg-green-500 px-6 py-2 text-white hover:bg-green-600 disabled:opacity-50"
-                                                                disabled={loading}
-                                                            >
-                                                                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        strokeWidth={2}
-                                                                        d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                                                                    />
-                                                                </svg>
-                                                                Edit Foto
-                                                            </button>
+                                                            {(originalImageUrl || originalImageFile) && (
+                                                                <button
+                                                                    onClick={handleEditPhoto}
+                                                                    className="inline-flex items-center rounded-xl bg-green-500 px-6 py-2 text-white hover:bg-green-600 disabled:opacity-50"
+                                                                    disabled={loading}
+                                                                >
+                                                                    <svg
+                                                                        className="mr-2 h-4 w-4"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth={2}
+                                                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                                        />
+                                                                    </svg>
+                                                                    Edit Foto
+                                                                </button>
+                                                            )}
                                                             <button
                                                                 onClick={handleDeletePhoto}
                                                                 className="inline-flex items-center rounded-xl bg-red-500 px-6 py-2 text-white hover:bg-red-600 disabled:opacity-50"
@@ -880,9 +983,17 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                                     </div>
                                                     <div className="mt-2 text-sm text-gray-500">
                                                         <p>
-                                                            💡 Klik "Edit Foto" untuk mengubah crop foto yang sudah ada, atau "Ganti Foto" untuk
-                                                            mengunggah foto baru.
+                                                            💡{' '}
+                                                            {originalImageUrl || originalImageFile
+                                                                ? 'Klik "Edit Foto" untuk mengubah crop foto original, atau'
+                                                                : ''}{' '}
+                                                            Klik "Ganti Foto" untuk mengunggah foto baru.
                                                         </p>
+                                                        {(originalImageUrl || originalImageFile) && (
+                                                            <p className="mt-1 text-xs text-blue-600">
+                                                                📷 Edit foto akan menggunakan gambar original untuk crop yang lebih fleksibel.
+                                                            </p>
+                                                        )}
                                                     </div>
                                                 </div>
                                             )}
@@ -938,36 +1049,16 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                             />
                                         </div>
 
-                                        <div>
-                                            <label className="block text-sm font-medium text-gray-700">Icon (Emoji)</label>
-                                            <select
-                                                value={bidangForm.data.icon}
-                                                onChange={(e) =>
-                                                    setBidangForm((prev) => ({
-                                                        ...prev,
-                                                        data: { ...prev.data, icon: e.target.value },
-                                                    }))
-                                                }
-                                                className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800"
-                                            >
-                                                <option value="📢">📢 Megaphone</option>
-                                                <option value="🏛️">🏛️ Government</option>
-                                                <option value="💻">💻 Computer</option>
-                                                <option value="📊">📊 Chart</option>
-                                                <option value="🏢">🏢 Building</option>
-                                                <option value="🔧">🔧 Tool</option>
-                                                <option value="📋">📋 Clipboard</option>
-                                                <option value="🎯">🎯 Target</option>
-                                                <option value="📈">📈 Graph</option>
-                                                <option value="⚙️">⚙️ Gear</option>
-                                                <option value="🌐">🌐 Globe</option>
-                                                <option value="📱">📱 Phone</option>
-                                                <option value="🎨">🎨 Art</option>
-                                                <option value="🔍">🔍 Search</option>
-                                                <option value="📞">📞 Telephone</option>
-                                                <option value="🏆">🏆 Trophy</option>
-                                            </select>
-                                        </div>
+                                        <IconPickerWithLabel
+                                            label="Icon"
+                                            selectedIcon={bidangForm.data.icon}
+                                            onIconSelect={(iconKey) =>
+                                                setBidangForm((prev) => ({
+                                                    ...prev,
+                                                    data: { ...prev.data, icon: iconKey },
+                                                }))
+                                            }
+                                        />
 
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700">Warna</label>

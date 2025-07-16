@@ -129,9 +129,9 @@ export default function ImageCropper({
     }, [completedCrop, getCroppedImg, onCropComplete]);
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70">
-            <div className="w-full max-w-4xl rounded-xl bg-white p-6 shadow-2xl">
-                <div className="mb-4 flex items-center justify-between">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
+            <div className="flex max-h-[95vh] w-full max-w-4xl flex-col rounded-xl bg-white shadow-2xl">
+                <div className="flex items-center justify-between border-b border-gray-200 p-6">
                     <h3 className="text-lg font-semibold text-gray-900">{title}</h3>
                     <button onClick={onCancel} className="rounded-lg p-2 text-gray-400 hover:bg-gray-100 hover:text-gray-600">
                         <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -140,35 +140,37 @@ export default function ImageCropper({
                     </button>
                 </div>
 
-                <div className="mb-4 text-sm text-gray-600">Seret dan resize area untuk memotong foto sesuai keinginan Anda.</div>
+                <div className="flex-1 overflow-y-auto p-6">
+                    <div className="mb-4 text-sm text-gray-600">Seret dan resize area untuk memotong foto sesuai keinginan Anda.</div>
 
-                <div className="mb-6 flex justify-center">
-                    <ReactCrop
-                        crop={crop}
-                        onChange={(c) => setCrop(c)}
-                        onComplete={(c) => setCompletedCrop(c)}
-                        aspect={aspectRatio}
-                        minWidth={50}
-                        minHeight={50}
-                        keepSelection
-                    >
-                        <img ref={imgRef} src={src} alt="Crop preview" onLoad={onImageLoad} className="max-h-96 max-w-full" />
-                    </ReactCrop>
+                    <div className="mb-6 flex justify-center">
+                        <ReactCrop
+                            crop={crop}
+                            onChange={(c) => setCrop(c)}
+                            onComplete={(c) => setCompletedCrop(c)}
+                            aspect={aspectRatio}
+                            minWidth={50}
+                            minHeight={50}
+                            keepSelection
+                        >
+                            <img ref={imgRef} src={src} alt="Crop preview" onLoad={onImageLoad} className="max-h-[60vh] max-w-full" />
+                        </ReactCrop>
+                    </div>
+
+                    <div className="mb-4 rounded-lg bg-blue-50 p-4">
+                        <h4 className="mb-2 font-medium text-blue-900">Tips:</h4>
+                        <ul className="space-y-1 text-sm text-blue-800">
+                            <li>• Seret sudut untuk mengubah ukuran area crop</li>
+                            <li>• Seret tengah area untuk memindahkan posisi</li>
+                            <li>
+                                • Hasil akan disesuaikan ke ukuran {cropWidth}x{cropHeight} pixels
+                            </li>
+                            <li>• Gunakan foto dengan kualitas baik untuk hasil terbaik</li>
+                        </ul>
+                    </div>
                 </div>
 
-                <div className="mb-4 rounded-lg bg-blue-50 p-4">
-                    <h4 className="mb-2 font-medium text-blue-900">Tips:</h4>
-                    <ul className="space-y-1 text-sm text-blue-800">
-                        <li>• Seret sudut untuk mengubah ukuran area crop</li>
-                        <li>• Seret tengah area untuk memindahkan posisi</li>
-                        <li>
-                            • Hasil akan disesuaikan ke ukuran {cropWidth}x{cropHeight} pixels
-                        </li>
-                        <li>• Gunakan foto dengan kualitas baik untuk hasil terbaik</li>
-                    </ul>
-                </div>
-
-                <div className="flex justify-end space-x-3">
+                <div className="flex justify-end space-x-3 border-t border-gray-200 p-6">
                     <button onClick={onCancel} className="rounded-xl border border-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-50">
                         Batal
                     </button>

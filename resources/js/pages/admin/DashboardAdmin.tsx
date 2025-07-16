@@ -1,3 +1,4 @@
+import { IconDisplay } from '@/components/IconPicker';
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 
@@ -172,25 +173,25 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
     };
 
     /**
-     * Mendapatkan icon emoji berdasarkan tipe file
+     * Mendapatkan icon berdasarkan tipe file menggunakan Lucide React icons
      * @param filePath - Path file untuk menentukan ekstensi
-     * @returns Emoji icon yang sesuai dengan tipe file
+     * @returns IconDisplay component dengan icon yang sesuai
      */
     const getFileIcon = (filePath: string) => {
         const ext = getFileExtension(filePath);
         switch (ext) {
             case 'pdf':
-                return '📄';
+                return <IconDisplay iconName="filetext" className="h-4 w-4 text-red-500" />;
             case 'doc':
             case 'docx':
-                return '📝';
+                return <IconDisplay iconName="book" className="h-4 w-4 text-blue-500" />;
             case 'jpg':
             case 'jpeg':
             case 'png':
             case 'gif':
-                return '🖼️';
+                return <IconDisplay iconName="image" className="h-4 w-4 text-green-500" />;
             default:
-                return '📁';
+                return <IconDisplay iconName="database" className="h-4 w-4 text-gray-500" />;
         }
     };
 
@@ -595,7 +596,8 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                         <div className="flex items-center space-x-4">
                             {/* Welcome Message */}
                             <div className="hidden items-center space-x-2 rounded-xl bg-white/20 px-4 py-2 backdrop-blur-sm md:flex">
-                                <span className="text-sm">👋 Selamat datang,</span>
+                                <IconDisplay iconName="smile" className="h-4 w-4 text-white" />
+                                <span className="text-sm">Selamat datang,</span>
                                 <span className="font-medium">{auth?.user?.name || 'Admin'}</span>
                             </div>
 
@@ -718,26 +720,29 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                 <div className="mb-8 rounded-3xl border border-blue-100 bg-gradient-to-r from-blue-50 to-green-50 p-6 shadow-xl">
                     <div className="flex items-start space-x-4">
                         <div className="flex-1">
-                            <h3 className="text-lg font-semibold text-gray-800">🤖 Otomatisasi Status Aktif</h3>
+                            <div className="flex items-center space-x-2">
+                                <IconDisplay iconName="bot" className="h-5 w-5 text-blue-600" />
+                                <h3 className="text-lg font-semibold text-gray-800">Otomatisasi Status Aktif</h3>
+                            </div>
                             <p className="mt-1 text-sm text-gray-600">Sistem otomatis mengupdate status mahasiswa setiap hari berdasarkan tanggal:</p>
                             <div className="mt-3 grid grid-cols-1 gap-2 md:grid-cols-2 lg:grid-cols-3">
                                 {/* Transisi Diterima ke Sedang Magang */}
                                 <div className="flex items-center space-x-2 rounded-lg bg-green-100 p-2">
-                                    <span className="text-green-600">✅</span>
+                                    <IconDisplay iconName="checkcircle" className="h-4 w-4 text-green-600" />
                                     <span className="text-sm text-green-800">
                                         <strong>Diterima → Sedang Magang</strong> (saat tanggal mulai tiba)
                                     </span>
                                 </div>
                                 {/* Transisi Sedang Magang ke Selesai */}
                                 <div className="flex items-center space-x-2 rounded-lg bg-blue-100 p-2">
-                                    <span className="text-blue-600">🎯</span>
+                                    <IconDisplay iconName="edit" className="h-4 w-4 text-blue-600" />
                                     <span className="text-sm text-blue-800">
                                         <strong>Sedang Magang → Selesai</strong> (saat tanggal selesai tiba)
                                     </span>
                                 </div>
                                 {/* Penghapusan Data Ditolak */}
                                 <div className="flex items-center space-x-2 rounded-lg bg-red-100 p-2">
-                                    <span className="text-red-600">🗑️</span>
+                                    <IconDisplay iconName="trash2" className="h-4 w-4 text-red-600" />
                                     <span className="text-sm text-red-800">
                                         <strong>Hapus Data Ditolak</strong> (setelah 30 hari)
                                     </span>
@@ -1021,7 +1026,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                         <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
                             <div className="mb-6">
                                 <h3 className="flex items-center text-lg font-semibold text-gray-800">
-                                    <span className="mr-2">📊</span>
+                                    <IconDisplay iconName="barchart3" className="mr-2 h-4 w-4" />
                                     Distribusi Bidang Magang
                                 </h3>
                                 <p className="mt-1 text-sm text-gray-600">
@@ -1056,7 +1061,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                         <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
                             <div className="mb-6">
                                 <h3 className="flex items-center text-lg font-semibold text-gray-800">
-                                    <span className="mr-2">🏫</span>
+                                    <IconDisplay iconName="building2" className="mr-2 h-4 w-4" />
                                     Distribusi Universitas Asal
                                 </h3>
                                 <p className="mt-1 text-sm text-gray-600">
@@ -1093,7 +1098,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                         <div className="rounded-3xl border border-gray-100 bg-white p-6 shadow-xl">
                             <div className="mb-6">
                                 <h3 className="flex items-center text-lg font-semibold text-gray-800">
-                                    <span className="mr-2">📅</span>
+                                    <IconDisplay iconName="clock" className="mr-2 h-4 w-4" />
                                     Distribusi Periode Mulai Magang
                                 </h3>
                                 <p className="mt-1 text-sm text-gray-600">
@@ -1130,7 +1135,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                 {sedangMagangData.length === 0 && (
                     <div className="mt-12 mb-8 rounded-3xl border border-gray-200 bg-gray-50 p-6 text-center">
                         <div className="flex flex-col items-center">
-                            <span className="mb-3 text-4xl">📊</span>
+                            <IconDisplay iconName="barchart3" className="mb-3 h-12 w-12 text-blue-600" />
                             <h3 className="text-lg font-semibold text-gray-700">Belum Ada Mahasiswa yang Sedang Magang</h3>
                             <p className="mt-1 text-sm text-gray-500">
                                 Distribusi bidang, universitas, dan periode akan muncul ketika ada mahasiswa dengan status "Sedang Magang"
@@ -1298,7 +1303,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                     ) : (
                                         <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4">
                                             <div className="text-center">
-                                                <span className="text-2xl text-gray-400">📄</span>
+                                                <IconDisplay iconName="filetext" className="mx-auto h-8 w-8 text-gray-400" />
                                                 <p className="mt-1 text-sm text-gray-500">Surat Pengantar</p>
                                                 <p className="text-xs text-gray-400">Tidak ada file</p>
                                             </div>
@@ -1361,7 +1366,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                     ) : (
                                         <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4">
                                             <div className="text-center">
-                                                <span className="text-2xl text-gray-400">📝</span>
+                                                <IconDisplay iconName="user" className="mx-auto h-8 w-8 text-gray-400" />
                                                 <p className="mt-1 text-sm text-gray-500">Curriculum Vitae (CV)</p>
                                                 <p className="text-xs text-gray-400">Tidak ada file (opsional)</p>
                                             </div>
@@ -1373,7 +1378,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                         <div className="rounded-lg border border-gray-200 bg-purple-50 p-4 transition-colors duration-200 hover:bg-purple-100">
                                             <div className="flex flex-col space-y-3">
                                                 <div className="flex items-center space-x-3">
-                                                    <span className="text-2xl">🔗</span>
+                                                    <IconDisplay iconName="link" className="h-6 w-6 text-purple-600" />
                                                     <div className="min-w-0 flex-1">
                                                         <p className="truncate text-sm font-medium text-gray-900">LinkedIn Profile</p>
                                                         <p className="truncate text-xs text-gray-500">{selectedMahasiswa.linkedin}</p>
@@ -1417,7 +1422,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                     ) : (
                                         <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-4">
                                             <div className="text-center">
-                                                <span className="text-2xl text-gray-400">🔗</span>
+                                                <IconDisplay iconName="link" className="mx-auto h-6 w-6 text-gray-400" />
                                                 <p className="mt-1 text-sm text-gray-500">LinkedIn Profile</p>
                                                 <p className="text-xs text-gray-400">Tidak ada profile LinkedIn</p>
                                             </div>

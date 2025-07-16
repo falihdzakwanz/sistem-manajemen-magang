@@ -13,6 +13,7 @@
 */
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
@@ -133,14 +134,22 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 // Redirect berbagai URL ke dashboard admin (untuk kemudahan akses dan kompatibilitas)
 Route::get('/admin', function () {
-    return redirect('/dashboard-admin');
-});
+    // Jika user belum login, redirect ke halaman login
+    if (!Auth::check()) {
+        return redirect('/login');
+    }
 
-Route::get('/login', function () {
+    // Jika sudah login, redirect ke dashboard admin
     return redirect('/dashboard-admin');
 });
 
 Route::get('/dashboard', function () {
+    // Jika user belum login, redirect ke halaman login
+    if (!Auth::check()) {
+        return redirect('/login');
+    }
+
+    // Jika sudah login, redirect ke dashboard admin
     return redirect('/dashboard-admin');
 });
 
@@ -155,3 +164,27 @@ Route::get('/dashboard', function () {
 */
 
 require __DIR__ . '/auth.php';
+
+/*
+|--------------------------------------------------------------------------
+| Override Login Route untuk Redirect Otomatis
+|--------------------------------------------------------------------------
+|
+| Route ini akan mengoverride route login dari auth.php untuk memberikan
+| fungsionalitas redirect otomatis jika user sudah login
+|
+*/
+
+// Route login dengan pengecekan autentikasi
+Route::get('/login', function () {
+    // Jika user sudah login, langsung redirect ke dashboard admin
+    if (Auth::check()) {
+        return redirect('/dashboard-admin');
+    }
+
+    // Jika belum login, tampilkan halaman login
+    return Inertia::render('admin/Login', [
+        'canResetPassword' => Route::has('password.request'),
+        'status' => session('status'),
+    ]);
+})->name('login');

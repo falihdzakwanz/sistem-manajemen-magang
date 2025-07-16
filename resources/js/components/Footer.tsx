@@ -1,4 +1,4 @@
-import { FaFacebook, FaInstagram, FaTiktok } from 'react-icons/fa6';
+import { IconDisplay } from './IconPicker';
 
 const Footer = () => {
     return (
@@ -24,55 +24,30 @@ const Footer = () => {
                             </div>
                         </div>
                         <p className="leading-relaxed text-gray-300">Jl. Dr. Susilo No.2 Bandar Lampung, Kota Bandar Lampung, Lampung 35214</p>
-                        <div className="mt-6 flex space-x-4">
-                            {/* Instagram */}
-                            <a
-                                href="https://www.instagram.com/kominfobandarlampung/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-pink-500/20 transition-colors hover:bg-pink-500/30"
-                            >
-                                <FaInstagram className="text-xl text-pink-400 transition-transform group-hover:scale-110" />
-                            </a>
-
-                            {/* TikTok */}
-                            <a
-                                href="https://www.tiktok.com/kominfobandarlampung/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-black/20 transition-colors hover:bg-black/30"
-                            >
-                                <FaTiktok className="text-xl text-white transition-transform group-hover:scale-110" />
-                            </a>
-
-                            {/* Facebook */}
-                            <a
-                                href="https://www.facebook.com/kominfobandarlampung/"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="group flex h-10 w-10 cursor-pointer items-center justify-center rounded-lg bg-blue-500/20 transition-colors hover:bg-blue-500/30"
-                            >
-                                <FaFacebook className="text-xl text-blue-400 transition-transform group-hover:scale-110" />
-                            </a>
-                        </div>
                     </div>
                     <div className="space-y-4">
                         <h3 className="mb-4 text-xl font-bold text-blue-300">Kontak Kami</h3>
                         <div className="space-y-3">
-                            <div className="group flex items-center space-x-3 rounded-lg p-3 transition-all duration-300 hover:bg-white/5">
+                            <a
+                                href="tel:(0721) 481301"
+                                className="group flex items-center space-x-3 rounded-lg p-3 transition-all duration-300 hover:bg-white/5"
+                            >
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-500/20 transition-colors group-hover:bg-blue-500/30">
-                                    <span className="text-blue-300">📞</span>
+                                    <IconDisplay iconName="phone" className="h-5 w-5 text-blue-300" />
                                 </div>
                                 <span className="text-gray-300 transition-colors group-hover:text-white">(0721) 481301</span>
-                            </div>
-                            <div className="group flex items-center space-x-3 rounded-lg p-3 transition-all duration-300 hover:bg-white/5">
+                            </a>
+                            <a
+                                href="mailto:diskoinfo@bandarlampungkota.go.id"
+                                className="group flex items-center space-x-3 rounded-lg p-3 transition-all duration-300 hover:bg-white/5"
+                            >
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-purple-500/20 transition-colors group-hover:bg-purple-500/30">
-                                    <span className="text-purple-300">✉️</span>
+                                    <IconDisplay iconName="mail" className="h-5 w-5 text-purple-300" />
                                 </div>
                                 <span className="text-sm text-gray-300 transition-colors group-hover:text-white">
                                     diskoinfo@bandarlampungkota.go.id
                                 </span>
-                            </div>
+                            </a>
                             <a
                                 href="https://bandarlampungkota.go.id"
                                 target="_blank"
@@ -80,7 +55,7 @@ const Footer = () => {
                                 className="group flex cursor-pointer items-center space-x-3 rounded-lg p-3 text-2xl transition-all duration-300 hover:bg-white/5"
                             >
                                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 transition-colors group-hover:bg-green-500/30">
-                                    <span className="text-green-300">🌐</span>
+                                    <IconDisplay iconName="globe" className="h-5 w-5 text-green-300" />
                                 </div>
                                 <span className="text-sm text-gray-300 transition-colors group-hover:text-white">bandarlampungkota.go.id</span>
                             </a>
@@ -89,21 +64,21 @@ const Footer = () => {
                     <div className="space-y-4">
                         <h3 className="mb-4 text-xl font-bold text-blue-300">Jam Kerja</h3>
                         <div className="space-y-3">
-                            <div className="group flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-all duration-300 hover:bg-white/5">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20 transition-colors group-hover:bg-green-500/30">
-                                    <span className="text-green-300">🕒</span>
+                            <div className="flex items-center space-x-3 rounded-lg p-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-green-500/20">
+                                    <IconDisplay iconName="clock" className="h-5 w-5 text-green-300" />
                                 </div>
                                 <div>
-                                    <p className="text-gray-300 transition-colors group-hover:text-white">Senin - Jumat</p>
+                                    <p className="text-gray-300">Senin - Jumat</p>
                                     <p className="text-sm text-gray-400">07:30 - 15:30 WIB</p>
                                 </div>
                             </div>
-                            <div className="group flex cursor-pointer items-center space-x-3 rounded-lg p-3 transition-all duration-300 hover:bg-white/5">
-                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/20 transition-colors group-hover:bg-red-500/30">
-                                    <span className="text-red-300">🚫</span>
+                            <div className="flex items-center space-x-3 rounded-lg p-3">
+                                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-red-500/20">
+                                    <IconDisplay iconName="x" className="h-5 w-5 text-red-300" />
                                 </div>
                                 <div>
-                                    <p className="text-gray-300 transition-colors group-hover:text-white">Sabtu - Minggu</p>
+                                    <p className="text-gray-300">Sabtu - Minggu</p>
                                     <p className="text-sm text-gray-400">Tutup</p>
                                 </div>
                             </div>

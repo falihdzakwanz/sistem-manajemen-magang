@@ -85,6 +85,7 @@ class BerandaController extends Controller
                 'title' => 'required|string|max:255',
                 'description' => 'required|string|max:500',
                 'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+                'original_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
                 'delete_photo' => 'nullable|boolean'
             ]);
 
@@ -108,11 +109,37 @@ class BerandaController extends Controller
                 $photoPath = $photo->storeAs('photos/struktur-organisasi', $photoName, 'public');
                 $data['photo_url'] = '/storage/' . $photoPath;
 
-                // Delete old photo if exists
-                $existingContent = BerandaContent::getByKey($request->key);
+                // Handle original photo
+                if ($request->hasFile('original_photo')) {
+                    $originalPhoto = $request->file('original_photo');
+                    $originalPhotoName = time() . '_original_' . $request->key . '.' . $originalPhoto->getClientOriginalExtension();
+                    $originalPhotoPath = $originalPhoto->storeAs('photos/struktur-organisasi', $originalPhotoName, 'public');
+                    $data['original_photo_url'] = '/storage/' . $originalPhotoPath;
+                } else {
+                    // Check if there's existing original photo to preserve
+                    if ($existingContent && $existingContent->original_photo_url) {
+                        // Preserve existing original photo
+                        $data['original_photo_url'] = $existingContent->original_photo_url;
+                    } else {
+                        // If no existing original photo, use the main photo as original
+                        $data['original_photo_url'] = '/storage/' . $photoPath;
+                    }
+                }
+
+                // Delete old cropped photo if exists (but preserve original photo)
                 if ($existingContent && $existingContent->photo_url) {
                     $oldPhotoPath = str_replace('/storage/', '', $existingContent->photo_url);
                     Storage::disk('public')->delete($oldPhotoPath);
+                }
+
+                // Only delete old original photo if we have a new one
+                if (
+                    $existingContent && $existingContent->original_photo_url &&
+                    $request->hasFile('original_photo') &&
+                    $existingContent->original_photo_url !== $data['original_photo_url']
+                ) {
+                    $oldOriginalPhotoPath = str_replace('/storage/', '', $existingContent->original_photo_url);
+                    Storage::disk('public')->delete($oldOriginalPhotoPath);
                 }
             } elseif ($request->delete_photo) {
                 // Handle photo deletion
@@ -120,7 +147,15 @@ class BerandaController extends Controller
                     $oldPhotoPath = str_replace('/storage/', '', $existingContent->photo_url);
                     Storage::disk('public')->delete($oldPhotoPath);
                 }
+
+                // Also delete original photo if different
+                if ($existingContent && $existingContent->original_photo_url && $existingContent->original_photo_url !== $existingContent->photo_url) {
+                    $oldOriginalPhotoPath = str_replace('/storage/', '', $existingContent->original_photo_url);
+                    Storage::disk('public')->delete($oldOriginalPhotoPath);
+                }
+
                 $data['photo_url'] = null;
+                $data['original_photo_url'] = null;
             } else {
                 // Check if there's temporary photo in session
                 $tempPhotoKey = 'temp_photo_' . $request->key;
@@ -135,17 +170,54 @@ class BerandaController extends Controller
                     Storage::disk('public')->copy($tempPhoto['path'], $newPhotoPath);
                     $data['photo_url'] = '/storage/' . $newPhotoPath;
 
+                    // Check if we have original photo in session, otherwise preserve existing original_photo_url
+                    $tempOriginalPhotoKey = 'temp_original_photo_' . $request->key;
+                    if ($request->session()->has($tempOriginalPhotoKey)) {
+                        $tempOriginalPhoto = $request->session()->get($tempOriginalPhotoKey);
+
+                        // Move original temp photo to permanent location
+                        $originalPhotoName = time() . '_original_' . $request->key . '.' . pathinfo($tempOriginalPhoto['path'], PATHINFO_EXTENSION);
+                        $originalPhotoPath = 'photos/struktur-organisasi/' . $originalPhotoName;
+
+                        Storage::disk('public')->copy($tempOriginalPhoto['path'], $originalPhotoPath);
+                        $data['original_photo_url'] = '/storage/' . $originalPhotoPath;
+
+                        // Delete temp original photo
+                        Storage::disk('public')->delete($tempOriginalPhoto['path']);
+
+                        // Remove temp original photo from session
+                        $request->session()->forget($tempOriginalPhotoKey);
+                    } else {
+                        // IMPORTANT: Preserve existing original_photo_url if it exists
+                        // This ensures that we always keep the original photo for future edits
+                        if ($existingContent && $existingContent->original_photo_url) {
+                            $data['original_photo_url'] = $existingContent->original_photo_url;
+                        } else {
+                            // If no existing original photo, use the current photo as original
+                            $data['original_photo_url'] = '/storage/' . $newPhotoPath;
+                        }
+                    }
+
                     // Delete temp photo
                     Storage::disk('public')->delete($tempPhoto['path']);
 
                     // Remove temp photo from session
                     $request->session()->forget($tempPhotoKey);
 
-                    // Delete old photo if exists
-                    $existingContent = BerandaContent::getByKey($request->key);
+                    // Delete old cropped photo if exists (but preserve original photo)
                     if ($existingContent && $existingContent->photo_url) {
                         $oldPhotoPath = str_replace('/storage/', '', $existingContent->photo_url);
                         Storage::disk('public')->delete($oldPhotoPath);
+                    }
+
+                    // Only delete old original photo if we have a new one and it's different
+                    if (
+                        $existingContent && $existingContent->original_photo_url &&
+                        $request->session()->has('temp_original_photo_' . $request->key) &&
+                        $existingContent->original_photo_url !== $data['original_photo_url']
+                    ) {
+                        $oldOriginalPhotoPath = str_replace('/storage/', '', $existingContent->original_photo_url);
+                        Storage::disk('public')->delete($oldOriginalPhotoPath);
                     }
                 }
             }
@@ -210,7 +282,8 @@ class BerandaController extends Controller
         try {
             $request->validate([
                 'key' => 'required|string',
-                'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048'
+                'photo' => 'required|image|mimes:jpeg,png,jpg|max:2048',
+                'original_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:2048'
             ]);
 
             // Extend session lifetime dan keep session data
@@ -227,6 +300,21 @@ class BerandaController extends Controller
                 'url' => $photoUrl,
                 'uploaded_at' => now()
             ]);
+
+            // Handle original photo if provided
+            if ($request->hasFile('original_photo')) {
+                $originalPhoto = $request->file('original_photo');
+                $originalPhotoName = 'temp_original_' . time() . '_' . $request->key . '.' . $originalPhoto->getClientOriginalExtension();
+                $originalPhotoPath = $originalPhoto->storeAs('photos/temp', $originalPhotoName, 'public');
+                $originalPhotoUrl = '/storage/' . $originalPhotoPath;
+
+                // Simpan info original foto sementara di session
+                $request->session()->put('temp_original_photo_' . $request->key, [
+                    'path' => $originalPhotoPath,
+                    'url' => $originalPhotoUrl,
+                    'uploaded_at' => now()
+                ]);
+            }
 
             return response()->json([
                 'success' => true,
@@ -274,6 +362,22 @@ class BerandaController extends Controller
                 $message = 'Foto sementara berhasil dihapus!';
             }
 
+            // Cek apakah ada original foto sementara di session
+            $tempOriginalPhotoKey = 'temp_original_photo_' . $key;
+            if ($request->session()->has($tempOriginalPhotoKey)) {
+                $tempOriginalPhoto = $request->session()->get($tempOriginalPhotoKey);
+
+                // Hapus original foto sementara dari storage
+                if (Storage::disk('public')->exists($tempOriginalPhoto['path'])) {
+                    Storage::disk('public')->delete($tempOriginalPhoto['path']);
+                }
+
+                // Hapus dari session
+                $request->session()->forget($tempOriginalPhotoKey);
+                $deleted = true;
+                $message = $message ? $message . ' Original foto sementara juga berhasil dihapus!' : 'Original foto sementara berhasil dihapus!';
+            }
+
             // Cek apakah ada foto yang sudah disimpan di database
             $content = BerandaContent::getByKey($key);
             if ($content && $content->photo_url) {
@@ -287,6 +391,20 @@ class BerandaController extends Controller
                 $content->update(['photo_url' => null]);
                 $deleted = true;
                 $message = $message ? $message . ' Foto yang tersimpan juga berhasil dihapus!' : 'Foto berhasil dihapus!';
+            }
+
+            // Cek apakah ada original foto yang sudah disimpan di database
+            if ($content && $content->original_photo_url && $content->original_photo_url !== $content->photo_url) {
+                // Delete original photo file
+                $originalPhotoPath = str_replace('/storage/', '', $content->original_photo_url);
+                if (Storage::disk('public')->exists($originalPhotoPath)) {
+                    Storage::disk('public')->delete($originalPhotoPath);
+                }
+
+                // Update database
+                $content->update(['original_photo_url' => null]);
+                $deleted = true;
+                $message = $message ? $message . ' Original foto yang tersimpan juga berhasil dihapus!' : 'Original foto berhasil dihapus!';
             }
 
             if ($deleted) {
@@ -314,6 +432,7 @@ class BerandaController extends Controller
 
             $key = $request->key;
             $tempPhotoKey = 'temp_photo_' . $key;
+            $tempOriginalPhotoKey = 'temp_original_photo_' . $key;
 
             // Cek apakah ada foto sementara di session
             if ($request->session()->has($tempPhotoKey)) {
@@ -326,10 +445,23 @@ class BerandaController extends Controller
 
                 // Hapus dari session
                 $request->session()->forget($tempPhotoKey);
+            }
+
+            // Cek apakah ada original foto sementara di session
+            if ($request->session()->has($tempOriginalPhotoKey)) {
+                $tempOriginalPhoto = $request->session()->get($tempOriginalPhotoKey);
+
+                // Hapus original foto sementara dari storage
+                if (Storage::disk('public')->exists($tempOriginalPhoto['path'])) {
+                    Storage::disk('public')->delete($tempOriginalPhoto['path']);
+                }
+
+                // Hapus dari session
+                $request->session()->forget($tempOriginalPhotoKey);
 
                 return response()->json([
                     'success' => true,
-                    'message' => 'Foto sementara berhasil direset!'
+                    'message' => 'Foto sementara dan original foto berhasil direset!'
                 ]);
             }
 

@@ -1,3 +1,4 @@
+import { IconDisplay } from '@/components/IconPicker';
 import Layout from '@/components/Layout';
 import { PageProps } from '@/types';
 
@@ -105,7 +106,7 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                                     <p className="text-2xl font-bold text-gray-800">{statistik.total_mahasiswa}</p>
                                 </div>
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
-                                    <span className="text-xl text-blue-600">👥</span>
+                                    <IconDisplay iconName="users" className="h-6 w-6 text-blue-600" />
                                 </div>
                             </div>
                         </div>
@@ -116,7 +117,7 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                                     <p className="text-2xl font-bold text-green-600">{statistik.sedang_aktif}</p>
                                 </div>
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
-                                    <span className="text-xl text-green-600">✅</span>
+                                    <IconDisplay iconName="rocket" className="h-6 w-6 text-green-600" />
                                 </div>
                             </div>
                         </div>
@@ -127,7 +128,7 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                                     <p className="text-2xl font-bold text-blue-600">{statistik.telah_selesai}</p>
                                 </div>
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
-                                    <span className="text-xl text-blue-600">🎓</span>
+                                    <IconDisplay iconName="trophy" className="h-6 w-6 text-blue-600" />
                                 </div>
                             </div>
                         </div>
@@ -138,7 +139,7 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                                     <p className="text-2xl font-bold text-purple-600">{statistik.total_universitas}</p>
                                 </div>
                                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-purple-100">
-                                    <span className="text-xl text-purple-600">🏫</span>
+                                    <IconDisplay iconName="building2" className="h-6 w-6 text-purple-600" />
                                 </div>
                             </div>
                         </div>
@@ -202,7 +203,7 @@ const DataMahasiswa = ({ mahasiswa, statistik, distribusi_bidang, distribusi_uni
                                         <tr>
                                             <td colSpan={9} className="px-6 py-8 text-center text-gray-500">
                                                 <div className="flex flex-col items-center justify-center">
-                                                    <span className="mb-2 text-4xl">📋</span>
+                                                    <IconDisplay iconName="database" className="mb-2 h-12 w-12 text-gray-400" />
                                                     <p className="text-lg font-medium">Belum ada data mahasiswa</p>
                                                     <p className="text-sm">Data akan muncul setelah ada mahasiswa yang diterima</p>
                                                 </div>
