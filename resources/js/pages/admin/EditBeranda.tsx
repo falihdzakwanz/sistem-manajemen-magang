@@ -16,23 +16,6 @@ interface InertiaPage {
     };
 }
 
-// Helper function to get fresh CSRF token with retry mechanism
-const getCsrfToken = () => {
-    // Try to get token from multiple sources
-    const metaTag = document.querySelector('meta[name="csrf-token"]');
-    const token = metaTag?.getAttribute('content');
-
-    // If token is empty or not found, try to reload it
-    if (!token) {
-        // Force a page refresh to get new CSRF token
-        console.warn('CSRF token not found, reloading page...');
-        window.location.reload();
-        return '';
-    }
-
-    return token;
-};
-
 interface StrukturOrganisasi {
     id: number;
     key: string;
@@ -306,51 +289,49 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
         // Check if photo needs to be deleted
         const shouldDeletePhoto = originalStrukturData?.photo_url && !photoPreview;
 
-        // Alternative approach: Use Inertia.js for better session handling
-        if (strukturForm.photo) {
-            // First, upload the photo to temporary storage with original photo info
-            const uploadFormData = new FormData();
-            uploadFormData.append('key', strukturForm.key);
-            uploadFormData.append('photo', strukturForm.photo);
+        try {
+            // Always use Inertia.js for better session handling
+            const formData = {
+                key: strukturForm.key,
+                title: strukturForm.title,
+                description: strukturForm.description,
+                ...(shouldDeletePhoto && { delete_photo: true }),
+            };
 
-            // Add original photo if available (prioritize originalImageFile, then originalImageUrl)
-            if (originalImageFile) {
-                uploadFormData.append('original_photo', originalImageFile);
-            } else if (originalImageUrl) {
-                // Convert original image URL to blob and append
-                try {
-                    const response = await fetch(originalImageUrl);
-                    const blob = await response.blob();
-                    const originalFile = new File([blob], 'original-photo.jpg', { type: 'image/jpeg' });
-                    uploadFormData.append('original_photo', originalFile);
-                } catch (error) {
-                    console.warn('Failed to fetch original image, will use current photo as original:', error);
+            // If there's a photo to upload
+            if (strukturForm.photo) {
+                // Create FormData for file upload
+                const uploadFormData = new FormData();
+                uploadFormData.append('key', strukturForm.key);
+                uploadFormData.append('title', strukturForm.title);
+                uploadFormData.append('description', strukturForm.description);
+                uploadFormData.append('photo', strukturForm.photo);
+
+                // Add original photo if available
+                if (originalImageFile) {
+                    uploadFormData.append('original_photo', originalImageFile);
+                } else if (originalImageUrl) {
+                    // Convert original image URL to blob and append
+                    try {
+                        const response = await fetch(originalImageUrl);
+                        const blob = await response.blob();
+                        const originalFile = new File([blob], 'original-photo.jpg', { type: 'image/jpeg' });
+                        uploadFormData.append('original_photo', originalFile);
+                    } catch (error) {
+                        console.warn('Failed to fetch original image:', error);
+                    }
                 }
-            }
-
-            // Upload to temporary storage first
-            const uploadResponse = await fetch('/admin/upload-temp-photo', {
-                method: 'POST',
-                body: uploadFormData,
-                headers: {
-                    'X-CSRF-TOKEN': getCsrfToken(),
-                },
-            });
-
-            if (uploadResponse.ok) {
-                // Now save with the temporary photo reference
-                const formData = new FormData();
-                formData.append('key', strukturForm.key);
-                formData.append('title', strukturForm.title);
-                formData.append('description', strukturForm.description);
 
                 // Add delete_photo parameter if needed
                 if (shouldDeletePhoto) {
-                    formData.append('delete_photo', '1');
+                    uploadFormData.append('delete_photo', '1');
                 }
 
-                router.post('/admin/update-struktur-organisasi', Object.fromEntries(formData), {
+                // Use Inertia for file upload
+                router.post('/admin/update-struktur-organisasi', uploadFormData, {
                     forceFormData: true,
+                    preserveState: true,
+                    preserveScroll: true,
                     onSuccess: (page: InertiaPage) => {
                         const flashSuccess = page.props?.flash?.success;
                         if (flashSuccess) {
@@ -359,69 +340,51 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                             alert('✅ Struktur organisasi berhasil diperbarui!\n\nPerubahan akan langsung terlihat di halaman beranda user.');
                         }
                         setShowModal(false);
-                        setLoading(false);
                     },
                     onError: (errors) => {
                         console.error('Validation errors:', errors);
-                        alert('❌ Gagal memperbarui struktur organisasi!\n\nSilakan periksa input Anda.');
-                        setLoading(false);
+                        if (errors.message) {
+                            alert(`❌ Gagal memperbarui struktur organisasi!\n\nError: ${errors.message}`);
+                        } else {
+                            alert('❌ Gagal memperbarui struktur organisasi!\n\nSilakan periksa input Anda.');
+                        }
                     },
                     onFinish: () => {
                         setLoading(false);
                     },
                 });
             } else {
-                alert('❌ Gagal mengupload foto!\n\nSilakan coba lagi.');
-                setLoading(false);
-            }
-            return;
-        }
-
-        // For non-file uploads, try fetch API with better error handling
-        try {
-            const csrfToken = getCsrfToken();
-
-            const requestData = {
-                key: strukturForm.key,
-                title: strukturForm.title,
-                description: strukturForm.description,
-                ...(shouldDeletePhoto && { delete_photo: true }),
-            };
-
-            const response = await fetch('/admin/update-struktur-organisasi', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': csrfToken,
-                    Accept: 'application/json',
-                },
-                credentials: 'same-origin',
-                body: JSON.stringify(requestData),
-            });
-
-            if (response.ok) {
-                alert('✅ Struktur organisasi berhasil diperbarui!\n\nPerubahan akan langsung terlihat di halaman beranda user.');
-                setShowModal(false);
-                router.reload();
-            } else {
-                const errorData = await response.json().catch(() => ({}));
-
-                if (response.status === 419) {
-                    alert('⚠️ Session expired. Silakan logout dan login kembali.');
-                    router.visit('/logout', { method: 'post' });
-                } else if (response.status === 401) {
-                    alert('⚠️ Anda tidak memiliki akses. Silakan login kembali.');
-                    router.visit('/login');
-                } else {
-                    alert(`❌ Gagal memperbarui struktur organisasi!\n\nError: ${errorData.message || 'Server error'}`);
-                }
+                // No file upload, use regular form data
+                router.post('/admin/update-struktur-organisasi', formData, {
+                    preserveState: true,
+                    preserveScroll: true,
+                    onSuccess: (page: InertiaPage) => {
+                        const flashSuccess = page.props?.flash?.success;
+                        if (flashSuccess) {
+                            alert(`✅ ${flashSuccess}\n\nPerubahan akan langsung terlihat di halaman beranda user.`);
+                        } else {
+                            alert('✅ Struktur organisasi berhasil diperbarui!\n\nPerubahan akan langsung terlihat di halaman beranda user.');
+                        }
+                        setShowModal(false);
+                    },
+                    onError: (errors) => {
+                        console.error('Validation errors:', errors);
+                        if (errors.message) {
+                            alert(`❌ Gagal memperbarui struktur organisasi!\n\nError: ${errors.message}`);
+                        } else {
+                            alert('❌ Gagal memperbarui struktur organisasi!\n\nSilakan periksa input Anda.');
+                        }
+                    },
+                    onFinish: () => {
+                        setLoading(false);
+                    },
+                });
             }
         } catch (error) {
             console.error('Error updating struktur:', error);
-            alert('❌ Terjadi kesalahan jaringan!\n\nSilakan periksa koneksi internet dan coba lagi.');
+            alert('❌ Terjadi kesalahan!\n\nSilakan coba lagi.');
+            setLoading(false);
         }
-
-        setLoading(false);
     };
 
     const handleSaveBidang = async () => {
@@ -442,42 +405,48 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
 
         setLoading(true);
 
-        // Filter out empty strings
-        const cleanedBidangForm = {
-            ...bidangForm,
-            data: {
-                ...bidangForm.data,
-                tugas: bidangForm.data.tugas.filter((tugas) => tugas.trim()),
-                magangTasks: bidangForm.data.magangTasks.filter((task) => task.trim()),
-                staffFungsional: bidangForm.data.staffFungsional.filter((staff) => staff.trim()),
-            },
-        };
+        try {
+            // Filter out empty strings
+            const cleanedBidangForm = {
+                ...bidangForm,
+                data: {
+                    ...bidangForm.data,
+                    tugas: bidangForm.data.tugas.filter((tugas) => tugas.trim()),
+                    magangTasks: bidangForm.data.magangTasks.filter((task) => task.trim()),
+                    staffFungsional: bidangForm.data.staffFungsional.filter((staff) => staff.trim()),
+                },
+            };
 
-        // Use Inertia.js for better session handling
-        router.post('/admin/update-bidang', cleanedBidangForm, {
-            onSuccess: (page: InertiaPage) => {
-                const flashSuccess = page.props?.flash?.success;
-                if (flashSuccess) {
-                    alert(`✅ ${flashSuccess}\n\nPerubahan akan langsung terlihat di halaman beranda user.`);
-                } else {
-                    alert('✅ Data bidang berhasil diperbarui!\n\nPerubahan akan langsung terlihat di halaman beranda user.');
-                }
-                setShowModal(false);
-                setLoading(false);
-            },
-            onError: (errors) => {
-                console.error('Validation errors:', errors);
-                if (errors.message) {
-                    alert(`❌ Gagal memperbarui data bidang!\n\nError: ${errors.message}`);
-                } else {
-                    alert('❌ Gagal memperbarui data bidang!\n\nSilakan periksa input Anda.');
-                }
-                setLoading(false);
-            },
-            onFinish: () => {
-                setLoading(false);
-            },
-        });
+            // Use Inertia.js for better session handling
+            router.post('/admin/update-bidang', cleanedBidangForm, {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: (page: InertiaPage) => {
+                    const flashSuccess = page.props?.flash?.success;
+                    if (flashSuccess) {
+                        alert(`✅ ${flashSuccess}\n\nPerubahan akan langsung terlihat di halaman beranda user.`);
+                    } else {
+                        alert('✅ Data bidang berhasil diperbarui!\n\nPerubahan akan langsung terlihat di halaman beranda user.');
+                    }
+                    setShowModal(false);
+                },
+                onError: (errors) => {
+                    console.error('Validation errors:', errors);
+                    if (errors.message) {
+                        alert(`❌ Gagal memperbarui data bidang!\n\nError: ${errors.message}`);
+                    } else {
+                        alert('❌ Gagal memperbarui data bidang!\n\nSilakan periksa input Anda.');
+                    }
+                },
+                onFinish: () => {
+                    setLoading(false);
+                },
+            });
+        } catch (error) {
+            console.error('Error updating bidang:', error);
+            alert('❌ Terjadi kesalahan!\n\nSilakan coba lagi.');
+            setLoading(false);
+        }
     };
 
     const addArrayItem = (field: 'tugas' | 'magangTasks' | 'staffFungsional') => {

@@ -1,6 +1,7 @@
 import { IconDisplay } from '@/components/IconPicker';
 import { router } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
+import { route } from 'ziggy-js';
 
 /**
  * Interface untuk data bidang magang
@@ -146,15 +147,6 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
     // ===== HELPER FUNCTIONS =====
 
     /**
-     * Mendapatkan URL lengkap untuk file yang disimpan di storage
-     * @param filePath - Path relatif file di storage
-     * @returns URL lengkap file
-     */
-    const getFileUrl = (filePath: string) => {
-        return `/storage/${filePath}`;
-    };
-
-    /**
      * Mengekstrak nama file dari path lengkap
      * @param filePath - Path lengkap file
      * @returns Nama file saja
@@ -196,12 +188,23 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
     };
 
     /**
-     * Membuka file dalam tab baru untuk preview
-     * @param filePath - Path file yang akan dibuka
+     * Preview file dengan nama yang disesuaikan
+     * @param mahasiswaId - ID mahasiswa
+     * @param fileType - Tipe file (surat_pengantar atau cv)
      */
-    const handleFilePreview = (filePath: string) => {
-        const url = getFileUrl(filePath);
-        window.open(url, '_blank');
+    const handleFilePreview = (mahasiswaId: number, fileType: string) => {
+        const previewUrl = route('admin.previewFile', { id: mahasiswaId, type: fileType });
+        window.open(previewUrl, '_blank');
+    };
+
+    /**
+     * Download file dengan nama yang disesuaikan
+     * @param mahasiswaId - ID mahasiswa
+     * @param fileType - Tipe file (surat_pengantar atau cv)
+     */
+    const handleFileDownload = (mahasiswaId: number, fileType: string) => {
+        const downloadUrl = route('admin.downloadFile', { id: mahasiswaId, type: fileType });
+        window.location.href = downloadUrl;
     };
 
     // ===== DATA PROCESSING =====
@@ -1261,7 +1264,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                                 </div>
                                                 <div className="flex flex-wrap gap-2">
                                                     <button
-                                                        onClick={() => handleFilePreview(selectedMahasiswa.surat_pengantar!)}
+                                                        onClick={() => handleFilePreview(selectedMahasiswa.id, 'surat_pengantar')}
                                                         className="inline-flex flex-1 items-center justify-center rounded-lg bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200"
                                                         title="Lihat File"
                                                     >
@@ -1281,9 +1284,8 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                                         </svg>
                                                         Lihat
                                                     </button>
-                                                    <a
-                                                        href={getFileUrl(selectedMahasiswa.surat_pengantar)}
-                                                        download
+                                                    <button
+                                                        onClick={() => handleFileDownload(selectedMahasiswa.id, 'surat_pengantar')}
                                                         className="inline-flex flex-1 items-center justify-center rounded-lg bg-green-100 px-2 py-1 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200"
                                                         title="Download File"
                                                     >
@@ -1296,7 +1298,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                                             />
                                                         </svg>
                                                         Download
-                                                    </a>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -1324,7 +1326,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                                 </div>
                                                 <div className="flex flex-wrap gap-2">
                                                     <button
-                                                        onClick={() => handleFilePreview(selectedMahasiswa.cv!)}
+                                                        onClick={() => handleFilePreview(selectedMahasiswa.id, 'cv')}
                                                         className="inline-flex flex-1 items-center justify-center rounded-lg bg-blue-100 px-2 py-1 text-xs font-medium text-blue-700 transition-colors duration-200 hover:bg-blue-200"
                                                         title="Lihat File"
                                                     >
@@ -1344,9 +1346,8 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                                         </svg>
                                                         Lihat
                                                     </button>
-                                                    <a
-                                                        href={getFileUrl(selectedMahasiswa.cv)}
-                                                        download
+                                                    <button
+                                                        onClick={() => handleFileDownload(selectedMahasiswa.id, 'cv')}
                                                         className="inline-flex flex-1 items-center justify-center rounded-lg bg-green-100 px-2 py-1 text-xs font-medium text-green-700 transition-colors duration-200 hover:bg-green-200"
                                                         title="Download File"
                                                     >
@@ -1359,7 +1360,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                                             />
                                                         </svg>
                                                         Download
-                                                    </a>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

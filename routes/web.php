@@ -99,6 +99,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/dashboard-admin/update-status-manual', [AdminController::class, 'updateStatusMagangManual'])
         ->name('admin.updateStatusManual');
 
+    // Download file dengan nama yang disesuaikan
+    Route::get('/dashboard-admin/download-file/{id}/{type}', [AdminController::class, 'downloadFile'])
+        ->name('admin.downloadFile')
+        ->where(['id' => '[0-9]+', 'type' => 'surat_pengantar|cv']);
+
+    // Preview file
+    Route::get('/dashboard-admin/preview-file/{id}/{type}', [AdminController::class, 'previewFile'])
+        ->name('admin.previewFile')
+        ->where(['id' => '[0-9]+', 'type' => 'surat_pengantar|cv']);
+
     // ===== RUTE EDIT BERANDA =====
 
     // Halaman edit beranda

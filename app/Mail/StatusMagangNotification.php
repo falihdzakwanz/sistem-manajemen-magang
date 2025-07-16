@@ -21,7 +21,7 @@ class StatusMagangNotification extends Mailable
     /**
      * Create a new message instance.
      */
-    public function __construct(User $mahasiswa, string $status, string $rejectReason = null)
+    public function __construct(User $mahasiswa, string $status, ?string $rejectReason = null)
     {
         $this->mahasiswa = $mahasiswa;
         $this->status = $status;

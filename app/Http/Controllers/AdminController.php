@@ -304,4 +304,106 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Gagal menghapus data mahasiswa');
         }
     }
+
+    /**
+     * Download file dengan nama yang disesuaikan
+     */
+    public function downloadFile($id, $type)
+    {
+        try {
+            $user = User::findOrFail($id);
+
+            // Tentukan file path berdasarkan type
+            $filePath = null;
+            $customFileName = null;
+
+            if ($type === 'surat_pengantar' && !empty($user->getAttribute('surat_pengantar'))) {
+                $filePath = $user->getAttribute('surat_pengantar');
+                // Bersihkan nama untuk filename (hapus karakter yang tidak diinginkan)
+                $cleanName = preg_replace('/[^a-zA-Z0-9\s\-_]/', '', $user->getAttribute('nama'));
+                $cleanName = str_replace(' ', '-', $cleanName);
+                $customFileName = 'surat-pengantar_' . $cleanName;
+            } elseif ($type === 'cv' && !empty($user->getAttribute('cv'))) {
+                $filePath = $user->getAttribute('cv');
+                // Bersihkan nama untuk filename (hapus karakter yang tidak diinginkan)
+                $cleanName = preg_replace('/[^a-zA-Z0-9\s\-_]/', '', $user->getAttribute('nama'));
+                $cleanName = str_replace(' ', '-', $cleanName);
+                $customFileName = 'cv_' . $cleanName;
+            }
+
+            if (!$filePath) {
+                return redirect()->back()->with('error', 'File tidak ditemukan');
+            }
+
+            $fullPath = storage_path('app/public/' . $filePath);
+
+            if (!file_exists($fullPath)) {
+                return redirect()->back()->with('error', 'File tidak ditemukan di server');
+            }
+
+            // Dapatkan ekstensi file asli
+            $originalExtension = pathinfo($filePath, PATHINFO_EXTENSION);
+            $downloadName = $customFileName . '.' . $originalExtension;
+
+            return response()->download($fullPath, $downloadName);
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Data mahasiswa tidak ditemukan');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal mendownload file: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Preview file dengan nama yang disesuaikan
+     */
+    public function previewFile($id, $type)
+    {
+        try {
+            $user = User::findOrFail($id);
+
+            // Tentukan file path berdasarkan type
+            $filePath = null;
+            $customFileName = null;
+
+            if ($type === 'surat_pengantar' && !empty($user->getAttribute('surat_pengantar'))) {
+                $filePath = $user->getAttribute('surat_pengantar');
+                // Bersihkan nama untuk filename (hapus karakter yang tidak diinginkan)
+                $cleanName = preg_replace('/[^a-zA-Z0-9\s\-_]/', '', $user->getAttribute('nama'));
+                $cleanName = str_replace(' ', '-', $cleanName);
+                $customFileName = 'surat-pengantar_' . $cleanName;
+            } elseif ($type === 'cv' && !empty($user->getAttribute('cv'))) {
+                $filePath = $user->getAttribute('cv');
+                // Bersihkan nama untuk filename (hapus karakter yang tidak diinginkan)
+                $cleanName = preg_replace('/[^a-zA-Z0-9\s\-_]/', '', $user->getAttribute('nama'));
+                $cleanName = str_replace(' ', '-', $cleanName);
+                $customFileName = 'cv_' . $cleanName;
+            }
+
+            if (!$filePath) {
+                return redirect()->back()->with('error', 'File tidak ditemukan');
+            }
+
+            $fullPath = storage_path('app/public/' . $filePath);
+
+            if (!file_exists($fullPath)) {
+                return redirect()->back()->with('error', 'File tidak ditemukan di server');
+            }
+
+            // Dapatkan ekstensi file asli
+            $originalExtension = pathinfo($filePath, PATHINFO_EXTENSION);
+            $previewName = $customFileName . '.' . $originalExtension;
+
+            // Dapatkan MIME type
+            $mimeType = mime_content_type($fullPath);
+
+            return response()->file($fullPath, [
+                'Content-Type' => $mimeType,
+                'Content-Disposition' => 'inline; filename="' . $previewName . '"'
+            ]);
+        } catch (ModelNotFoundException $e) {
+            return redirect()->back()->with('error', 'Data mahasiswa tidak ditemukan');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Gagal preview file: ' . $e->getMessage());
+        }
+    }
 }
