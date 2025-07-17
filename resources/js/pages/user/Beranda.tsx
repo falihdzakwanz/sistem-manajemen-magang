@@ -10,6 +10,9 @@ interface BerandaContentData {
         title: string;
         description: string;
         photo_url: string | null;
+        data?: {
+            category?: string;
+        };
     }>;
     bidangData: Array<{
         id: number;
@@ -87,21 +90,47 @@ const Beranda = () => {
         });
     }
 
-    // Get struktur organisasi data
+    // Get struktur organisasi data with category grouping
     const getStrukturData = (key: string) => {
         if (!berandaContent) return null;
         return berandaContent.strukturOrganisasi.find((item) => item.key === key);
     };
 
+    // Group struktur organisasi by categories
+    const getStrukturByCategory = (category: string) => {
+        if (!berandaContent) return [];
+        return berandaContent.strukturOrganisasi.filter((item) => {
+            // Check if item has category in data field
+            if (item.data && item.data.category === category) {
+                return true;
+            }
+
+            // Fallback to key-based detection for existing items
+            switch (category) {
+                case 'sub_bagian':
+                    return item.key.includes('kasubag');
+                case 'jabatan_fungsional':
+                    return item.key.includes('perencana') || item.key.includes('ahli');
+                case 'kepala_bidang':
+                    return item.key.includes('kabid');
+                default:
+                    return false;
+            }
+        });
+    };
+
+    // Get specific items (for backward compatibility)
     const kepalaDinas = getStrukturData('kepala_dinas');
     const sekretaris = getStrukturData('sekretaris');
-    const kasubagUmum = getStrukturData('kasubag_umum');
-    const kasubagKeuangan = getStrukturData('kasubag_keuangan');
-    const perencanaAhliMuda = getStrukturData('perencana_ahli_muda');
     const kabidInformasi = getStrukturData('kabid_informasi');
     const kabidEgovernment = getStrukturData('kabid_egovernment');
     const kabidKeamanan = getStrukturData('kabid_keamanan');
     const kabidStatistik = getStrukturData('kabid_statistik');
+
+    // Get dynamic categories
+    const subBagianItems = getStrukturByCategory('sub_bagian');
+    const jabatanFungsionalItems = getStrukturByCategory('jabatan_fungsional');
+    const kepalaBidangItems = getStrukturByCategory('kepala_bidang');
 
     const openModal = (bidangId: number) => {
         setSelectedBidang(bidangId);
@@ -239,86 +268,170 @@ const Beranda = () => {
                             <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Sub Bagian dan Jabatan Fungsional</h4>
 
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
-                                {/* Kasubbag Umum Dan Kepegawaian */}
-                                <div className="mx-auto flex max-w-xs justify-center">
-                                    <div className="rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white to-green-50 p-6 text-center shadow-lg">
-                                        {kasubagUmum?.photo_url && (
-                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
-                                                <img src={kasubagUmum.photo_url} alt={kasubagUmum.title} className="h-full w-full object-cover" />
+                                {/* Render Sub Bagian Items */}
+                                {subBagianItems.map((item) => (
+                                    <div key={item.id} className="mx-auto flex max-w-xs justify-center">
+                                        <div className="flex min-h-[280px] w-80 flex-col justify-between rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white to-green-50 p-6 text-center shadow-lg">
+                                            <div className="flex flex-col items-center">
+                                                {item.photo_url && (
+                                                    <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                        <img src={item.photo_url} alt={item.title} className="h-full w-full object-cover" />
+                                                    </div>
+                                                )}
+                                                {!item.photo_url && (
+                                                    <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
+                                                        <User className="h-10 w-10 text-white" />
+                                                    </div>
+                                                )}
+                                                <div className="mb-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
+                                                    Sub Bagian
+                                                </div>
                                             </div>
-                                        )}
-                                        {!kasubagUmum?.photo_url && (
-                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
-                                                <User className="h-8 w-8 text-white" />
+                                            <div className="flex flex-1 flex-col justify-center">
+                                                <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">{item.title}</h4>
+                                                <p className="line-clamp-3 text-sm font-medium text-gray-600">{item.description}</p>
                                             </div>
-                                        )}
-                                        <div className="mb-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
-                                            Sub Bagian
                                         </div>
-                                        <h4 className="mb-1 text-lg font-bold text-gray-800">{kasubagUmum?.title || 'Yoranda Tiara Sati, S.STP'}</h4>
-                                        <p className="text-sm font-medium text-gray-600">
-                                            {kasubagUmum?.description || 'Kasubbag Umum Dan Kepegawaian'}
-                                        </p>
                                     </div>
-                                </div>
+                                ))}
 
-                                {/* Kasubbag Keuangan Dan Aset */}
-                                <div className="mx-auto flex max-w-xs justify-center">
-                                    <div className="rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white to-green-50 p-6 text-center shadow-lg">
-                                        {kasubagKeuangan?.photo_url && (
-                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
-                                                <img
-                                                    src={kasubagKeuangan.photo_url}
-                                                    alt={kasubagKeuangan.title}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                {/* Render Jabatan Fungsional Items */}
+                                {jabatanFungsionalItems.map((item) => (
+                                    <div key={item.id} className="mx-auto flex max-w-xs justify-center">
+                                        <div className="flex min-h-[280px] w-80 flex-col justify-between rounded-2xl border-2 border-teal-100 bg-gradient-to-br from-white to-teal-50 p-6 text-center shadow-lg">
+                                            <div className="flex flex-col items-center">
+                                                {item.photo_url && (
+                                                    <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                        <img src={item.photo_url} alt={item.title} className="h-full w-full object-cover" />
+                                                    </div>
+                                                )}
+                                                {!item.photo_url && (
+                                                    <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-600 shadow-md">
+                                                        <User className="h-10 w-10 text-white" />
+                                                    </div>
+                                                )}
+                                                <div className="mb-2 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
+                                                    Jabatan Fungsional
+                                                </div>
                                             </div>
-                                        )}
-                                        {!kasubagKeuangan?.photo_url && (
-                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
-                                                <User className="h-8 w-8 text-white" />
+                                            <div className="flex flex-1 flex-col justify-center">
+                                                <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">{item.title}</h4>
+                                                <p className="line-clamp-3 text-sm font-medium text-gray-600">{item.description}</p>
                                             </div>
-                                        )}
-                                        <div className="mb-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
-                                            Sub Bagian
                                         </div>
-                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
-                                            {kasubagKeuangan?.title || 'Asha Astriani, S.I.Kom, M.M.'}
-                                        </h4>
-                                        <p className="text-sm font-medium text-gray-600">
-                                            {kasubagKeuangan?.description || 'Kasubbag Keuangan Dan Aset'}
-                                        </p>
                                     </div>
-                                </div>
+                                ))}
 
-                                {/* Jabatan Fungsional Perencana Ahli Muda */}
-                                <div className="mx-auto flex max-w-xs justify-center">
-                                    <div className="rounded-2xl border-2 border-teal-100 bg-gradient-to-br from-white to-teal-50 p-6 text-center shadow-lg">
-                                        {perencanaAhliMuda?.photo_url && (
-                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
-                                                <img
-                                                    src={perencanaAhliMuda.photo_url}
-                                                    alt={perencanaAhliMuda.title}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                {/* Show fallback for existing hardcoded items if no dynamic items found */}
+                                {subBagianItems.length === 0 && jabatanFungsionalItems.length === 0 && (
+                                    <>
+                                        {/* Fallback Kasubbag Umum */}
+                                        {getStrukturData('kasubag_umum') && (
+                                            <div className="mx-auto flex max-w-xs justify-center">
+                                                <div className="flex min-h-[280px] w-80 flex-col justify-between rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white to-green-50 p-6 text-center shadow-lg">
+                                                    <div className="flex flex-col items-center">
+                                                        {getStrukturData('kasubag_umum')?.photo_url && (
+                                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                                <img
+                                                                    src={getStrukturData('kasubag_umum')!.photo_url!}
+                                                                    alt={getStrukturData('kasubag_umum')!.title}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {!getStrukturData('kasubag_umum')?.photo_url && (
+                                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
+                                                                <User className="h-10 w-10 text-white" />
+                                                            </div>
+                                                        )}
+                                                        <div className="mb-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
+                                                            Sub Bagian
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-1 flex-col justify-center">
+                                                        <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">
+                                                            {getStrukturData('kasubag_umum')?.title || 'Yoranda Tiara Sati, S.STP'}
+                                                        </h4>
+                                                        <p className="line-clamp-3 text-sm font-medium text-gray-600">
+                                                            {getStrukturData('kasubag_umum')?.description || 'Kasubbag Umum Dan Kepegawaian'}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
-                                        {!perencanaAhliMuda?.photo_url && (
-                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-cyan-600 shadow-md">
-                                                <User className="h-8 w-8 text-white" />
+
+                                        {/* Fallback Kasubbag Keuangan */}
+                                        {getStrukturData('kasubag_keuangan') && (
+                                            <div className="mx-auto flex max-w-xs justify-center">
+                                                <div className="flex min-h-[280px] w-80 flex-col justify-between rounded-2xl border-2 border-green-100 bg-gradient-to-br from-white to-green-50 p-6 text-center shadow-lg">
+                                                    <div className="flex flex-col items-center">
+                                                        {getStrukturData('kasubag_keuangan')?.photo_url && (
+                                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                                <img
+                                                                    src={getStrukturData('kasubag_keuangan')!.photo_url!}
+                                                                    alt={getStrukturData('kasubag_keuangan')!.title}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {!getStrukturData('kasubag_keuangan')?.photo_url && (
+                                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-md">
+                                                                <User className="h-10 w-10 text-white" />
+                                                            </div>
+                                                        )}
+                                                        <div className="mb-2 inline-block rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-600">
+                                                            Sub Bagian
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-1 flex-col justify-center">
+                                                        <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">
+                                                            {getStrukturData('kasubag_keuangan')?.title || 'Asha Astriani, S.I.Kom, M.M.'}
+                                                        </h4>
+                                                        <p className="line-clamp-3 text-sm font-medium text-gray-600">
+                                                            {getStrukturData('kasubag_keuangan')?.description || 'Kasubbag Keuangan Dan Aset'}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
-                                        <div className="mb-2 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
-                                            Jabatan Fungsional
-                                        </div>
-                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
-                                            {perencanaAhliMuda?.title || 'Yesi Herawati, S.Sos, MM.'}
-                                        </h4>
-                                        <p className="text-sm font-medium text-gray-600">
-                                            {perencanaAhliMuda?.description || 'Jabatan Fungsional Perencana Ahli Muda'}
-                                        </p>
-                                    </div>
-                                </div>
+
+                                        {/* Fallback Perencana Ahli Muda */}
+                                        {getStrukturData('perencana_ahli_muda') && (
+                                            <div className="mx-auto flex max-w-xs justify-center">
+                                                <div className="flex min-h-[280px] w-80 flex-col justify-between rounded-2xl border-2 border-teal-100 bg-gradient-to-br from-white to-teal-50 p-6 text-center shadow-lg">
+                                                    <div className="flex flex-col items-center">
+                                                        {getStrukturData('perencana_ahli_muda')?.photo_url && (
+                                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                                <img
+                                                                    src={getStrukturData('perencana_ahli_muda')!.photo_url!}
+                                                                    alt={getStrukturData('perencana_ahli_muda')!.title}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {!getStrukturData('perencana_ahli_muda')?.photo_url && (
+                                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-600 shadow-md">
+                                                                <User className="h-10 w-10 text-white" />
+                                                            </div>
+                                                        )}
+                                                        <div className="mb-2 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
+                                                            Jabatan Fungsional
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-1 flex-col justify-center">
+                                                        <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">
+                                                            {getStrukturData('perencana_ahli_muda')?.title || 'Yesi Herawati, S.Sos, MM.'}
+                                                        </h4>
+                                                        <p className="line-clamp-3 text-sm font-medium text-gray-600">
+                                                            {getStrukturData('perencana_ahli_muda')?.description ||
+                                                                'Jabatan Fungsional Perencana Ahli Muda'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         </div>
 
@@ -327,115 +440,232 @@ const Beranda = () => {
                             <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Kepala Bidang</h4>
 
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                                {/* Kabid Informasi dan Komunikasi Publik */}
-                                <div className="mx-auto flex max-w-xs justify-center">
-                                    <div className="rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50 p-6 text-center shadow-lg">
-                                        {kabidInformasi?.photo_url && (
-                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
-                                                <img
-                                                    src={kabidInformasi.photo_url}
-                                                    alt={kabidInformasi.title}
-                                                    className="h-full w-full object-cover"
-                                                />
-                                            </div>
-                                        )}
-                                        {!kabidInformasi?.photo_url && (
-                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-md">
-                                                <Megaphone className="h-10 w-10 text-white" />
-                                            </div>
-                                        )}
-                                        <div className="mb-2 inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-600">
-                                            Bidang 1
-                                        </div>
-                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
-                                            {kabidInformasi?.title || 'Rudhy Hartono, SE., M.Si.'}
-                                        </h4>
-                                        <p className="text-sm font-medium text-gray-600">
-                                            {kabidInformasi?.description || 'Kepala Bidang Informasi dan Komunikasi Publik'}
-                                        </p>
-                                    </div>
-                                </div>
+                                {/* Render dynamic Kepala Bidang items */}
+                                {kepalaBidangItems.map((item, index) => {
+                                    // Dynamic color schemes for different items matching fallback structure
+                                    const colorSchemes = [
+                                        {
+                                            border: 'blue-100',
+                                            gradient: 'from-white to-blue-50',
+                                            badge: 'blue-100',
+                                            badgeText: 'blue-600',
+                                            icon: 'from-blue-500 to-blue-600',
+                                        },
+                                        {
+                                            border: 'purple-100',
+                                            gradient: 'from-white to-purple-50',
+                                            badge: 'purple-100',
+                                            badgeText: 'purple-600',
+                                            icon: 'from-purple-500 to-purple-600',
+                                        },
+                                        {
+                                            border: 'red-100',
+                                            gradient: 'from-white to-red-50',
+                                            badge: 'red-100',
+                                            badgeText: 'red-600',
+                                            icon: 'from-red-500 to-red-600',
+                                        },
+                                        {
+                                            border: 'teal-100',
+                                            gradient: 'from-white to-teal-50',
+                                            badge: 'teal-100',
+                                            badgeText: 'teal-600',
+                                            icon: 'from-teal-500 to-teal-600',
+                                        },
+                                        {
+                                            border: 'green-100',
+                                            gradient: 'from-white to-green-50',
+                                            badge: 'green-100',
+                                            badgeText: 'green-600',
+                                            icon: 'from-green-500 to-green-600',
+                                        },
+                                        {
+                                            border: 'indigo-100',
+                                            gradient: 'from-white to-indigo-50',
+                                            badge: 'indigo-100',
+                                            badgeText: 'indigo-600',
+                                            icon: 'from-indigo-500 to-indigo-600',
+                                        },
+                                    ];
+                                    const colorScheme = colorSchemes[index % colorSchemes.length];
 
-                                {/* Kabid Pemberdayaan E-Government */}
-                                <div className="mx-auto flex max-w-xs justify-center">
-                                    <div className="rounded-2xl border-2 border-purple-100 bg-gradient-to-br from-white to-purple-50 p-6 text-center shadow-lg">
-                                        {kabidEgovernment?.photo_url && (
-                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
-                                                <img
-                                                    src={kabidEgovernment.photo_url}
-                                                    alt={kabidEgovernment.title}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                    return (
+                                        <div key={item.id} className="mx-auto flex max-w-xs justify-center">
+                                            <div
+                                                className={`min-h-[280px] w-80 rounded-2xl border-2 border-${colorScheme.border} bg-gradient-to-br ${colorScheme.gradient} flex flex-col justify-between p-6 text-center shadow-lg`}
+                                            >
+                                                <div className="flex flex-col items-center">
+                                                    {item.photo_url && (
+                                                        <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                            <img src={item.photo_url} alt={item.title} className="h-full w-full object-cover" />
+                                                        </div>
+                                                    )}
+                                                    {!item.photo_url && (
+                                                        <div
+                                                            className={`mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br ${colorScheme.icon} shadow-md`}
+                                                        >
+                                                            <User className="h-10 w-10 text-white" />
+                                                        </div>
+                                                    )}
+                                                    <div
+                                                        className={`mb-2 inline-block rounded-full bg-${colorScheme.badge} px-3 py-1 text-xs font-semibold text-${colorScheme.badgeText}`}
+                                                    >
+                                                        Kepala Bidang {index + 1}
+                                                    </div>
+                                                </div>
+                                                <div className="flex flex-1 flex-col justify-center">
+                                                    <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">{item.title}</h4>
+                                                    <p className="line-clamp-3 text-sm font-medium text-gray-600">{item.description}</p>
+                                                </div>
                                             </div>
-                                        )}
-                                        {!kabidEgovernment?.photo_url && (
-                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-purple-600 shadow-md">
-                                                <Building2 className="h-10 w-10 text-white" />
-                                            </div>
-                                        )}
-                                        <div className="mb-2 inline-block rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-600">
-                                            Bidang 2
                                         </div>
-                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
-                                            {kabidEgovernment?.title || 'Fachrizal, S.Kom, M.Kom.'}
-                                        </h4>
-                                        <p className="text-sm font-medium text-gray-600">
-                                            {kabidEgovernment?.description || 'Kepala Bidang Pemberdayaan E-Government'}
-                                        </p>
-                                    </div>
-                                </div>
+                                    );
+                                })}
 
-                                {/* Kabid Persandian, Keamanan Informasi dan Siber */}
-                                <div className="mx-auto flex max-w-xs justify-center">
-                                    <div className="rounded-2xl border-2 border-red-100 bg-gradient-to-br from-white to-red-50 p-6 text-center shadow-lg">
-                                        {kabidKeamanan?.photo_url && (
-                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
-                                                <img src={kabidKeamanan.photo_url} alt={kabidKeamanan.title} className="h-full w-full object-cover" />
+                                {/* Show fallback for existing hardcoded items if no dynamic items found */}
+                                {kepalaBidangItems.length === 0 && (
+                                    <>
+                                        {/* Fallback Kabid Informasi dan Komunikasi Publik */}
+                                        {kabidInformasi && (
+                                            <div className="mx-auto flex max-w-xs justify-center">
+                                                <div className="flex min-h-[280px] w-80 flex-col justify-between rounded-2xl border-2 border-blue-100 bg-gradient-to-br from-white to-blue-50 p-6 text-center shadow-lg">
+                                                    <div className="flex flex-col items-center">
+                                                        {kabidInformasi.photo_url && (
+                                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                                <img
+                                                                    src={kabidInformasi.photo_url}
+                                                                    alt={kabidInformasi.title}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {!kabidInformasi.photo_url && (
+                                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-blue-600 shadow-md">
+                                                                <Megaphone className="h-10 w-10 text-white" />
+                                                            </div>
+                                                        )}
+                                                        <div className="mb-2 inline-block rounded-full bg-blue-100 px-3 py-1 text-xs font-semibold text-blue-600">
+                                                            Kepala Bidang 1
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-1 flex-col justify-center">
+                                                        <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">
+                                                            {kabidInformasi.title || 'Rudhy Hartono, SE., M.Si.'}
+                                                        </h4>
+                                                        <p className="line-clamp-3 text-sm font-medium text-gray-600">
+                                                            {kabidInformasi.description || 'Kepala Bidang Informasi dan Komunikasi Publik'}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
-                                        {!kabidKeamanan?.photo_url && (
-                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 shadow-md">
-                                                <Shield className="h-10 w-10 text-white" />
-                                            </div>
-                                        )}
-                                        <div className="mb-2 inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">
-                                            Bidang 3
-                                        </div>
-                                        <h4 className="mb-1 text-lg font-bold text-gray-800">{kabidKeamanan?.title || 'Nursari, S.Sos., MM'}</h4>
-                                        <p className="text-sm font-medium text-gray-600">
-                                            {kabidKeamanan?.description || 'Kepala Bidang Persandian, Keamanan Informasi dan Siber'}
-                                        </p>
-                                    </div>
-                                </div>
 
-                                {/* Kabid Statistik dan Data Elektronik */}
-                                <div className="mx-auto flex max-w-xs justify-center">
-                                    <div className="rounded-2xl border-2 border-teal-100 bg-gradient-to-br from-white to-teal-50 p-6 text-center shadow-lg">
-                                        {kabidStatistik?.photo_url && (
-                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
-                                                <img
-                                                    src={kabidStatistik.photo_url}
-                                                    alt={kabidStatistik.title}
-                                                    className="h-full w-full object-cover"
-                                                />
+                                        {/* Fallback Kabid Pemberdayaan E-Government */}
+                                        {kabidEgovernment && (
+                                            <div className="mx-auto flex max-w-xs justify-center">
+                                                <div className="flex min-h-[280px] w-80 flex-col justify-between rounded-2xl border-2 border-purple-100 bg-gradient-to-br from-white to-purple-50 p-6 text-center shadow-lg">
+                                                    <div className="flex flex-col items-center">
+                                                        {kabidEgovernment.photo_url && (
+                                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                                <img
+                                                                    src={kabidEgovernment.photo_url}
+                                                                    alt={kabidEgovernment.title}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {!kabidEgovernment.photo_url && (
+                                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-purple-500 to-purple-600 shadow-md">
+                                                                <Building2 className="h-10 w-10 text-white" />
+                                                            </div>
+                                                        )}
+                                                        <div className="mb-2 inline-block rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-600">
+                                                            Kepala Bidang 2
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-1 flex-col justify-center">
+                                                        <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">
+                                                            {kabidEgovernment.title || 'Fachrizal, S.Kom, M.Kom.'}
+                                                        </h4>
+                                                        <p className="line-clamp-3 text-sm font-medium text-gray-600">
+                                                            {kabidEgovernment.description || 'Kepala Bidang Pemberdayaan E-Government'}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
-                                        {!kabidStatistik?.photo_url && (
-                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-600 shadow-md">
-                                                <BarChart3 className="h-10 w-10 text-white" />
+
+                                        {/* Fallback Kabid Persandian, Keamanan Informasi dan Siber */}
+                                        {kabidKeamanan && (
+                                            <div className="mx-auto flex max-w-xs justify-center">
+                                                <div className="flex min-h-[280px] w-80 flex-col justify-between rounded-2xl border-2 border-red-100 bg-gradient-to-br from-white to-red-50 p-6 text-center shadow-lg">
+                                                    <div className="flex flex-col items-center">
+                                                        {kabidKeamanan.photo_url && (
+                                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                                <img
+                                                                    src={kabidKeamanan.photo_url}
+                                                                    alt={kabidKeamanan.title}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {!kabidKeamanan.photo_url && (
+                                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-red-600 shadow-md">
+                                                                <Shield className="h-10 w-10 text-white" />
+                                                            </div>
+                                                        )}
+                                                        <div className="mb-2 inline-block rounded-full bg-red-100 px-3 py-1 text-xs font-semibold text-red-600">
+                                                            Kepala Bidang 3
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-1 flex-col justify-center">
+                                                        <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">
+                                                            {kabidKeamanan.title || 'Nursari, S.Sos., MM'}
+                                                        </h4>
+                                                        <p className="line-clamp-3 text-sm font-medium text-gray-600">
+                                                            {kabidKeamanan.description || 'Kepala Bidang Persandian, Keamanan Informasi dan Siber'}
+                                                        </p>
+                                                    </div>
+                                                </div>
                                             </div>
                                         )}
-                                        <div className="mb-2 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
-                                            Bidang 4
-                                        </div>
-                                        <h4 className="mb-1 text-lg font-bold text-gray-800">
-                                            {kabidStatistik?.title || 'Donny Diaz Rizaldy Praja, SH., MH.'}
-                                        </h4>
-                                        <p className="text-sm font-medium text-gray-600">
-                                            {kabidStatistik?.description || 'Kepala Bidang Statistik dan Data Elektronik'}
-                                        </p>
-                                    </div>
-                                </div>
+
+                                        {/* Fallback Kabid Statistik dan Data Elektronik */}
+                                        {kabidStatistik && (
+                                            <div className="mx-auto flex max-w-xs justify-center">
+                                                <div className="flex min-h-[280px] w-80 flex-col justify-between rounded-2xl border-2 border-teal-100 bg-gradient-to-br from-white to-teal-50 p-6 text-center shadow-lg">
+                                                    <div className="flex flex-col items-center">
+                                                        {kabidStatistik.photo_url && (
+                                                            <div className="mx-auto mb-4 h-20 w-20 overflow-hidden rounded-full shadow-md">
+                                                                <img
+                                                                    src={kabidStatistik.photo_url}
+                                                                    alt={kabidStatistik.title}
+                                                                    className="h-full w-full object-cover"
+                                                                />
+                                                            </div>
+                                                        )}
+                                                        {!kabidStatistik.photo_url && (
+                                                            <div className="mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-teal-500 to-teal-600 shadow-md">
+                                                                <BarChart3 className="h-10 w-10 text-white" />
+                                                            </div>
+                                                        )}
+                                                        <div className="mb-2 inline-block rounded-full bg-teal-100 px-3 py-1 text-xs font-semibold text-teal-600">
+                                                            Kepala Bidang 4
+                                                        </div>
+                                                    </div>
+                                                    <div className="flex flex-1 flex-col justify-center">
+                                                        <h4 className="mb-1 line-clamp-2 text-lg font-bold text-gray-800">
+                                                            {kabidStatistik.title || 'Donny Diaz Rizaldy Praja, SH., MH.'}
+                                                        </h4>
+                                                        <p className="line-clamp-3 text-sm font-medium text-gray-600">
+                                                            {kabidStatistik.description || 'Kepala Bidang Statistik dan Data Elektronik'}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         </div>
 

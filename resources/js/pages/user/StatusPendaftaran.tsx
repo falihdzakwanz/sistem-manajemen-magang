@@ -492,12 +492,14 @@ const StatusPendaftaran = ({ pendaftars = [] }: StatusPendaftaranProps) => {
 
                         {/* Modal Footer */}
                         <div className="border-t border-gray-200 p-6 text-center">
-                            <button
-                                onClick={closeRejectModal}
-                                className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
-                            >
-                                Tutup
-                            </button>
+                            <div className="flex justify-center">
+                                <button
+                                    onClick={closeRejectModal}
+                                    className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
+                                >
+                                    Tutup
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

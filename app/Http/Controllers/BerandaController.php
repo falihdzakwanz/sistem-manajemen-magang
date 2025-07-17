@@ -122,12 +122,18 @@ class BerandaController extends Controller
 
             // Get existing content untuk referensi
             $existingContent = BerandaContent::getByKey($request->key);
+            $isNewItem = !$existingContent;
 
             $data = $this->prepareStrukturOrganisasiData($request, $existingContent);
 
             BerandaContent::updateOrCreateByKey($request->key, $data);
 
-            return redirect()->back()->with('success', 'Struktur organisasi berhasil diupdate!');
+            // Provide appropriate success message
+            if ($isNewItem) {
+                return redirect()->back()->with('success', '🎉 Struktur organisasi berhasil ditambahkan! 🔄 Data telah tersinkronisasi dengan halaman beranda user. 📱 Perubahan dapat langsung dilihat di halaman beranda.');
+            } else {
+                return redirect()->back()->with('success', '✅ Struktur organisasi berhasil diperbarui! 🔄 Data telah tersinkronisasi dengan halaman beranda user. 📱 Perubahan dapat langsung dilihat di halaman beranda.');
+            }
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (Exception $e) {
@@ -148,10 +154,14 @@ class BerandaController extends Controller
      */
     private function validateStrukturOrganisasiRequest(Request $request): void
     {
+        // Valid categories for struktur organisasi
+        $validCategories = ['sub_bagian', 'jabatan_fungsional', 'kepala_bidang'];
+
         $request->validate([
             'key' => 'required|string|max:255',
             'title' => 'required|string|max:255',
             'description' => 'required|string|max:500',
+            'category' => 'nullable|string|in:' . implode(',', $validCategories),
             'photo' => 'nullable|image|mimes:jpeg,png,jpg|max:' . self::PHOTO_MAX_SIZE,
             'original_photo' => 'nullable|image|mimes:jpeg,png,jpg|max:' . self::PHOTO_MAX_SIZE,
             'delete_photo' => 'nullable|boolean'
@@ -173,6 +183,18 @@ class BerandaController extends Controller
             'title' => $request->title,
             'description' => $request->description,
         ];
+
+        // Add category information to data field for structured storage
+        if ($request->has('category') && $request->category) {
+            // Merge with existing data if available
+            $existingData = $existingContent && $existingContent->data ? $existingContent->data : [];
+            $data['data'] = array_merge($existingData, [
+                'category' => $request->category
+            ]);
+        } else if ($existingContent && $existingContent->data) {
+            // Preserve existing data if no category provided
+            $data['data'] = $existingContent->data;
+        }
 
         // Handle photo upload
         if ($request->hasFile('photo')) {
@@ -313,6 +335,10 @@ class BerandaController extends Controller
             // Regenerate session to prevent session expiration
             $request->session()->regenerate();
 
+            // Check if this is a new item or update
+            $existingContent = BerandaContent::getByKey($request->key);
+            $isNewItem = !$existingContent;
+
             $data = [
                 'content_type' => self::CONTENT_TYPE_BIDANG,
                 'key' => $request->key,
@@ -323,7 +349,12 @@ class BerandaController extends Controller
 
             BerandaContent::updateOrCreateByKey($request->key, $data);
 
-            return redirect()->back()->with('success', 'Data bidang berhasil diupdate!');
+            // Provide appropriate success message
+            if ($isNewItem) {
+                return redirect()->back()->with('success', '🎉 Data bidang berhasil ditambahkan! 🔄 Data telah tersinkronisasi dengan halaman beranda user. 📱 Perubahan dapat langsung dilihat di halaman beranda.');
+            } else {
+                return redirect()->back()->with('success', '✅ Data bidang berhasil diperbarui! 🔄 Data telah tersinkronisasi dengan halaman beranda user. 📱 Perubahan dapat langsung dilihat di halaman beranda.');
+            }
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
         } catch (Exception $e) {
@@ -752,5 +783,95 @@ class BerandaController extends Controller
     private function getSessionPhotoKey(string $key, bool $isOriginal = false): string
     {
         return ($isOriginal ? self::SESSION_TEMP_ORIGINAL_PHOTO_PREFIX : self::SESSION_TEMP_PHOTO_PREFIX) . $key;
+    }
+
+    /**
+     * Delete single struktur organisasi item
+     * 
+     * @param Request $request
+     * @param string $key
+     * @return RedirectResponse
+     */
+    public function deleteStrukturOrganisasi(Request $request, string $key): RedirectResponse
+    {
+        try {
+            // Regenerate session to prevent session expiration
+            $request->session()->regenerate();
+
+            // Find the item to be deleted
+            $item = BerandaContent::where('content_type', self::CONTENT_TYPE_STRUKTUR_ORGANISASI)
+                ->where('key', $key)
+                ->first();
+
+            if (!$item) {
+                return redirect()->back()->withErrors(['error' => 'Data tidak ditemukan.']);
+            }
+
+            // Delete associated photos
+            if ($item->photo_url) {
+                $this->deletePhotoFile($item->photo_url);
+            }
+
+            if ($item->original_photo_url && $item->original_photo_url !== $item->photo_url) {
+                $this->deletePhotoFile($item->original_photo_url);
+            }
+
+            // Delete the database record
+            $item->delete();
+
+            return redirect()->back()->with('success', '✅ Data berhasil dihapus! 🔄 Perubahan telah tersinkronisasi dengan halaman beranda user.');
+        } catch (Exception $e) {
+            Log::error('Error deleting struktur organisasi: ' . $e->getMessage(), [
+                'key' => $key,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi.']);
+        }
+    }
+
+    /**
+     * Delete all struktur organisasi data
+     * 
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function deleteAllStrukturOrganisasi(Request $request): RedirectResponse
+    {
+        try {
+            // Regenerate session to prevent session expiration
+            $request->session()->regenerate();
+
+            // Get all struktur organisasi items
+            $items = BerandaContent::where('content_type', self::CONTENT_TYPE_STRUKTUR_ORGANISASI)->get();
+
+            if ($items->count() === 0) {
+                return redirect()->back()->withErrors(['error' => 'Tidak ada data untuk dihapus.']);
+            }
+
+            $deletedCount = 0;
+
+            // Delete all photos and records
+            foreach ($items as $item) {
+                // Delete associated photos
+                if ($item->photo_url) {
+                    $this->deletePhotoFile($item->photo_url);
+                }
+
+                if ($item->original_photo_url && $item->original_photo_url !== $item->photo_url) {
+                    $this->deletePhotoFile($item->original_photo_url);
+                }
+
+                // Delete the database record
+                $item->delete();
+                $deletedCount++;
+            }
+
+            return redirect()->back()->with('success', "✅ Berhasil menghapus {$deletedCount} data struktur organisasi! 🔄 Perubahan telah tersinkronisasi dengan halaman beranda user.");
+        } catch (Exception $e) {
+            Log::error('Error deleting all struktur organisasi: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi.']);
+        }
     }
 }

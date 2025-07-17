@@ -11,30 +11,58 @@ interface Bidang {
     deskripsi: string;
 }
 
-interface DaftarMagangProps {
-    bidangs: Bidang[];
+interface EditData {
+    id: number;
+    nama: string;
+    nim: string;
+    universitas: string;
+    jurusan: string;
+    email: string;
+    telepon: string;
+    tanggal_daftar: string;
+    tanggal_mulai: string;
+    tanggal_selesai: string;
+    bidang_id: number;
+    linkedin: string;
+    motivasi: string;
+    surat_pengantar: string;
+    cv: string;
+    reject_reason: string;
 }
 
-export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
+interface DaftarMagangProps {
+    bidangs: Bidang[];
+    editData?: EditData;
+    isEdit?: boolean;
+}
+
+export default function DaftarMagang({ bidangs = [], editData, isEdit = false }: DaftarMagangProps) {
     const { data, setData, reset, errors } = useForm({
-        nama: '',
-        nim: '',
-        universitas: '',
-        jurusan: '',
-        email: '',
-        telepon: '',
-        tanggal_daftar: '',
-        tanggal_mulai: '',
-        tanggal_selesai: '',
-        bidang_id: '',
+        nama: editData?.nama || '',
+        nim: editData?.nim || '',
+        universitas: editData?.universitas || '',
+        jurusan: editData?.jurusan || '',
+        email: editData?.email || '',
+        telepon: editData?.telepon || '',
+        tanggal_daftar: editData?.tanggal_daftar || '',
+        tanggal_mulai: editData?.tanggal_mulai || '',
+        tanggal_selesai: editData?.tanggal_selesai || '',
+        bidang_id: editData?.bidang_id.toString() || '',
         surat_pengantar: null as File | null,
         cv: null as File | null,
-        linkedin: '',
-        motivasi: '',
+        linkedin: editData?.linkedin || '',
+        motivasi: editData?.motivasi || '',
     });
 
     const { flash } = usePage().props as { flash?: { success?: string } };
     const [processing, setProcessing] = React.useState(false);
+
+    // Debug: log data yang diterima (bisa dihapus setelah testing)
+    useEffect(() => {
+        if (isEdit && editData) {
+            console.log('Edit Mode - Data yang diterima:', editData);
+        }
+    }, [isEdit, editData]);
 
     // Fungsi untuk mengubah text menjadi Title Case
     const toTitleCase = (str: string) => {
@@ -64,7 +92,7 @@ export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
         formData.append('tanggal_daftar', data.tanggal_daftar || new Date().toISOString().slice(0, 10));
         formData.append('tanggal_mulai', data.tanggal_mulai);
         formData.append('tanggal_selesai', data.tanggal_selesai);
-        formData.append('bidang_id', data.bidang_id);
+        formData.append('bidang_id', parseInt(data.bidang_id).toString());
         formData.append('linkedin', data.linkedin);
         formData.append('motivasi', data.motivasi);
 
@@ -76,17 +104,39 @@ export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
             formData.append('cv', data.cv);
         }
 
-        router.post('/mahasiswa', formData, {
+        const url = isEdit ? `/update-pendaftaran/${editData?.id}` : '/mahasiswa';
+
+        // Jika isEdit, tambahkan token dari URL parameter
+        if (isEdit) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const token = urlParams.get('token');
+            if (token) {
+                formData.append('token', token);
+            }
+        }
+
+        // Debug: log the submission
+        console.log('Submitting form:', { url, isEdit, editData });
+
+        router.post(url, formData, {
             forceFormData: true,
             onSuccess: () => {
                 setProcessing(false);
-                toast.success('Pendaftaran magang berhasil disubmit! Kami akan menghubungi Anda segera.');
-                reset();
-                suratPengantarRef.current?.reset();
-                cvRef.current?.reset();
+                console.log('Update berhasil untuk user:', editData?.id);
+                toast.success(
+                    isEdit
+                        ? 'Data berhasil diperbaiki dan akan direview ulang!'
+                        : 'Pendaftaran magang berhasil disubmit! Kami akan menghubungi Anda segera.',
+                );
+                if (!isEdit) {
+                    reset();
+                    suratPengantarRef.current?.reset();
+                    cvRef.current?.reset();
+                }
             },
             onError: (errors) => {
                 setProcessing(false);
+                console.error('Error submitting form:', errors);
                 // Tampilkan error pertama yang ditemukan
                 const firstError = Object.values(errors)[0];
                 toast.error(firstError ? String(firstError) : 'Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
@@ -112,15 +162,17 @@ export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
                     <div className="text-center">
                         <div className="mb-6 inline-flex items-center rounded-full bg-white/20 px-4 py-2 text-sm font-medium backdrop-blur-sm">
                             <span className="mr-2 h-2 w-2 animate-pulse rounded-full bg-green-400"></span>
-                            Pendaftaran Online Tersedia
+                            {isEdit ? 'Perbaikan Data' : 'Pendaftaran Online Tersedia'}
                         </div>
                         <h2 className="mb-4 text-4xl leading-tight font-bold md:text-5xl">
                             <span className="bg-gradient-to-r from-white via-blue-100 to-purple-100 bg-clip-text text-transparent">
-                                Daftar Magang
+                                {isEdit ? 'Perbaiki Data Pendaftaran' : 'Daftar Magang'}
                             </span>
                         </h2>
                         <p className="mx-auto max-w-2xl text-xl leading-relaxed opacity-90">
-                            Bergabunglah dengan program magang di Dinas Kominfo Kota Bandar Lampung dan kembangkan karir Anda di bidang teknologi
+                            {isEdit
+                                ? 'Perbaiki data pendaftaran Anda dan kirim ulang untuk direview oleh admin'
+                                : 'Bergabunglah dengan program magang di Dinas Kominfo Kota Bandar Lampung dan kembangkan karir Anda di bidang teknologi'}
                         </p>
                     </div>
                 </div>
@@ -300,7 +352,15 @@ export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
 
                     {/* Form Pendaftaran */}
                     <div className="rounded-lg bg-white p-6 shadow-md lg:col-span-2">
-                        <h3 className="mb-6 text-xl font-bold text-gray-800">Formulir Pendaftaran</h3>
+                        <h3 className="mb-6 text-xl font-bold text-gray-800">{isEdit ? 'Perbaiki Data Pendaftaran' : 'Formulir Pendaftaran'}</h3>
+
+                        {/* Tampilkan alasan penolakan jika dalam mode edit */}
+                        {isEdit && editData?.reject_reason && (
+                            <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+                                <h4 className="mb-2 font-semibold text-red-700">Alasan Penolakan:</h4>
+                                <p className="text-sm text-red-600">{editData.reject_reason}</p>
+                            </div>
+                        )}
 
                         <form onSubmit={submit} className="space-y-6">
                             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -355,15 +415,35 @@ export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
                                 value={data.bidang_id}
                                 onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setData('bidang_id', e.target.value)}
                                 error={errors.bidang_id}
-                                options={[
-                                    { value: '', label: 'Pilih bidang yang diminati' },
-                                    ...bidangs
-                                        .filter((bidang, index, self) => index === self.findIndex((b) => b.id === bidang.id))
-                                        .map((bidang) => ({
+                                options={(() => {
+                                    // Implementasi deduplikasi multi-level untuk memastikan tidak ada duplikasi
+
+                                    // Level 1: Filter duplikasi berdasarkan ID
+                                    const uniqueByIdMap = new Map();
+                                    bidangs.forEach((bidang) => {
+                                        if (!uniqueByIdMap.has(bidang.id)) {
+                                            uniqueByIdMap.set(bidang.id, bidang);
+                                        }
+                                    });
+
+                                    // Level 2: Filter duplikasi berdasarkan nama_bidang
+                                    const uniqueByNameMap = new Map();
+                                    Array.from(uniqueByIdMap.values()).forEach((bidang) => {
+                                        if (!uniqueByNameMap.has(bidang.nama_bidang)) {
+                                            uniqueByNameMap.set(bidang.nama_bidang, bidang);
+                                        }
+                                    });
+
+                                    const finalUniqueBidangs = Array.from(uniqueByNameMap.values());
+
+                                    return [
+                                        { value: '', label: 'Pilih bidang yang diminati' },
+                                        ...finalUniqueBidangs.map((bidang) => ({
                                             value: bidang.id.toString(),
                                             label: bidang.nama_bidang,
                                         })),
-                                ]}
+                                    ];
+                                })()}
                                 required
                             />
 
@@ -412,8 +492,12 @@ export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
                                 onChange={(file: File | null) => setData('surat_pengantar', file)}
                                 error={errors.surat_pengantar}
                                 accept=".pdf,.doc,.docx"
-                                helpText="Format: PDF, DOC, DOCX (Max: 5MB)"
-                                required
+                                helpText={
+                                    isEdit && editData?.surat_pengantar
+                                        ? `File saat ini: ${editData.surat_pengantar.split('/').pop()} | Format: PDF, DOC, DOCX (Max: 5MB)`
+                                        : 'Format: PDF, DOC, DOCX (Max: 5MB)'
+                                }
+                                required={!isEdit}
                             />
 
                             <FileInput
@@ -422,7 +506,11 @@ export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
                                 onChange={(file: File | null) => setData('cv', file)}
                                 error={errors.cv}
                                 accept=".pdf,.doc,.docx"
-                                helpText="Format: PDF, DOC, DOCX (Max: 5MB)"
+                                helpText={
+                                    isEdit && editData?.cv
+                                        ? `File saat ini: ${editData.cv.split('/').pop()} | Format: PDF, DOC, DOCX (Max: 5MB)`
+                                        : 'Format: PDF, DOC, DOCX (Max: 5MB)'
+                                }
                             />
 
                             <Input
@@ -448,7 +536,7 @@ export default function DaftarMagang({ bidangs = [] }: DaftarMagangProps) {
                                 disabled={processing}
                                 className="w-full rounded-lg bg-gradient-to-r from-orange-500 to-red-500 px-6 py-3 font-semibold text-white transition duration-200 hover:from-orange-600 hover:to-red-600 disabled:opacity-50"
                             >
-                                {processing ? 'Mendaftar...' : 'Daftar Sekarang'}
+                                {processing ? 'Memproses...' : isEdit ? 'Update Data' : 'Daftar Sekarang'}
                             </button>
                         </form>
                     </div>
@@ -512,7 +600,7 @@ function Select({ label, value, onChange, error, required = false, options }: Se
                 className="w-full rounded-md border border-gray-300 px-3 py-2 text-black focus:border-transparent focus:ring-2 focus:ring-blue-500 focus:outline-none"
             >
                 {options.map((option, index) => (
-                    <option key={`${option.value}-${index}`} value={option.value}>
+                    <option key={option.value || `option-${index}`} value={option.value}>
                         {option.label}
                     </option>
                 ))}

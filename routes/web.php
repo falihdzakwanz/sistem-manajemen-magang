@@ -46,6 +46,14 @@ Route::post('/daftar-magang', [UserController::class, 'store'])
 Route::post('/mahasiswa', [UserController::class, 'store'])
     ->name('mahasiswa.store');
 
+// Halaman edit data untuk user yang ditolak (dengan token keamanan)
+Route::get('/edit-pendaftaran/{id}', [UserController::class, 'edit'])
+    ->name('edit-pendaftaran');
+
+// Proses update data user yang sudah diperbaiki
+Route::post('/update-pendaftaran/{id}', [UserController::class, 'update'])
+    ->name('update-pendaftaran');
+
 // Halaman untuk cek status pendaftaran berdasarkan NIM
 Route::get('/status-pendaftaran', [UserController::class, 'getStatusPendaftaran'])
     ->name('status-pendaftaran');
@@ -134,6 +142,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Hapus foto struktur organisasi (baru - support temp photos)
     Route::delete('/admin/delete-photo', [BerandaController::class, 'deletePhoto'])
         ->name('admin.delete-photo');
+
+    // Delete single struktur organisasi item
+    Route::delete('/admin/delete-struktur-organisasi/{key}', [BerandaController::class, 'deleteStrukturOrganisasi'])
+        ->name('admin.delete-struktur-organisasi');
+
+    // Delete all struktur organisasi data
+    Route::delete('/admin/delete-all-struktur-organisasi', [BerandaController::class, 'deleteAllStrukturOrganisasi'])
+        ->name('admin.delete-all-struktur-organisasi');
 });
 
 /*

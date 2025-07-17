@@ -22,38 +22,63 @@ class AdminController extends Controller
         // Jalankan auto-update status jika diperlukan
         $this->autoUpdateStatusIfNeeded();
 
-        $users = User::with('bidang')->get()->map(function ($user) {
-            return [
-                'id' => $user->id,
-                'nama' => $user->nama,
-                'nim' => $user->nim,
-                'universitas' => $user->universitas,
-                'jurusan' => $user->jurusan,
-                'email' => $user->email,
-                'telepon' => $user->telepon,
-                'tanggal_daftar' => $user->tanggal_daftar,
-                'tanggal_mulai' => $user->tanggal_mulai,
-                'tanggal_selesai' => $user->tanggal_selesai,
-                'status' => $user->status,
-                'bidang_id' => $user->bidang_id,
-                'bidang' => $user->bidang ? $user->bidang->nama_bidang : 'Belum ditentukan',
-                'motivasi' => $user->motivasi ?? '',
-                'linkedin' => $user->linkedin ?? '',
-                'surat_pengantar' => $user->surat_pengantar,
-                'cv' => $user->cv,
-                'reject_reason' => $user->reject_reason ?? '',
-            ];
-        });
+        // Optimasi dengan select specific columns dan eager loading
+        $users = User::with(['bidang:id,nama_bidang'])
+            ->select([
+                'id',
+                'nama',
+                'nim',
+                'universitas',
+                'jurusan',
+                'email',
+                'telepon',
+                'tanggal_daftar',
+                'tanggal_mulai',
+                'tanggal_selesai',
+                'status',
+                'bidang_id',
+                'motivasi',
+                'linkedin',
+                'surat_pengantar',
+                'cv',
+                'reject_reason'
+            ])
+            ->get()
+            ->map(function ($user) {
+                return [
+                    'id' => $user->id,
+                    'nama' => $user->nama,
+                    'nim' => $user->nim,
+                    'universitas' => $user->universitas,
+                    'jurusan' => $user->jurusan,
+                    'email' => $user->email,
+                    'telepon' => $user->telepon,
+                    'tanggal_daftar' => $user->tanggal_daftar,
+                    'tanggal_mulai' => $user->tanggal_mulai,
+                    'tanggal_selesai' => $user->tanggal_selesai,
+                    'status' => $user->status,
+                    'bidang_id' => $user->bidang_id,
+                    'bidang' => $user->bidang ? $user->bidang->nama_bidang : 'Belum ditentukan',
+                    'motivasi' => $user->motivasi ?? '',
+                    'linkedin' => $user->linkedin ?? '',
+                    'surat_pengantar' => $user->surat_pengantar,
+                    'cv' => $user->cv,
+                    'reject_reason' => $user->reject_reason ?? '',
+                ];
+            });
 
-        // Urutkan bidang dengan Kesekretariatan di posisi pertama
-        $bidangs = Bidang::all()
-            ->sortBy(function ($bidang) {
-                if ($bidang->nama_bidang === 'Kesekretariatan') {
-                    return 0; // Kesekretariatan di urutan pertama
-                }
-                return 1; // Bidang lainnya di urutan berikutnya
-            })
-            ->values(); // Reset index array
+        // Cache bidang data untuk 5 menit
+        $bidangs = cache()->remember('bidangs_sorted', 300, function () {
+            return Bidang::select('id', 'nama_bidang')
+                ->get()
+                ->sortBy(function ($bidang) {
+                    if ($bidang->nama_bidang === 'Kesekretariatan') {
+                        return 0; // Kesekretariatan di urutan pertama
+                    }
+                    return 1; // Bidang lainnya di urutan berikutnya
+                })
+                ->values(); // Reset index array
+        });
 
         return Inertia::render('admin/DashboardAdmin', [
             'mahasiswas' => $users,
@@ -63,113 +88,146 @@ class AdminController extends Controller
 
     public function updateStatus(Request $request, $id): RedirectResponse
     {
-        $request->validate([
-            'status' => 'required|in:Menunggu,Diterima,Ditolak,Sedang Magang,Selesai Magang',
-            'reject_reason' => 'nullable|string'
-        ]);
+        try {
+            $request->validate([
+                'status' => 'required|in:Menunggu,Diterima,Ditolak,Sedang Magang,Selesai Magang',
+                'reject_reason' => 'nullable|string'
+            ]);
 
-        $user = User::findOrFail($id);
-        $oldStatus = $user->status;
+            $user = User::findOrFail($id);
+            $oldStatus = $user->status;
 
-        $updateData = ['status' => $request->status];
+            // Validasi status transition berdasarkan aturan bisnis
+            $this->validateStatusTransition($oldStatus, $request->status);
 
-        // Jika status ditolak, simpan alasan penolakan
-        if ($request->status === 'Ditolak' && $request->reject_reason) {
-            $updateData['reject_reason'] = $request->reject_reason;
-        }
+            $updateData = ['status' => $request->status];
 
-        // Jika status bukan ditolak, hapus alasan penolakan jika ada
-        if ($request->status !== 'Ditolak') {
-            $updateData['reject_reason'] = null;
-        }
-
-        $user->update($updateData);
-
-        // Kirim email notifikasi jika status berubah dari Menunggu ke Diterima atau Ditolak
-        if ($oldStatus === 'Menunggu' && in_array($request->status, ['Diterima', 'Ditolak'])) {
-            try {
-                $rejectReason = $request->status === 'Ditolak' ? $request->reject_reason : null;
-                Mail::to($user->email)->send(new StatusMagangNotification($user, $request->status, $rejectReason));
-
-                $emailMessage = $request->status === 'Diterima'
-                    ? 'Status berhasil diupdate dan email pemberitahuan telah dikirim ke mahasiswa'
-                    : 'Status berhasil diupdate dan email pemberitahuan penolakan telah dikirim ke mahasiswa';
-
-                return redirect()->back()->with('success', $emailMessage);
-            } catch (\Exception $e) {
-                Log::error('Failed to send email notification: ' . $e->getMessage());
-                return redirect()->back()->with('success', 'Status berhasil diupdate, namun email notifikasi gagal dikirim');
+            // Jika status ditolak, simpan alasan penolakan dan buat token edit
+            if ($request->status === 'Ditolak' && $request->reject_reason) {
+                $updateData['reject_reason'] = $request->reject_reason;
+                // Buat token edit yang valid selama 30 hari
+                $updateData['edit_token'] = \Illuminate\Support\Str::random(60);
+                $updateData['edit_token_expires_at'] = now()->addDays(30);
             }
-        }
 
-        return redirect()->back()->with('success', 'Status user berhasil diupdate');
+            // Jika status bukan ditolak, hapus alasan penolakan dan token edit
+            if ($request->status !== 'Ditolak') {
+                $updateData['reject_reason'] = null;
+                $updateData['edit_token'] = null;
+                $updateData['edit_token_expires_at'] = null;
+            }
+
+            $user->update($updateData);
+
+            // Kirim email notifikasi jika status berubah dari Menunggu ke Diterima atau Ditolak
+            if ($oldStatus === 'Menunggu' && in_array($request->status, ['Diterima', 'Ditolak'])) {
+                try {
+                    // Refresh user data untuk memastikan token sudah tersimpan
+                    $user->refresh();
+                    $rejectReason = $request->status === 'Ditolak' ? $request->reject_reason : null;
+                    Mail::to($user->email)->send(new StatusMagangNotification($user, $request->status, $rejectReason));
+
+                    $emailMessage = $request->status === 'Diterima'
+                        ? 'Status berhasil diupdate dan email pemberitahuan telah dikirim ke mahasiswa'
+                        : 'Status berhasil diupdate dan email pemberitahuan penolakan telah dikirim ke mahasiswa';
+
+                    return redirect()->back()->with('success', $emailMessage);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send email notification: ' . $e->getMessage());
+                    return redirect()->back()->with('success', 'Status berhasil diupdate, namun email notifikasi gagal dikirim');
+                }
+            }
+
+            return redirect()->back()->with('success', 'Status user berhasil diupdate');
+        } catch (\InvalidArgumentException $e) {
+            // Error dari validasi status transition
+            return redirect()->back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            // Error lainnya
+            Log::error('Error updating status: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate status mahasiswa');
+        }
     }
 
     public function updateMahasiswa(Request $request, $id): RedirectResponse
     {
-        $request->validate([
-            'nama' => 'required|string|max:255',
-            'nim' => 'required|string|max:20',
-            'universitas' => 'required|string|max:255',
-            'jurusan' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'telepon' => 'required|string|max:20',
-            'tanggal_mulai' => 'required|date',
-            'tanggal_selesai' => 'required|date|after:tanggal_mulai',
-            'status' => 'required|in:Menunggu,Diterima,Ditolak,Sedang Magang,Selesai Magang',
-            'bidang_id' => 'required|exists:bidangs,id',
-            'motivasi' => 'nullable|string',
-            'linkedin' => 'nullable|url',
-        ]);
+        try {
+            $user = User::findOrFail($id);
+            $currentStatus = $user->status;
 
-        $user = User::findOrFail($id);
-        $oldStatus = $user->status;
+            // Validasi status transition berdasarkan aturan bisnis
+            $this->validateStatusTransition($currentStatus, $request->status);
 
-        $updateData = [
-            'nama' => $request->nama,
-            'nim' => $request->nim,
-            'universitas' => $request->universitas,
-            'jurusan' => $request->jurusan,
-            'email' => $request->email,
-            'telepon' => $request->telepon,
-            'tanggal_mulai' => $request->tanggal_mulai,
-            'tanggal_selesai' => $request->tanggal_selesai,
-            'status' => $request->status,
-            'bidang_id' => $request->bidang_id,
-            'motivasi' => $request->motivasi,
-            'linkedin' => $request->linkedin,
-        ];
+            $request->validate([
+                'nama' => 'required|string|max:255',
+                'nim' => 'required|string|max:20',
+                'universitas' => 'required|string|max:255',
+                'jurusan' => 'required|string|max:255',
+                'email' => 'required|email|max:255',
+                'telepon' => 'required|string|max:20',
+                'tanggal_mulai' => 'required|date',
+                'tanggal_selesai' => 'required|date|after:tanggal_mulai',
+                'status' => 'required|in:Menunggu,Diterima,Ditolak,Sedang Magang,Selesai Magang',
+                'bidang_id' => 'required|exists:bidangs,id',
+                'motivasi' => 'nullable|string',
+                'linkedin' => 'nullable|url',
+            ]);
 
-        // Jika status ditolak, simpan alasan penolakan jika ada
-        if ($request->status === 'Ditolak' && $request->reject_reason) {
-            $updateData['reject_reason'] = $request->reject_reason;
-        }
+            $oldStatus = $user->status;
 
-        // Jika status bukan ditolak, hapus alasan penolakan jika ada
-        if ($request->status !== 'Ditolak') {
-            $updateData['reject_reason'] = null;
-        }
+            $updateData = [
+                'nama' => $request->nama,
+                'nim' => $request->nim,
+                'universitas' => $request->universitas,
+                'jurusan' => $request->jurusan,
+                'email' => $request->email,
+                'telepon' => $request->telepon,
+                'tanggal_mulai' => $request->tanggal_mulai,
+                'tanggal_selesai' => $request->tanggal_selesai,
+                'status' => $request->status,
+                'bidang_id' => $request->bidang_id,
+                'motivasi' => $request->motivasi,
+                'linkedin' => $request->linkedin,
+            ];
 
-        $user->update($updateData);
-
-        // Kirim email notifikasi jika status berubah dari Menunggu ke Diterima atau Ditolak
-        if ($oldStatus === 'Menunggu' && in_array($request->status, ['Diterima', 'Ditolak'])) {
-            try {
-                $rejectReason = $request->status === 'Ditolak' ? $request->reject_reason : null;
-                Mail::to($user->email)->send(new StatusMagangNotification($user, $request->status, $rejectReason));
-
-                $emailMessage = $request->status === 'Diterima'
-                    ? 'Data mahasiswa berhasil diupdate dan email pemberitahuan telah dikirim'
-                    : 'Data mahasiswa berhasil diupdate dan email pemberitahuan penolakan telah dikirim';
-
-                return redirect()->back()->with('success', $emailMessage);
-            } catch (\Exception $e) {
-                Log::error('Failed to send email notification: ' . $e->getMessage());
-                return redirect()->back()->with('success', 'Data mahasiswa berhasil diupdate, namun email notifikasi gagal dikirim');
+            // Jika status ditolak, simpan alasan penolakan jika ada
+            if ($request->status === 'Ditolak' && $request->reject_reason) {
+                $updateData['reject_reason'] = $request->reject_reason;
             }
-        }
 
-        return redirect()->back()->with('success', 'Data mahasiswa berhasil diupdate');
+            // Jika status bukan ditolak, hapus alasan penolakan jika ada
+            if ($request->status !== 'Ditolak') {
+                $updateData['reject_reason'] = null;
+            }
+
+            $user->update($updateData);
+
+            // Kirim email notifikasi jika status berubah dari Menunggu ke Diterima atau Ditolak
+            if ($oldStatus === 'Menunggu' && in_array($request->status, ['Diterima', 'Ditolak'])) {
+                try {
+                    $rejectReason = $request->status === 'Ditolak' ? $request->reject_reason : null;
+                    Mail::to($user->email)->send(new StatusMagangNotification($user, $request->status, $rejectReason));
+
+                    $emailMessage = $request->status === 'Diterima'
+                        ? 'Data mahasiswa berhasil diupdate dan email pemberitahuan telah dikirim'
+                        : 'Data mahasiswa berhasil diupdate dan email pemberitahuan penolakan telah dikirim';
+
+                    return redirect()->back()->with('success', $emailMessage);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send email notification: ' . $e->getMessage());
+                    return redirect()->back()->with('success', 'Data mahasiswa berhasil diupdate, namun email notifikasi gagal dikirim');
+                }
+            }
+
+            return redirect()->back()->with('success', 'Data mahasiswa berhasil diupdate');
+        } catch (\InvalidArgumentException $e) {
+            // Error dari validasi status transition
+            return redirect()->back()->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            // Error lainnya
+            Log::error('Error updating mahasiswa: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal mengupdate data mahasiswa');
+        }
     }
 
     public function destroy(User $users)
@@ -350,6 +408,40 @@ class AdminController extends Controller
             return redirect()->back()->with('error', 'Data mahasiswa tidak ditemukan');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Gagal mendownload file: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Validasi transisi status berdasarkan aturan bisnis
+     */
+    private function validateStatusTransition(string $currentStatus, string $newStatus): void
+    {
+        // Aturan transisi status yang diizinkan
+        $allowedTransitions = [
+            'Menunggu' => ['Menunggu', 'Diterima', 'Ditolak'],
+            'Diterima' => ['Diterima', 'Sedang Magang'],
+            'Ditolak' => ['Ditolak'], // Tidak bisa diubah
+            'Sedang Magang' => ['Sedang Magang', 'Selesai Magang'],
+            'Selesai Magang' => ['Selesai Magang'], // Final state
+        ];
+
+        // Jika status saat ini tidak ada dalam aturan, allow semua untuk backward compatibility
+        if (!isset($allowedTransitions[$currentStatus])) {
+            return;
+        }
+
+        // Cek apakah transisi diizinkan
+        if (!in_array($newStatus, $allowedTransitions[$currentStatus])) {
+            $errorMessages = [
+                'Ditolak' => 'Status "Ditolak" tidak dapat diubah karena sudah final.',
+                'Selesai Magang' => 'Status "Selesai Magang" tidak dapat diubah karena sudah final.',
+            ];
+
+            $message = $errorMessages[$currentStatus] ??
+                "Tidak dapat mengubah status dari \"{$currentStatus}\" ke \"{$newStatus}\". " .
+                "Status yang diizinkan: " . implode(', ', $allowedTransitions[$currentStatus]);
+
+            throw new \InvalidArgumentException($message);
         }
     }
 

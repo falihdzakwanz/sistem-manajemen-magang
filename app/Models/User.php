@@ -24,8 +24,10 @@ use Illuminate\Database\Eloquent\Model;
  * @property string|null $motivasi
  * @property string|null $reject_reason
  * @property string|null $rejected_at
- * @property \DateTime $created_at
- * @property \DateTime $updated_at
+ * @property string|null $edit_token
+ * @property \Carbon\Carbon|null $edit_token_expires_at
+ * @property \Carbon\Carbon|null $created_at
+ * @property \Carbon\Carbon|null $updated_at
  * @property-read \App\Models\Bidang $bidang
  */
 class User extends Model
@@ -51,6 +53,8 @@ class User extends Model
         'motivasi',
         'reject_reason',
         'rejected_at',
+        'edit_token',
+        'edit_token_expires_at',
     ];
 
     protected $dates = [

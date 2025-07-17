@@ -20,14 +20,14 @@ class BerandaContentSeeder extends Seeder
                 'key' => 'kepala_dinas',
                 'title' => 'Rizky Agung Arisanto, S.T.',
                 'description' => 'Kepala Dinas Komunikasi dan Informatika',
-                'photo_url' => '/asset/foto-kepala-dinas.jpg'
+                'photo_url' => null
             ],
             'sekretaris' => [
                 'content_type' => 'struktur_organisasi',
                 'key' => 'sekretaris',
                 'title' => 'Arienge Rahman, S.Kom., M.M',
                 'description' => 'Sekretaris Dinas Komunikasi dan Informatika',
-                'photo_url' => '/asset/foto-sekretaris.jpg'
+                'photo_url' => null
             ],
             'kasubag_umum' => [
                 'content_type' => 'struktur_organisasi',

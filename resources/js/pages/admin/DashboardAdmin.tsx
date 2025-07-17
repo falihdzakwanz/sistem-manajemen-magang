@@ -374,6 +374,51 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
     };
 
     /**
+     * Mendapatkan status yang bisa dipilih berdasarkan status saat ini
+     * @param currentStatus - Status mahasiswa saat ini
+     * @returns Array status yang bisa dipilih
+     */
+    const getAvailableStatuses = (currentStatus: string) => {
+        switch (currentStatus) {
+            case 'Menunggu':
+                return [
+                    { value: 'Menunggu', label: 'Menunggu' },
+                    { value: 'Diterima', label: 'Diterima' },
+                    { value: 'Ditolak', label: 'Ditolak' },
+                ];
+            case 'Diterima':
+                return [
+                    { value: 'Diterima', label: 'Diterima' },
+                    { value: 'Sedang Magang', label: 'Sedang Magang' },
+                ];
+            case 'Ditolak':
+                return [{ value: 'Ditolak', label: 'Ditolak (Tidak dapat diubah)' }];
+            case 'Sedang Magang':
+                return [
+                    { value: 'Sedang Magang', label: 'Sedang Magang' },
+                    { value: 'Selesai Magang', label: 'Selesai Magang' },
+                ];
+            case 'Selesai Magang':
+                return [{ value: 'Selesai Magang', label: 'Selesai Magang (Final)' }];
+            default:
+                return [
+                    { value: 'Menunggu', label: 'Menunggu' },
+                    { value: 'Diterima', label: 'Diterima' },
+                    { value: 'Ditolak', label: 'Ditolak' },
+                ];
+        }
+    };
+
+    /**
+     * Cek apakah status bisa diubah
+     * @param currentStatus - Status mahasiswa saat ini
+     * @returns Boolean apakah status bisa diubah
+     */
+    const canEditStatus = (currentStatus: string) => {
+        return currentStatus !== 'Ditolak' && currentStatus !== 'Selesai Magang';
+    };
+
+    /**
      * Membuka modal konfirmasi hapus data
      */
     const openDeleteModal = () => {
@@ -584,9 +629,13 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                     <div className="flex items-center justify-between">
                         {/* Logo dan Judul */}
                         <div className="flex items-center space-x-4">
-                            <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg">
+                            <button
+                                onClick={() => router.get('/dashboard-admin')}
+                                className="flex h-14 w-14 cursor-pointer items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg transition-all duration-300 hover:scale-105 hover:rotate-6"
+                                title="Refresh Dashboard"
+                            >
                                 <img src="/asset/Logo-Kominfo.png" alt="Logo Kominfo" className="h-10 w-10 object-contain" />
-                            </div>
+                            </button>
                             <div>
                                 <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">
                                     Admin Dashboard
@@ -1721,15 +1770,35 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                         <select
                                             value={editData.status || ''}
                                             onChange={(e) => updateEditData('status', e.target.value)}
-                                            className="w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            disabled={!canEditStatus(selectedMahasiswa?.status || '')}
+                                            className={`w-full rounded-xl border border-gray-300 px-4 py-3 text-black transition-all duration-300 focus:border-transparent focus:ring-2 focus:ring-blue-500 ${
+                                                !canEditStatus(selectedMahasiswa?.status || '') ? 'cursor-not-allowed bg-gray-100 opacity-60' : ''
+                                            }`}
                                         >
                                             <option value="">Pilih Status</option>
-                                            <option value="Menunggu">Menunggu</option>
-                                            <option value="Diterima">Diterima</option>
-                                            <option value="Ditolak">Ditolak</option>
-                                            <option value="Sedang Magang">Sedang Magang</option>
-                                            <option value="Selesai Magang">Selesai Magang</option>
+                                            {getAvailableStatuses(selectedMahasiswa?.status || '').map((status) => (
+                                                <option key={status.value} value={status.value}>
+                                                    {status.label}
+                                                </option>
+                                            ))}
                                         </select>
+                                        {!canEditStatus(selectedMahasiswa?.status || '') && (
+                                            <p className="mt-2 text-sm text-gray-500">
+                                                {selectedMahasiswa?.status === 'Ditolak'
+                                                    ? 'Status "Ditolak" tidak dapat diubah'
+                                                    : 'Status "Selesai Magang" adalah status final'}
+                                            </p>
+                                        )}
+                                        {selectedMahasiswa?.status === 'Diterima' && (
+                                            <p className="mt-2 text-sm text-blue-600">
+                                                💡 Status akan otomatis berubah ke "Sedang Magang" pada tanggal mulai magang
+                                            </p>
+                                        )}
+                                        {selectedMahasiswa?.status === 'Sedang Magang' && (
+                                            <p className="mt-2 text-sm text-purple-600">
+                                                💡 Status akan otomatis berubah ke "Selesai Magang" pada tanggal selesai magang
+                                            </p>
+                                        )}
                                     </div>
                                     <div>
                                         <label className="mb-2 block text-sm font-medium text-gray-700">Tanggal Mulai</label>

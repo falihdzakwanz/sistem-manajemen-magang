@@ -1,3 +1,5 @@
+import { router } from '@inertiajs/react';
+
 interface NavbarProps {
     currentPage: 'beranda' | 'daftar-magang' | 'cek-status' | 'data-mahasiswa';
 }
@@ -8,9 +10,13 @@ const Navbar = ({ currentPage }: NavbarProps) => {
             <div className="container mx-auto px-6 py-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
-                        <div className="flex h-14 w-14 transform items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg transition-all duration-300 hover:scale-105 hover:rotate-6">
+                        <button
+                            onClick={() => router.get('/')}
+                            className="flex h-14 w-14 transform cursor-pointer items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg transition-all duration-300 hover:scale-105 hover:rotate-6"
+                            title="Kembali ke Beranda"
+                        >
                             <img src="/asset/Logo-Kominfo.png" alt="Logo Kominfo" className="h-10 w-10 object-contain" />
-                        </div>
+                        </button>
                         <div>
                             <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-2xl font-bold text-transparent">
                                 Dinas Kominfo
@@ -19,8 +25,8 @@ const Navbar = ({ currentPage }: NavbarProps) => {
                         </div>
                     </div>
                     <nav className="hidden space-x-2 md:flex">
-                        <a
-                            href="/"
+                        <button
+                            onClick={() => router.get('/')}
                             className={`rounded-xl border px-6 py-3 font-medium transition-all duration-300 hover:scale-105 ${
                                 currentPage === 'beranda'
                                     ? 'border-white/10 bg-white/20 shadow-lg backdrop-blur-sm hover:bg-white/30 hover:shadow-xl'
@@ -28,9 +34,9 @@ const Navbar = ({ currentPage }: NavbarProps) => {
                             }`}
                         >
                             Beranda
-                        </a>
-                        <a
-                            href="/daftar-magang"
+                        </button>
+                        <button
+                            onClick={() => router.get('/daftar-magang')}
                             className={`rounded-xl border px-6 py-3 font-medium transition-all duration-300 hover:scale-105 ${
                                 currentPage === 'daftar-magang'
                                     ? 'border-white/10 bg-white/20 shadow-lg backdrop-blur-sm hover:bg-white/30 hover:shadow-xl'
@@ -38,9 +44,9 @@ const Navbar = ({ currentPage }: NavbarProps) => {
                             }`}
                         >
                             Daftar Magang
-                        </a>
-                        <a
-                            href="/status-pendaftaran"
+                        </button>
+                        <button
+                            onClick={() => router.get('/status-pendaftaran')}
                             className={`rounded-xl border px-6 py-3 font-medium transition-all duration-300 hover:scale-105 ${
                                 currentPage === 'cek-status'
                                     ? 'border-white/10 bg-white/20 shadow-lg backdrop-blur-sm hover:bg-white/30 hover:shadow-xl'
@@ -48,9 +54,9 @@ const Navbar = ({ currentPage }: NavbarProps) => {
                             }`}
                         >
                             Cek Status
-                        </a>
-                        <a
-                            href="/data-mahasiswa"
+                        </button>
+                        <button
+                            onClick={() => router.get('/data-mahasiswa')}
                             className={`rounded-xl border px-6 py-3 font-medium transition-all duration-300 hover:scale-105 ${
                                 currentPage === 'data-mahasiswa'
                                     ? 'border-white/10 bg-white/20 shadow-lg backdrop-blur-sm hover:bg-white/30 hover:shadow-xl'
@@ -58,7 +64,7 @@ const Navbar = ({ currentPage }: NavbarProps) => {
                             }`}
                         >
                             Data Mahasiswa
-                        </a>
+                        </button>
                     </nav>
                     {/* Mobile menu button */}
                     <button className="rounded-lg bg-white/20 p-2 transition-all hover:bg-white/30 md:hidden">
