@@ -63,6 +63,12 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     const [showDeleteItemModal, setShowDeleteItemModal] = useState(false);
     const [itemToDelete, setItemToDelete] = useState<StrukturOrganisasi | null>(null);
 
+    // Bidang search and delete states
+    const [searchBidang, setSearchBidang] = useState<string>('');
+    const [showDeleteAllBidangModal, setShowDeleteAllBidangModal] = useState(false);
+    const [showDeleteBidangModal, setShowDeleteBidangModal] = useState(false);
+    const [bidangToDelete, setBidangToDelete] = useState<BidangData | null>(null);
+
     // Crop modal state
     const [showCropModal, setShowCropModal] = useState(false);
     const [imageToCrop, setImageToCrop] = useState<string | null>(null);
@@ -169,6 +175,26 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             };
 
             return getItemCategory(item) === filterCategory;
+        });
+    };
+
+    // Get filtered bidang based on search
+    const getFilteredBidangData = () => {
+        if (!searchBidang.trim()) {
+            return bidangData;
+        }
+        
+        return bidangData.filter((item) => {
+            const searchTerm = searchBidang.toLowerCase();
+            return (
+                item.title.toLowerCase().includes(searchTerm) ||
+                item.description.toLowerCase().includes(searchTerm) ||
+                item.data.kepala.toLowerCase().includes(searchTerm) ||
+                item.key.toLowerCase().includes(searchTerm) ||
+                item.data.tugas.some((tugas) => tugas.toLowerCase().includes(searchTerm)) ||
+                item.data.magangTasks.some((task) => task.toLowerCase().includes(searchTerm)) ||
+                item.data.staffFungsional.some((staff) => staff.toLowerCase().includes(searchTerm))
+            );
         });
     };
 
@@ -291,6 +317,76 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
         }
     };
 
+    // Handle delete single bidang
+    const handleDeleteBidang = (item: BidangData) => {
+        setBidangToDelete(item);
+        setShowDeleteBidangModal(true);
+    };
+
+    // Confirm delete single bidang
+    const confirmDeleteBidang = async () => {
+        if (!bidangToDelete) return;
+
+        setLoading(true);
+        try {
+            router.delete(`/admin/delete-bidang/${bidangToDelete.key}`, {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    alert('✅ Data bidang berhasil dihapus!');
+                    setShowDeleteBidangModal(false);
+                    setBidangToDelete(null);
+                },
+                onError: (errors) => {
+                    console.error('Delete bidang error:', errors);
+                    alert('❌ Gagal menghapus data bidang!\n\nSilakan coba lagi.');
+                },
+                onFinish: () => {
+                    setLoading(false);
+                },
+            });
+        } catch (error) {
+            console.error('Error deleting bidang:', error);
+            alert('❌ Terjadi kesalahan!\n\nSilakan coba lagi.');
+            setLoading(false);
+        }
+    };
+
+    // Handle delete all bidang
+    const handleDeleteAllBidang = () => {
+        if (bidangData.length === 0) {
+            alert('📭 Tidak ada data bidang untuk dihapus.');
+            return;
+        }
+        setShowDeleteAllBidangModal(true);
+    };
+
+    // Confirm delete all bidang
+    const confirmDeleteAllBidang = async () => {
+        setLoading(true);
+        try {
+            router.delete('/admin/delete-all-bidang', {
+                preserveState: true,
+                preserveScroll: true,
+                onSuccess: () => {
+                    alert('✅ Semua data bidang berhasil dihapus!');
+                    setShowDeleteAllBidangModal(false);
+                },
+                onError: (errors) => {
+                    console.error('Delete all bidang error:', errors);
+                    alert('❌ Gagal menghapus semua data bidang!\n\nSilakan coba lagi.');
+                },
+                onFinish: () => {
+                    setLoading(false);
+                },
+            });
+        } catch (error) {
+            console.error('Error deleting all bidang:', error);
+            alert('❌ Terjadi kesalahan!\n\nSilakan coba lagi.');
+            setLoading(false);
+        }
+    };
+
     const handleBack = () => {
         router.get('/dashboard-admin');
     };
@@ -403,8 +499,8 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             description: '',
             data: {
                 kepala: '',
-                icon: '',
-                color: '',
+                icon: 'building2',
+                color: 'blue',
                 tugas: [''],
                 magangTasks: [''],
                 staffFungsional: [''],
@@ -1323,21 +1419,83 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
 
                 {activeTab === 'bidang' && (
                     <div>
-                        {/* Add Button for Bidang */}
-                        <div className="mb-6">
-                            <button
-                                onClick={openAddBidang}
-                                className="flex items-center space-x-2 rounded-xl bg-green-500 px-6 py-3 font-medium text-white shadow-lg transition-colors hover:bg-green-600"
-                            >
-                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                                </svg>
-                                <span>Tambah Data Bidang</span>
-                            </button>
+                        {/* Header Section with Add Button, Search, and Delete All */}
+                        <div className="mb-6 space-y-4">
+                            {/* Action Buttons Row */}
+                            <div className="flex flex-wrap items-center justify-between gap-4">
+                                <button
+                                    onClick={openAddBidang}
+                                    className="flex items-center space-x-2 rounded-xl bg-green-500 px-6 py-3 font-medium text-white shadow-lg transition-colors hover:bg-green-600"
+                                >
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                                    </svg>
+                                    <span>Tambah Data Bidang</span>
+                                </button>
+
+                                <button
+                                    onClick={handleDeleteAllBidang}
+                                    disabled={bidangData.length === 0}
+                                    className="flex items-center space-x-2 rounded-xl bg-red-500 px-6 py-3 font-medium text-white shadow-lg transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300"
+                                >
+                                    <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                        />
+                                    </svg>
+                                    <span>Hapus Semua Data</span>
+                                </button>
+                            </div>
+
+                            {/* Search Section */}
+                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
+                                <div className="flex flex-wrap items-center justify-between gap-4">
+                                    <div className="flex items-center space-x-3">
+                                        <span className="font-medium text-gray-700">Pencarian:</span>
+                                        <div className="relative">
+                                            <input
+                                                type="text"
+                                                value={searchBidang}
+                                                onChange={(e) => setSearchBidang(e.target.value)}
+                                                placeholder="Cari berdasarkan nama, deskripsi, kepala bidang..."
+                                                className="w-96 rounded-lg border border-gray-300 bg-white px-4 py-2 pl-10 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                            />
+                                            <svg
+                                                className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
+                                                fill="none"
+                                                stroke="currentColor"
+                                                viewBox="0 0 24 24"
+                                            >
+                                                <path
+                                                    strokeLinecap="round"
+                                                    strokeLinejoin="round"
+                                                    strokeWidth={2}
+                                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                                />
+                                            </svg>
+                                        </div>
+                                        {searchBidang && (
+                                            <button
+                                                onClick={() => setSearchBidang('')}
+                                                className="rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                                            >
+                                                Hapus Filter
+                                            </button>
+                                        )}
+                                    </div>
+
+                                    <div className="text-sm text-gray-600">
+                                        Menampilkan {getFilteredBidangData().length} dari {bidangData.length} data
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-                            {bidangData.map((item) => {
+                            {getFilteredBidangData().map((item) => {
                                 // Color mapping untuk background berdasarkan data.color
                                 const getColorConfig = (color: string) => {
                                     const colorMap: Record<string, { bg: string; text: string }> = {
@@ -1382,12 +1540,22 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                                     </span>
                                                 </div>
                                             </div>
-                                            <button
-                                                onClick={() => openEditBidang(item)}
-                                                className="rounded-lg bg-blue-100 px-3 py-1 text-blue-600 transition-colors hover:bg-blue-200"
-                                            >
-                                                Edit
-                                            </button>
+                                            <div className="flex items-center space-x-2">
+                                                <button
+                                                    onClick={() => openEditBidang(item)}
+                                                    className="rounded-lg bg-blue-100 px-3 py-2 text-xs text-blue-600 transition-colors hover:bg-blue-200"
+                                                    title="Edit data bidang"
+                                                >
+                                                    <Edit2 className="h-4 w-4" />
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteBidang(item)}
+                                                    className="rounded-lg bg-red-100 px-3 py-2 text-xs text-red-600 transition-colors hover:bg-red-200"
+                                                    title="Hapus data bidang"
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
+                                                </button>
+                                            </div>
                                         </div>
 
                                         <div className="space-y-3">
@@ -1950,6 +2118,96 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                             </button>
                             <button
                                 onClick={confirmDeleteAll}
+                                className="rounded-xl bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                disabled={loading}
+                            >
+                                {loading ? 'Menghapus...' : 'Ya, Hapus Semua'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Single Bidang Confirmation Modal */}
+            {showDeleteBidangModal && bidangToDelete && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                        <div className="mb-4 text-center">
+                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                                <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L5.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                                    />
+                                </svg>
+                            </div>
+                            <h3 className="mb-2 text-lg font-bold text-gray-900">Konfirmasi Hapus Data Bidang</h3>
+                            <p className="text-gray-600">
+                                Apakah Anda yakin ingin menghapus data bidang <strong>"{bidangToDelete.title}"</strong>?
+                            </p>
+                            <p className="mt-2 text-sm text-red-600">Tindakan ini tidak dapat dibatalkan!</p>
+                        </div>
+
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                onClick={() => {
+                                    setShowDeleteBidangModal(false);
+                                    setBidangToDelete(null);
+                                }}
+                                className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
+                                disabled={loading}
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={confirmDeleteBidang}
+                                className="rounded-xl bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                disabled={loading}
+                            >
+                                {loading ? 'Menghapus...' : 'Ya, Hapus'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete All Bidang Confirmation Modal */}
+            {showDeleteAllBidangModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+                    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                        <div className="mb-4 text-center">
+                            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
+                                <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L5.082 16.5c-.77.833.192 2.5 1.732 2.5z"
+                                    />
+                                </svg>
+                            </div>
+                            <h3 className="mb-2 text-lg font-bold text-gray-900">Konfirmasi Hapus Semua Data Bidang</h3>
+                            <p className="text-gray-600">
+                                Apakah Anda yakin ingin menghapus <strong>SEMUA</strong> data bidang?
+                            </p>
+                            <p className="mt-2 text-sm text-red-600">
+                                Tindakan ini akan menghapus <strong>{bidangData.length} data bidang</strong> secara permanen dan tidak dapat
+                                dibatalkan!
+                            </p>
+                        </div>
+
+                        <div className="flex justify-end space-x-4">
+                            <button
+                                onClick={() => setShowDeleteAllBidangModal(false)}
+                                className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
+                                disabled={loading}
+                            >
+                                Batal
+                            </button>
+                            <button
+                                onClick={confirmDeleteAllBidang}
                                 className="rounded-xl bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400"
                                 disabled={loading}
                             >

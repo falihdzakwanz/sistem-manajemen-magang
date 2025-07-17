@@ -150,6 +150,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Delete all struktur organisasi data
     Route::delete('/admin/delete-all-struktur-organisasi', [BerandaController::class, 'deleteAllStrukturOrganisasi'])
         ->name('admin.delete-all-struktur-organisasi');
+
+    // Delete single bidang item
+    Route::delete('/admin/delete-bidang/{key}', [BerandaController::class, 'deleteBidang'])
+        ->name('admin.delete-bidang');
+
+    // Delete all bidang data
+    Route::delete('/admin/delete-all-bidang', [BerandaController::class, 'deleteAllBidang'])
+        ->name('admin.delete-all-bidang');
 });
 
 /*

@@ -673,46 +673,92 @@ const Beranda = () => {
                         <div className="mb-16">
                             <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Bidang Penempatan</h4>
 
-                            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-2">
+                            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
                                 {Object.entries(bidangData).map(([bidangId, bidang]) => {
-                                    const colorClass =
-                                        {
-                                            blue: 'from-blue-500 to-blue-600',
-                                            purple: 'from-purple-500 to-purple-600',
-                                            green: 'from-green-500 to-green-600',
-                                            red: 'from-red-500 to-red-600',
-                                            yellow: 'from-yellow-500 to-yellow-600',
-                                            indigo: 'from-indigo-500 to-indigo-600',
-                                            teal: 'from-teal-500 to-teal-600',
-                                        }[bidang.color] || 'from-blue-500 to-blue-600';
+                                    // Get color index based on bidang ID
+                                    const colorIndex = (parseInt(bidangId) - 1) % 6;
+
+                                    // Define color classes explicitly to ensure they're included in build
+                                    let cardClasses = '';
+                                    let iconClasses = '';
+                                    let badgeClasses = '';
+                                    let buttonClasses = '';
+
+                                    switch (colorIndex) {
+                                        case 0: // Orange
+                                            cardClasses = 'border-orange-100 bg-gradient-to-br from-white to-orange-50';
+                                            iconClasses = 'bg-gradient-to-br from-orange-500 to-orange-600';
+                                            badgeClasses = 'bg-orange-100 text-orange-600';
+                                            buttonClasses = 'bg-orange-100 text-orange-600';
+                                            break;
+                                        case 1: // Blue
+                                            cardClasses = 'border-blue-100 bg-gradient-to-br from-white to-blue-50';
+                                            iconClasses = 'bg-gradient-to-br from-blue-500 to-blue-600';
+                                            badgeClasses = 'bg-blue-100 text-blue-600';
+                                            buttonClasses = 'bg-blue-100 text-blue-600';
+                                            break;
+                                        case 2: // Purple
+                                            cardClasses = 'border-purple-100 bg-gradient-to-br from-white to-purple-50';
+                                            iconClasses = 'bg-gradient-to-br from-purple-500 to-purple-600';
+                                            badgeClasses = 'bg-purple-100 text-purple-600';
+                                            buttonClasses = 'bg-purple-100 text-purple-600';
+                                            break;
+                                        case 3: // Green
+                                            cardClasses = 'border-green-100 bg-gradient-to-br from-white to-green-50';
+                                            iconClasses = 'bg-gradient-to-br from-green-500 to-green-600';
+                                            badgeClasses = 'bg-green-100 text-green-600';
+                                            buttonClasses = 'bg-green-100 text-green-600';
+                                            break;
+                                        case 4: // Red
+                                            cardClasses = 'border-red-100 bg-gradient-to-br from-white to-red-50';
+                                            iconClasses = 'bg-gradient-to-br from-red-500 to-red-600';
+                                            badgeClasses = 'bg-red-100 text-red-600';
+                                            buttonClasses = 'bg-red-100 text-red-600';
+                                            break;
+                                        case 5: // Indigo
+                                            cardClasses = 'border-indigo-100 bg-gradient-to-br from-white to-indigo-50';
+                                            iconClasses = 'bg-gradient-to-br from-indigo-500 to-indigo-600';
+                                            badgeClasses = 'bg-indigo-100 text-indigo-600';
+                                            buttonClasses = 'bg-indigo-100 text-indigo-600';
+                                            break;
+                                        default:
+                                            cardClasses = 'border-gray-100 bg-gradient-to-br from-white to-gray-50';
+                                            iconClasses = 'bg-gradient-to-br from-gray-500 to-gray-600';
+                                            badgeClasses = 'bg-gray-100 text-gray-600';
+                                            buttonClasses = 'bg-gray-100 text-gray-600';
+                                    }
 
                                     return (
-                                        <div key={bidangId} className="group relative">
+                                        <div key={bidangId} className="mx-auto flex max-w-xs justify-center">
                                             <div
-                                                className={`cursor-pointer overflow-hidden rounded-3xl bg-gradient-to-br ${colorClass} hover:shadow-3xl p-8 text-white shadow-2xl transition-all duration-300 hover:scale-105`}
+                                                className={`flex min-h-[350px] w-80 cursor-pointer flex-col justify-between rounded-2xl border-2 ${cardClasses} p-6 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl`}
                                                 onClick={() => openModal(parseInt(bidangId))}
                                             >
-                                                <div className="text-center">
-                                                    <div className="mb-4">
-                                                        <IconDisplay iconName={bidang.icon} className="mx-auto h-12 w-12 text-white" />
+                                                <div className="flex flex-col items-center">
+                                                    <div
+                                                        className={`mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full ${iconClasses} shadow-md`}
+                                                    >
+                                                        <IconDisplay iconName={bidang.icon} className="h-10 w-10 text-white" />
                                                     </div>
-                                                    <h4 className="mb-4 text-2xl font-bold">{bidang.title}</h4>
-                                                    <p className="mb-4 text-lg opacity-90">Kepala Bidang: {bidang.kepala}</p>
-                                                    <div className="mb-6">
-                                                        <h5 className="mb-3 text-lg font-semibold">Fokus Kerja:</h5>
-                                                        <ul className="space-y-2 text-sm">
-                                                            {bidang.tugas.slice(0, 3).map((tugas: string, index: number) => (
-                                                                <li key={index} className="flex items-center">
-                                                                    <Target className="mr-2 h-4 w-4 text-white/80" /> {tugas.substring(0, 50)}
-                                                                    {tugas.length > 50 ? '...' : ''}
-                                                                </li>
-                                                            ))}
-                                                        </ul>
+                                                    <div className={`mb-2 inline-block rounded-full ${badgeClasses} px-3 py-1 text-xs font-semibold`}>
+                                                        Bidang {bidangId}
                                                     </div>
-                                                    <div className="group/btn inline-flex items-center rounded-full bg-white/20 px-6 py-3 text-sm font-semibold text-white backdrop-blur-sm transition-all duration-300 hover:scale-105 hover:bg-white/30">
-                                                        <span>Lihat Peluang Magang</span>
+                                                </div>
+                                                <div className="flex flex-1 flex-col justify-center">
+                                                    <h4 className="mb-2 line-clamp-2 text-lg font-bold text-gray-800">{bidang.title}</h4>
+                                                    <p className="mb-3 text-sm font-medium text-gray-600">Kepala: {bidang.kepala}</p>
+                                                    <p className="mb-3 line-clamp-2 text-xs text-gray-500">{bidang.description}</p>
+                                                    <div className="text-xs text-gray-400">
+                                                        {bidang.tugas.length} tugas • {bidang.magangTasks.length} kegiatan magang
+                                                    </div>
+                                                </div>
+                                                <div className="mt-4">
+                                                    <div
+                                                        className={`inline-flex items-center rounded-full ${buttonClasses} px-4 py-2 text-xs font-semibold transition-all duration-300 hover:scale-105`}
+                                                    >
+                                                        <span>Lihat Detail</span>
                                                         <svg
-                                                            className="ml-2 h-4 w-4 transition-transform group-hover/btn:translate-x-1"
+                                                            className="ml-2 h-3 w-3 transition-transform group-hover:translate-x-1"
                                                             fill="none"
                                                             stroke="currentColor"
                                                             viewBox="0 0 24 24"

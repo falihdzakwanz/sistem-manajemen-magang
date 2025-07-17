@@ -874,4 +874,67 @@ class BerandaController extends Controller
             return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi.']);
         }
     }
+
+    /**
+     * Delete single bidang item
+     * 
+     * @param Request $request
+     * @param string $key
+     * @return RedirectResponse
+     */
+    public function deleteBidang(Request $request, string $key): RedirectResponse
+    {
+        try {
+            $content = BerandaContent::where('content_type', self::CONTENT_TYPE_BIDANG)
+                ->where('key', $key)
+                ->first();
+
+            if (!$content) {
+                return redirect()->back()->withErrors(['error' => 'Data bidang tidak ditemukan.']);
+            }
+
+            // Delete the database record
+            $content->delete();
+
+            return redirect()->back()->with('success', '✅ Data bidang berhasil dihapus! 🔄 Perubahan telah tersinkronisasi dengan halaman beranda user.');
+        } catch (Exception $e) {
+            Log::error('Error deleting bidang: ' . $e->getMessage(), [
+                'key' => $key,
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi.']);
+        }
+    }
+
+    /**
+     * Delete all bidang data
+     * 
+     * @param Request $request
+     * @return RedirectResponse
+     */
+    public function deleteAllBidang(Request $request): RedirectResponse
+    {
+        try {
+            $items = BerandaContent::where('content_type', self::CONTENT_TYPE_BIDANG)->get();
+
+            if ($items->isEmpty()) {
+                return redirect()->back()->withErrors(['error' => 'Tidak ada data bidang untuk dihapus.']);
+            }
+
+            $deletedCount = 0;
+
+            // Delete all records
+            foreach ($items as $item) {
+                $item->delete();
+                $deletedCount++;
+            }
+
+            return redirect()->back()->with('success', "✅ Berhasil menghapus {$deletedCount} data bidang! 🔄 Perubahan telah tersinkronisasi dengan halaman beranda user.");
+        } catch (Exception $e) {
+            Log::error('Error deleting all bidang: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi.']);
+        }
+    }
 }
