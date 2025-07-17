@@ -211,7 +211,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 category = 'sub_bagian';
             } else if (key.includes('perencana') || key.includes('ahli')) {
                 category = 'jabatan_fungsional';
-            } else if (key.includes('kabid') || key.includes('kepala')) {
+            } else if (key.includes('kabid')) {
                 category = 'kepala_bidang';
             }
 
@@ -327,7 +327,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 category = 'sub_bagian';
             } else if (item.key.includes('perencana') || item.key.includes('ahli')) {
                 category = 'jabatan_fungsional';
-            } else if (item.key.includes('kabid') || item.key.includes('kepala')) {
+            } else if (item.key.includes('kabid')) {
                 category = 'kepala_bidang';
             }
         }
