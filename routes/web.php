@@ -18,6 +18,7 @@ use Inertia\Inertia;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\BerandaController;
+use App\Http\Controllers\AdminPasswordResetController;
 
 /*
 |--------------------------------------------------------------------------
@@ -65,6 +66,32 @@ Route::get('/data-mahasiswa', [UserController::class, 'getDataMahasiswa'])
 // API endpoint untuk mengambil konten beranda
 Route::get('/api/beranda-content', [BerandaController::class, 'getBerandaContent'])
     ->name('beranda.content');
+
+/*
+|--------------------------------------------------------------------------
+| Rute Reset Password Admin
+|--------------------------------------------------------------------------
+|
+| Rute untuk fitur reset password admin dengan email verification.
+| Termasuk form lupa password, kirim email, dan form reset password.
+|
+*/
+
+// Halaman lupa password untuk admin
+Route::get('/admin/forgot-password', [AdminPasswordResetController::class, 'showForgotPasswordForm'])
+    ->name('admin.password.request');
+
+// Kirim email reset password
+Route::post('/admin/forgot-password', [AdminPasswordResetController::class, 'sendResetLinkEmail'])
+    ->name('admin.password.email');
+
+// Halaman form reset password dengan token
+Route::get('/admin/reset-password/{token}', [AdminPasswordResetController::class, 'showResetPasswordForm'])
+    ->name('admin.password.reset');
+
+// Proses update password baru
+Route::post('/admin/reset-password', [AdminPasswordResetController::class, 'resetPassword'])
+    ->name('admin.password.update');
 
 /*
 |--------------------------------------------------------------------------

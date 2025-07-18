@@ -98,7 +98,19 @@ export default function Login({ status }: LoginProps) {
                         </Button>
                     </div>
                 </form>
-                {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
+
+                {/* Status Message */}
+                {status && <div className="mt-4 text-center text-sm font-medium text-green-600">{status}</div>}
+
+                {/* Link Lupa Password */}
+                <div className="mt-6 text-center">
+                    <a
+                        href={route('admin.password.request')}
+                        className="text-sm text-blue-600 transition-colors duration-200 hover:text-blue-800 hover:underline"
+                    >
+                        Lupa password atau username?
+                    </a>
+                </div>
             </div>
         </div>
     );

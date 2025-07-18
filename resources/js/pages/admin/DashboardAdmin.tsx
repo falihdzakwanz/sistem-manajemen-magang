@@ -1,5 +1,6 @@
 import { IconDisplay } from '@/components/IconPicker';
-import { router } from '@inertiajs/react';
+import { showDeleteConfirmAlert, showErrorAlert, showSuccessAlert } from '@/utils/sweetAlert';
+import { router, usePage } from '@inertiajs/react';
 import { useEffect, useState } from 'react';
 import { route } from 'ziggy-js';
 
@@ -88,7 +89,23 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
     const [currentPage, setCurrentPage] = useState(1);
     const [itemsPerPage] = useState(10);
 
+    // Get flash messages from server
+    const { flash } = usePage().props as { flash?: { success?: string; error?: string } };
+
     // ===== EFFECT HOOKS =====
+
+    /**
+     * Effect untuk menangani flash messages dari server
+     */
+    useEffect(() => {
+        if (flash?.success) {
+            showSuccessAlert(flash.success);
+        }
+
+        if (flash?.error) {
+            showErrorAlert(flash.error);
+        }
+    }, [flash]);
 
     /**
      * Effect untuk menangani scroll delegation ke modal edit
@@ -447,11 +464,13 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    console.log('Mahasiswa berhasil diterima');
+                    showSuccessAlert('Mahasiswa berhasil diterima dan akan dihubungi melalui email', 'Pendaftaran Diterima!');
                     closeModal();
                 },
                 onError: (errors) => {
                     console.error('Gagal menerima mahasiswa:', errors);
+                    const errorMessage = (Object.values(errors)[0] as string) || 'Gagal menerima mahasiswa';
+                    showErrorAlert(errorMessage, 'Gagal Menerima Mahasiswa');
                 },
             },
         );
@@ -472,13 +491,15 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
             {
                 preserveScroll: true,
                 onSuccess: () => {
-                    console.log('Mahasiswa berhasil ditolak');
+                    showSuccessAlert('Mahasiswa berhasil ditolak dan email pemberitahuan telah dikirim', 'Pendaftaran Ditolak');
                     setShowRejectModal(false);
                     setRejectReason('');
                     closeModal();
                 },
                 onError: (errors) => {
                     console.error('Gagal menolak mahasiswa:', errors);
+                    const errorMessage = (Object.values(errors)[0] as string) || 'Gagal menolak mahasiswa';
+                    showErrorAlert(errorMessage, 'Gagal Menolak Mahasiswa');
                 },
             },
         );
@@ -501,12 +522,14 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
             router.patch(route('admin.updateMahasiswa', selectedMahasiswa.id), editData, {
                 preserveScroll: true,
                 onSuccess: () => {
-                    console.log('Data mahasiswa berhasil diupdate');
+                    showSuccessAlert('Data mahasiswa berhasil diperbarui', 'Update Berhasil!');
                     closeEditModal();
                     closeModal();
                 },
                 onError: (errors) => {
                     console.error('Gagal mengupdate data mahasiswa:', errors);
+                    const errorMessage = (Object.values(errors)[0] as string) || 'Gagal mengupdate data mahasiswa';
+                    showErrorAlert(errorMessage, 'Gagal Update Data');
                 },
             });
         }
@@ -515,19 +538,28 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
     /**
      * Menghapus data mahasiswa
      */
-    const handleDeleteMahasiswa = () => {
+    const handleDeleteMahasiswa = async () => {
         if (selectedMahasiswa) {
-            router.delete(route('admin.deleteMahasiswa', selectedMahasiswa.id), {
-                preserveScroll: true,
-                onSuccess: () => {
-                    console.log('Data mahasiswa berhasil dihapus');
-                    closeDeleteModal();
-                    closeModal();
-                },
-                onError: (errors) => {
-                    console.error('Gagal menghapus data mahasiswa:', errors);
-                },
-            });
+            const result = await showDeleteConfirmAlert(
+                `Data mahasiswa ${selectedMahasiswa.nama} akan dihapus permanently!`,
+                'Konfirmasi Hapus Data',
+            );
+
+            if (result.isConfirmed) {
+                router.delete(route('admin.deleteMahasiswa', selectedMahasiswa.id), {
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        showSuccessAlert('Data mahasiswa berhasil dihapus dari sistem', 'Data Terhapus!');
+                        closeDeleteModal();
+                        closeModal();
+                    },
+                    onError: (errors) => {
+                        console.error('Gagal menghapus data mahasiswa:', errors);
+                        const errorMessage = (Object.values(errors)[0] as string) || 'Gagal menghapus data mahasiswa';
+                        showErrorAlert(errorMessage, 'Gagal Hapus Data');
+                    },
+                });
+            }
         }
     };
 

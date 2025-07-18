@@ -1,3 +1,4 @@
+import { showErrorAlert, showInfoAlert, showSuccessAlert } from '@/utils/sweetAlert';
 import { router } from '@inertiajs/react';
 import { AlertTriangle, Building2, Camera, Check, ClipboardList, Edit2, Trash2 } from 'lucide-react';
 import React, { useState } from 'react';
@@ -266,13 +267,14 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
-                    alert('✅ Data berhasil dihapus!');
+                    showSuccessAlert('Data struktur organisasi berhasil dihapus!', 'Berhasil Dihapus!');
                     setShowDeleteItemModal(false);
                     setItemToDelete(null);
                 },
                 onError: (errors) => {
                     console.error('Delete error:', errors);
-                    alert('❌ Gagal menghapus data!\n\nSilakan coba lagi.');
+                    const errorMessage = (Object.values(errors)[0] as string) || 'Gagal menghapus data struktur organisasi';
+                    showErrorAlert(errorMessage, 'Gagal Menghapus Data');
                 },
                 onFinish: () => {
                     setLoading(false);
@@ -280,7 +282,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             });
         } catch (error) {
             console.error('Error deleting item:', error);
-            alert('❌ Terjadi kesalahan!\n\nSilakan coba lagi.');
+            showErrorAlert('Terjadi kesalahan saat menghapus data. Silakan coba lagi.', 'Error Sistem');
             setLoading(false);
         }
     };
@@ -288,7 +290,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     // Handle delete all data
     const handleDeleteAll = () => {
         if (strukturOrganisasi.length === 0) {
-            alert('📭 Tidak ada data untuk dihapus.');
+            showErrorAlert('Tidak ada data struktur organisasi untuk dihapus.', 'Tidak Ada Data');
             return;
         }
         setShowDeleteAllModal(true);
@@ -302,12 +304,13 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
-                    alert('✅ Semua data berhasil dihapus!');
+                    showSuccessAlert('Semua data struktur organisasi berhasil dihapus!', 'Semua Data Terhapus!');
                     setShowDeleteAllModal(false);
                 },
                 onError: (errors) => {
                     console.error('Delete all error:', errors);
-                    alert('❌ Gagal menghapus semua data!\n\nSilakan coba lagi.');
+                    const errorMessage = (Object.values(errors)[0] as string) || 'Gagal menghapus semua data struktur organisasi';
+                    showErrorAlert(errorMessage, 'Gagal Menghapus Semua Data');
                 },
                 onFinish: () => {
                     setLoading(false);
@@ -315,7 +318,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             });
         } catch (error) {
             console.error('Error deleting all:', error);
-            alert('❌ Terjadi kesalahan!\n\nSilakan coba lagi.');
+            showErrorAlert('Terjadi kesalahan saat menghapus semua data. Silakan coba lagi.', 'Error Sistem');
             setLoading(false);
         }
     };
@@ -336,13 +339,14 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
-                    alert('✅ Data bidang berhasil dihapus!');
+                    showSuccessAlert('Data bidang berhasil dihapus!', 'Berhasil Dihapus!');
                     setShowDeleteBidangModal(false);
                     setBidangToDelete(null);
                 },
                 onError: (errors) => {
                     console.error('Delete bidang error:', errors);
-                    alert('❌ Gagal menghapus data bidang!\n\nSilakan coba lagi.');
+                    const errorMessage = (Object.values(errors)[0] as string) || 'Gagal menghapus data bidang';
+                    showErrorAlert(errorMessage, 'Gagal Menghapus Data');
                 },
                 onFinish: () => {
                     setLoading(false);
@@ -350,7 +354,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             });
         } catch (error) {
             console.error('Error deleting bidang:', error);
-            alert('❌ Terjadi kesalahan!\n\nSilakan coba lagi.');
+            showErrorAlert('Terjadi kesalahan saat menghapus data bidang. Silakan coba lagi.', 'Error Sistem');
             setLoading(false);
         }
     };
@@ -358,7 +362,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     // Handle delete all bidang
     const handleDeleteAllBidang = () => {
         if (bidangData.length === 0) {
-            alert('📭 Tidak ada data bidang untuk dihapus.');
+            showErrorAlert('Tidak ada data bidang untuk dihapus.', 'Tidak Ada Data');
             return;
         }
         setShowDeleteAllBidangModal(true);
@@ -372,12 +376,13 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 preserveState: true,
                 preserveScroll: true,
                 onSuccess: () => {
-                    alert('✅ Semua data bidang berhasil dihapus!');
+                    showSuccessAlert('Semua data bidang berhasil dihapus!', 'Semua Data Terhapus!');
                     setShowDeleteAllBidangModal(false);
                 },
                 onError: (errors) => {
                     console.error('Delete all bidang error:', errors);
-                    alert('❌ Gagal menghapus semua data bidang!\n\nSilakan coba lagi.');
+                    const errorMessage = (Object.values(errors)[0] as string) || 'Gagal menghapus semua data bidang';
+                    showErrorAlert(errorMessage, 'Gagal Menghapus Semua Data');
                 },
                 onFinish: () => {
                     setLoading(false);
@@ -385,7 +390,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             });
         } catch (error) {
             console.error('Error deleting all bidang:', error);
-            alert('❌ Terjadi kesalahan!\n\nSilakan coba lagi.');
+            showErrorAlert('Terjadi kesalahan saat menghapus semua data bidang. Silakan coba lagi.', 'Error Sistem');
             setLoading(false);
         }
     };
@@ -609,26 +614,32 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
         setStrukturForm((prev) => ({ ...prev, photo: null }));
 
         if (editingItem) {
-            alert('✅ Foto akan dihapus setelah Anda menekan tombol "Simpan"');
+            showInfoAlert('Foto akan dihapus setelah Anda menekan tombol "Simpan"', 'Foto Ditandai untuk Dihapus');
         } else {
-            alert('✅ Foto dihapus dari pratinjau');
+            showInfoAlert('Foto dihapus dari pratinjau', 'Foto Dihapus');
         }
     };
 
     const handleSaveStruktur = async () => {
+        console.log('handleSaveStruktur called', {
+            hasPhoto: !!strukturForm.photo,
+            shouldDeletePhoto: editingItem && originalStrukturData?.photo_url && !photoPreview,
+            editingItem: !!editingItem,
+        });
+
         if (!strukturForm.title.trim() || !strukturForm.description.trim()) {
-            alert('Mohon lengkapi nama dan jabatan!');
+            showErrorAlert('Mohon lengkapi nama dan jabatan!', 'Data Tidak Lengkap');
             return;
         }
 
         // For new items, validate required fields
         if (!editingItem) {
             if (!strukturForm.category.trim()) {
-                alert('Mohon pilih kategori struktur organisasi!');
+                showErrorAlert('Mohon pilih kategori struktur organisasi!', 'Kategori Belum Dipilih');
                 return;
             }
             if (!strukturForm.key.trim()) {
-                alert('Mohon masukkan key/ID unik untuk struktur organisasi!');
+                showErrorAlert('Mohon masukkan key/ID unik untuk struktur organisasi!', 'Key/ID Belum Diisi');
                 return;
             }
         }
@@ -685,21 +696,38 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                     preserveScroll: true,
                     onSuccess: (page: InertiaPage) => {
                         const flashSuccess = page.props?.flash?.success;
+                        const action = editingItem ? 'diperbarui' : 'ditambahkan';
+
                         if (flashSuccess) {
-                            alert(flashSuccess);
+                            showSuccessAlert(flashSuccess, 'Berhasil!');
                         } else {
-                            const action = editingItem ? 'diperbarui' : 'ditambahkan';
-                            alert(`✅ Struktur organisasi berhasil ${action}! 🔄 Data telah tersinkronisasi dengan halaman beranda user.`);
+                            // Pastikan ada notifikasi sukses meskipun tidak ada flash message
+                            let message = `Struktur organisasi berhasil ${action}!`;
+                            if (strukturForm.photo) {
+                                message += ' Foto berhasil diupload.';
+                            }
+                            if (shouldDeletePhoto) {
+                                message += ' Foto lama berhasil dihapus.';
+                            }
+                            message += ' Data telah tersinkronisasi dengan halaman beranda user.';
+                            showSuccessAlert(message, 'Operasi Berhasil!');
                         }
                         setShowModal(false);
                     },
                     onError: (errors) => {
-                        console.error('Validation errors:', errors);
+                        console.error('Upload errors:', errors);
+                        let errorMessage = 'Gagal memperbarui struktur organisasi dengan foto.';
+
                         if (errors.message) {
-                            alert(`❌ Gagal memperbarui struktur organisasi!\n\nError: ${errors.message}`);
-                        } else {
-                            alert('❌ Gagal memperbarui struktur organisasi!\n\nSilakan periksa input Anda.');
+                            errorMessage = `Error: ${errors.message}`;
+                        } else if (errors.photo) {
+                            errorMessage = `Error upload foto: ${Array.isArray(errors.photo) ? errors.photo[0] : errors.photo}`;
+                        } else if (typeof errors === 'object' && Object.keys(errors).length > 0) {
+                            const firstError = Object.values(errors)[0];
+                            errorMessage = Array.isArray(firstError) ? firstError[0] : String(firstError);
                         }
+
+                        showErrorAlert(errorMessage, 'Gagal Upload Foto');
                     },
                     onFinish: () => {
                         setLoading(false);
@@ -712,21 +740,37 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                     preserveScroll: true,
                     onSuccess: (page: InertiaPage) => {
                         const flashSuccess = page.props?.flash?.success;
+                        const action = editingItem ? 'diperbarui' : 'ditambahkan';
+
                         if (flashSuccess) {
-                            alert(flashSuccess);
+                            showSuccessAlert(flashSuccess, 'Berhasil!');
                         } else {
-                            const action = editingItem ? 'diperbarui' : 'ditambahkan';
-                            alert(`✅ Struktur organisasi berhasil ${action}! 🔄 Data telah tersinkronisasi dengan halaman beranda user.`);
+                            // Pastikan ada notifikasi sukses meskipun tidak ada flash message
+                            let message = `Struktur organisasi berhasil ${action}!`;
+                            if (shouldDeletePhoto) {
+                                message += ' Foto berhasil dihapus.';
+                            }
+                            message += ' Data telah tersinkronisasi dengan halaman beranda user.';
+                            showSuccessAlert(message, 'Operasi Berhasil!');
                         }
                         setShowModal(false);
                     },
                     onError: (errors) => {
-                        console.error('Validation errors:', errors);
+                        console.error('Update errors:', errors);
+                        let errorMessage = 'Gagal memperbarui struktur organisasi.';
+
                         if (errors.message) {
-                            alert(`❌ Gagal memperbarui struktur organisasi!\n\nError: ${errors.message}`);
-                        } else {
-                            alert('❌ Gagal memperbarui struktur organisasi!\n\nSilakan periksa input Anda.');
+                            errorMessage = `Error: ${errors.message}`;
+                        } else if (errors.title) {
+                            errorMessage = `Error nama: ${Array.isArray(errors.title) ? errors.title[0] : errors.title}`;
+                        } else if (errors.description) {
+                            errorMessage = `Error deskripsi: ${Array.isArray(errors.description) ? errors.description[0] : errors.description}`;
+                        } else if (typeof errors === 'object' && Object.keys(errors).length > 0) {
+                            const firstError = Object.values(errors)[0];
+                            errorMessage = Array.isArray(firstError) ? firstError[0] : String(firstError);
                         }
+
+                        showErrorAlert(errorMessage, 'Gagal Memperbarui Data');
                     },
                     onFinish: () => {
                         setLoading(false);
@@ -735,36 +779,36 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             }
         } catch (error) {
             console.error('Error updating struktur:', error);
-            alert('❌ Terjadi kesalahan!\n\nSilakan coba lagi.');
+            showErrorAlert('Terjadi kesalahan saat memperbarui struktur organisasi. Silakan coba lagi.', 'Error Sistem');
             setLoading(false);
         }
     };
 
     const handleSaveBidang = async () => {
         if (!bidangForm.title.trim() || !bidangForm.description.trim() || !bidangForm.data.kepala.trim()) {
-            alert('Mohon lengkapi nama bidang, deskripsi, dan nama kepala bidang!');
+            showErrorAlert('Mohon lengkapi nama bidang, deskripsi, dan nama kepala bidang!', 'Data Tidak Lengkap');
             return;
         }
 
         // Validasi category wajib diisi
         if (!bidangForm.data.category.trim()) {
-            alert('Mohon masukkan kategori bidang!');
+            showErrorAlert('Mohon masukkan kategori bidang!', 'Kategori Belum Diisi');
             return;
         }
 
         // For new items, key is required
         if (!editingItem && !bidangForm.key.trim()) {
-            alert('Mohon masukkan key/ID unik untuk bidang!');
+            showErrorAlert('Mohon masukkan key/ID unik untuk bidang!', 'Key/ID Belum Diisi');
             return;
         }
 
         // Validasi array tidak boleh kosong
-        const hasEmptyTugas = bidangForm.data.tugas.some((tugas) => !tugas.trim());
-        const hasEmptyMagangTasks = bidangForm.data.magangTasks.some((task) => !task.trim());
-        const hasEmptyStaff = bidangForm.data.staffFungsional.some((staff) => !staff.trim());
+        const hasEmptyTugas = bidangForm.data.tugas.some((tugas: string) => !tugas.trim());
+        const hasEmptyMagangTasks = bidangForm.data.magangTasks.some((task: string) => !task.trim());
+        const hasEmptyStaff = bidangForm.data.staffFungsional.some((staff: string) => !staff.trim());
 
         if (hasEmptyTugas || hasEmptyMagangTasks || hasEmptyStaff) {
-            alert('Mohon lengkapi semua field atau hapus yang kosong!');
+            showErrorAlert('Mohon lengkapi semua field atau hapus yang kosong!', 'Field Tidak Lengkap');
             return;
         }
 
@@ -789,19 +833,22 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 onSuccess: (page: InertiaPage) => {
                     const flashSuccess = page.props?.flash?.success;
                     if (flashSuccess) {
-                        alert(`✅ ${flashSuccess}\n\nPerubahan akan langsung terlihat di halaman beranda user.`);
+                        showSuccessAlert(`${flashSuccess} Perubahan akan langsung terlihat di halaman beranda user.`, 'Berhasil!');
                     } else {
                         const action = editingItem ? 'diperbarui' : 'ditambahkan';
-                        alert(`✅ Data bidang berhasil ${action}!\n\nPerubahan akan langsung terlihat di halaman beranda user.`);
+                        showSuccessAlert(
+                            `Data bidang berhasil ${action}! Perubahan akan langsung terlihat di halaman beranda user.`,
+                            'Operasi Berhasil!',
+                        );
                     }
                     setShowModal(false);
                 },
                 onError: (errors) => {
                     console.error('Validation errors:', errors);
                     if (errors.message) {
-                        alert(`❌ Gagal memperbarui data bidang!\n\nError: ${errors.message}`);
+                        showErrorAlert(`Error: ${errors.message}`, 'Gagal Memperbarui Data Bidang');
                     } else {
-                        alert('❌ Gagal memperbarui data bidang!\n\nSilakan periksa input Anda.');
+                        showErrorAlert('Silakan periksa input Anda dan coba lagi.', 'Gagal Memperbarui Data Bidang');
                     }
                 },
                 onFinish: () => {

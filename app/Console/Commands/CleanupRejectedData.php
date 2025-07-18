@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
 
 class CleanupRejectedData extends Command
 {
@@ -134,7 +135,7 @@ class CleanupRejectedData extends Command
                 $days
             );
             
-            \Log::info($logMessage);
+            Log::info($logMessage);
             
         } else {
             $this->info("\n🔍 Mode dry-run: {$rejectedData->count()} data akan dihapus jika command dijalankan tanpa --dry-run");

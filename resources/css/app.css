@@ -1,8 +1,6 @@
 @import 'tailwindcss';
 @import 'react-image-crop/dist/ReactCrop.css';
-
-
-
+@import 'sweetalert2/dist/sweetalert2.min.css';
 
 :root {
     --font-sans:
