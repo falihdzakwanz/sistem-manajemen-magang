@@ -97,11 +97,6 @@ export default function Login({ status }: LoginProps) {
                             Masuk
                         </Button>
                     </div>
-                    <div className="mt-4 text-center text-sm text-gray-500">
-                        Demo Login: <br />
-                        Username: admin <br />
-                        Password: admin123
-                    </div>
                 </form>
                 {status && <div className="mb-4 text-center text-sm font-medium text-green-600">{status}</div>}
             </div>
