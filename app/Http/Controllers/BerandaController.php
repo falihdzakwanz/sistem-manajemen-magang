@@ -383,6 +383,7 @@ class BerandaController extends Controller
             'data.kepala' => 'required|string|max:255',
             'data.icon' => 'required|string|max:10',
             'data.color' => 'required|string|max:50',
+            'data.category' => 'required|string|max:50',
             'data.tugas' => 'required|array|min:1',
             'data.tugas.*' => 'required|string|max:500',
             'data.magangTasks' => 'required|array|min:1',

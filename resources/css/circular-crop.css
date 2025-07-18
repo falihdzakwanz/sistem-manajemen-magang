@@ -1,0 +1,178 @@
+/* Ultra-Responsive Circular Crop Styling - Pure Circle Only */
+.circular-crop .ReactCrop__crop-selection {
+    /* Hide the square border completely for pure circular crop */
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 50% !important;
+    transition: none !important; /* Remove transition for instant response */
+}
+
+/* Show only the circular overlay with instant feedback */
+.circular-crop .ReactCrop__crop-selection::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    border: 3px solid #2563eb;
+    border-radius: 50%;
+    box-shadow:
+        0 0 0 2px rgba(37, 99, 235, 0.2),
+        0 0 20px rgba(37, 99, 235, 0.3);
+    pointer-events: none;
+    transition: none; /* Instant visual feedback */
+}
+
+/* Hover effect for the circular border */
+.circular-crop .ReactCrop__crop-selection:hover::before {
+    border-color: #1d4ed8;
+    box-shadow:
+        0 0 0 3px rgba(29, 78, 216, 0.3),
+        0 0 25px rgba(29, 78, 216, 0.4);
+}
+
+/* Ultra-responsive drag handles - larger and zero delay */
+.circular-crop .ReactCrop__drag-handle {
+    width: 20px !important;
+    height: 20px !important;
+    background: #2563eb !important;
+    border: 3px solid white !important;
+    border-radius: 50% !important;
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        0 0 0 1px rgba(37, 99, 235, 0.3) !important;
+    cursor: grab !important;
+    transform: translate(-50%, -50%) !important;
+    transition: none !important; /* Remove transition for instant response */
+    z-index: 100 !important;
+    /* Improve click detection */
+    touch-action: none !important;
+}
+
+/* Instant hover state for drag handles */
+.circular-crop .ReactCrop__drag-handle:hover {
+    background: #1d4ed8 !important;
+    transform: translate(-50%, -50%) scale(1.25) !important;
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 0 2px rgba(29, 78, 216, 0.4) !important;
+    cursor: grabbing !important;
+}
+
+/* Active/dragging state with immediate feedback */
+.circular-crop .ReactCrop__drag-handle:active {
+    background: #1e40af !important;
+    transform: translate(-50%, -50%) scale(1.3) !important;
+    cursor: grabbing !important;
+    box-shadow:
+        0 6px 16px rgba(0, 0, 0, 0.4),
+        0 0 0 3px rgba(30, 64, 175, 0.5) !important;
+}
+
+/* Remove any ::after pseudo elements that might interfere */
+.circular-crop .ReactCrop__drag-handle::after {
+    display: none !important;
+}
+
+/* Ensure all corner handles are properly sized for easy grabbing */
+.circular-crop .ReactCrop__drag-handle.ord-nw,
+.circular-crop .ReactCrop__drag-handle.ord-ne,
+.circular-crop .ReactCrop__drag-handle.ord-se,
+.circular-crop .ReactCrop__drag-handle.ord-sw {
+    width: 22px !important;
+    height: 22px !important;
+}
+
+/* Edge handles slightly smaller but still accessible */
+.circular-crop .ReactCrop__drag-handle.ord-n,
+.circular-crop .ReactCrop__drag-handle.ord-s,
+.circular-crop .ReactCrop__drag-handle.ord-e,
+.circular-crop .ReactCrop__drag-handle.ord-w {
+    width: 18px !important;
+    height: 18px !important;
+}
+
+/* Ultra-responsive container scrolling - enhanced smooth behavior */
+.crop-container {
+    scroll-behavior: smooth !important; /* Smooth scroll for better UX */
+    scroll-padding-top: 120px; /* Increased padding for portrait images */
+    scroll-padding-bottom: 120px;
+    /* Improve scroll performance with better optimization */
+    transform: translateZ(0);
+    will-change: scroll-position;
+    /* Enhanced smooth scrolling properties */
+    -webkit-overflow-scrolling: touch; /* Better mobile scroll */
+}
+
+/* Remove any selection highlighting that might interfere */
+.circular-crop .ReactCrop__crop-selection::-moz-selection,
+.circular-crop .ReactCrop__crop-selection::selection {
+    background: transparent;
+}
+
+/* Ensure the crop area is always visible */
+.circular-crop {
+    position: relative;
+    overflow: visible;
+}
+
+/* Add visual feedback for the center point */
+.circular-crop .ReactCrop__crop-selection::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px;
+    height: 6px;
+    background: rgba(37, 99, 235, 0.8);
+    border-radius: 50%;
+    border: 2px solid white;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    z-index: 50;
+    pointer-events: none;
+}
+
+/* Click-to-move image styling with high-contrast cursor */
+.circular-crop img {
+    transition: filter 0.1s ease !important;
+    /* High contrast cursor with black outline and white fill */
+    cursor:
+        url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIi8+CjxsaW5lIHgxPSIxMiIgeTE9IjYiIHgyPSIxMiIgeTI9IjE4IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIvPgo8bGluZSB4MT0iMTIiIHkxPSI2IiB4Mj0iMTIiIHkyPSIxOCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiLz4KPGxpbmUgeDE9IjYiIHkxPSIxMiIgeDI9IjE4IiB5Mj0iMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxsaW5lIHgxPSI2IiB5MT0iMTIiIHgyPSIxOCIgeTI9IjEyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPgo8L3N2Zz4K')
+            12 12,
+        crosshair !important;
+}
+
+.circular-crop img:hover {
+    filter: brightness(1.05) !important;
+    /* Same high-contrast cursor on hover */
+    cursor:
+        url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTIiIGN5PSIxMiIgcj0iMTAiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIiBmaWxsPSJub25lIi8+CjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjgiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIiBmaWxsPSJub25lIi8+CjxsaW5lIHgxPSIxMiIgeTE9IjYiIHgyPSIxMiIgeTI9IjE4IiBzdHJva2U9IiMwMDAiIHN0cm9rZS13aWR0aD0iMiIvPgo8bGluZSB4MT0iMTIiIHkxPSI2IiB4Mj0iMTIiIHkyPSIxOCIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiLz4KPGxpbmUgeDE9IjYiIHkxPSIxMiIgeDI9IjE4IiB5Mj0iMTIiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxsaW5lIHgxPSI2IiB5MT0iMTIiIHgyPSIxOCIgeTI9IjEyIiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPgo8L3N2Zz4K')
+            12 12,
+        crosshair !important;
+}
+
+.circular-crop img:active {
+    filter: brightness(0.95) !important;
+    /* Smaller crosshair when clicking */
+    cursor:
+        url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAiIGhlaWdodD0iMjAiIHZpZXdCb3g9IjAgMCAyMCAyMCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iOCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiLz4KPGNpcmNsZSBjeD0iMTAiIGN5PSIxMCIgcj0iNiIgc3Ryb2tlPSIjZmZmIiBzdHJva2Utd2lkdGg9IjEiIGZpbGw9Im5vbmUiLz4KPGxpbmUgeDE9IjEwIiB5MT0iNCIgeDI9IjEwIiB5Mj0iMTYiIHN0cm9rZT0iIzAwMCIgc3Ryb2tlLXdpZHRoPSIyIi8+CjxsaW5lIHgxPSIxMCIgeTE9IjQiIHgyPSIxMCIgeTI9IjE2IiBzdHJva2U9IiNmZmYiIHN0cm9rZS13aWR0aD0iMSIvPgo8bGluZSB4MT0iNCIgeTE9IjEwIiB4Mj0iMTYiIHkyPSIxMCIgc3Ryb2tlPSIjMDAwIiBzdHJva2Utd2lkdGg9IjIiLz4KPGxpbmUgeDE9IjQiIHkxPSIxMCIgeDI9IjE2IiB5Mj0iMTAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIxIi8+Cjwvc3ZnPgo=')
+            10 10,
+        crosshair !important;
+}
+
+/* Add subtle overlay hint for click-to-move */
+.circular-crop:hover::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(37, 99, 235, 0.02);
+    pointer-events: none;
+    z-index: 1;
+    border-radius: 8px;
+}

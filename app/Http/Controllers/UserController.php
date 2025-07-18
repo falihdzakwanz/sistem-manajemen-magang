@@ -33,43 +33,195 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'nama'             => 'required|string|max:255',
-            'nim'              => 'required|string',
-            'universitas'      => 'required|string|max:255',
-            'jurusan'          => 'required|string|max:255',
-            'email'            => 'required|email',
-            'telepon'          => 'required|string|max:20',
-            'tanggal_daftar'   => 'required|date',
-            'tanggal_mulai'    => 'required|date',
-            'tanggal_selesai'  => 'required|date|after_or_equal:tanggal_mulai',
-            'bidang_id'        => 'required|string',
-            'surat_pengantar'  => 'required|file|mimes:pdf,doc,docx|max:5120',
-            'cv'               => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-            'linkedin'         => 'nullable|url|max:255',
-            'motivasi'         => 'required|string|max:1000',
-        ]);
+        try {
+            // Cek upload error sebelum validasi
+            if ($request->hasFile('surat_pengantar')) {
+                $file = $request->file('surat_pengantar');
+                $uploadError = $file->getError();
 
-        // Simpan file surat pengantar
-        if ($request->hasFile('surat_pengantar')) {
-            $file = $request->file('surat_pengantar');
-            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $validated['surat_pengantar'] = $file->storeAs('surat-pengantar', $filename, 'public');
+                if ($uploadError !== UPLOAD_ERR_OK) {
+                    $errorMessages = [
+                        UPLOAD_ERR_INI_SIZE => 'File surat pengantar terlalu besar untuk konfigurasi server (max: ' . ini_get('upload_max_filesize') . '). Ukuran file Anda: ' . round($file->getSize() / 1024 / 1024, 2) . 'MB',
+                        UPLOAD_ERR_FORM_SIZE => 'File surat pengantar melebihi ukuran maksimum yang diizinkan form',
+                        UPLOAD_ERR_PARTIAL => 'File surat pengantar hanya terupload sebagian, silakan coba lagi',
+                        UPLOAD_ERR_NO_FILE => 'Tidak ada file surat pengantar yang dipilih',
+                        UPLOAD_ERR_NO_TMP_DIR => 'Folder sementara tidak tersedia di server',
+                        UPLOAD_ERR_CANT_WRITE => 'Gagal menulis file ke disk server',
+                        UPLOAD_ERR_EXTENSION => 'Upload dihentikan oleh ekstensi PHP'
+                    ];
+
+                    $message = $errorMessages[$uploadError] ?? 'Error upload tidak diketahui (Code: ' . $uploadError . ')';
+                    throw new \Exception($message);
+                }
+
+                // Validasi MIME type ketat untuk security
+                $allowedMimeTypes = ['application/pdf'];
+                if (!in_array($file->getMimeType(), $allowedMimeTypes)) {
+                    throw new \Exception('Tipe file tidak valid. Hanya PDF asli yang diizinkan. Tipe file Anda: ' . $file->getMimeType());
+                }
+
+                // Validasi ekstensi file
+                $allowedExtensions = ['pdf'];
+                $fileExtension = strtolower($file->getClientOriginalExtension());
+                if (!in_array($fileExtension, $allowedExtensions)) {
+                    throw new \Exception('Ekstensi file tidak valid. Hanya file .pdf yang diizinkan.');
+                }
+
+                // Validasi ukuran file (2MB)
+                $maxSizeBytes = 2 * 1024 * 1024; // 2MB
+                if ($file->getSize() > $maxSizeBytes) {
+                    throw new \Exception('Ukuran file surat pengantar terlalu besar. Maksimal 2MB, file Anda: ' . round($file->getSize() / 1024 / 1024, 2) . 'MB');
+                }
+            }
+
+            if ($request->hasFile('cv')) {
+                $cvFile = $request->file('cv');
+                $uploadError = $cvFile->getError();
+
+                if ($uploadError !== UPLOAD_ERR_OK) {
+                    $errorMessages = [
+                        UPLOAD_ERR_INI_SIZE => 'File CV terlalu besar untuk konfigurasi server (max: ' . ini_get('upload_max_filesize') . '). Ukuran file Anda: ' . round($cvFile->getSize() / 1024 / 1024, 2) . 'MB',
+                        UPLOAD_ERR_FORM_SIZE => 'File CV melebihi ukuran maksimum yang diizinkan form',
+                        UPLOAD_ERR_PARTIAL => 'File CV hanya terupload sebagian, silakan coba lagi',
+                        UPLOAD_ERR_NO_TMP_DIR => 'Folder sementara tidak tersedia di server',
+                        UPLOAD_ERR_CANT_WRITE => 'Gagal menulis file ke disk server',
+                        UPLOAD_ERR_EXTENSION => 'Upload dihentikan oleh ekstensi PHP'
+                    ];
+
+                    $message = $errorMessages[$uploadError] ?? 'Error upload CV tidak diketahui (Code: ' . $uploadError . ')';
+                    throw new \Exception($message);
+                }
+
+                // Validasi MIME type ketat untuk security
+                $allowedMimeTypes = ['application/pdf'];
+                if (!in_array($cvFile->getMimeType(), $allowedMimeTypes)) {
+                    throw new \Exception('Tipe file CV tidak valid. Hanya PDF asli yang diizinkan. Tipe file Anda: ' . $cvFile->getMimeType());
+                }
+
+                // Validasi ekstensi file
+                $allowedExtensions = ['pdf'];
+                $fileExtension = strtolower($cvFile->getClientOriginalExtension());
+                if (!in_array($fileExtension, $allowedExtensions)) {
+                    throw new \Exception('Ekstensi file CV tidak valid. Hanya file .pdf yang diizinkan.');
+                }
+
+                // Validasi ukuran file (2MB)
+                $maxSizeBytes = 2 * 1024 * 1024; // 2MB
+                if ($cvFile->getSize() > $maxSizeBytes) {
+                    throw new \Exception('Ukuran file CV terlalu besar. Maksimal 2MB, file Anda: ' . round($cvFile->getSize() / 1024 / 1024, 2) . 'MB');
+                }
+            }
+
+            Log::info('File upload attempt:', [
+                'files' => $request->allFiles(),
+                'surat_pengantar_info' => $request->hasFile('surat_pengantar') ? [
+                    'original_name' => $request->file('surat_pengantar')->getClientOriginalName(),
+                    'mime_type' => $request->file('surat_pengantar')->getMimeType(),
+                    'size' => $request->file('surat_pengantar')->getSize(),
+                    'extension' => $request->file('surat_pengantar')->getClientOriginalExtension(),
+                ] : 'No file'
+            ]);
+
+            $validated = $request->validate([
+                'nama'             => 'required|string|max:255',
+                'nim'              => 'required|string',
+                'universitas'      => 'required|string|max:255',
+                'jurusan'          => 'required|string|max:255',
+                'email'            => 'required|email',
+                'telepon'          => 'required|string|max:20',
+                'tanggal_daftar'   => 'required|date',
+                'tanggal_mulai'    => 'required|date',
+                'tanggal_selesai'  => 'required|date|after_or_equal:tanggal_mulai',
+                'bidang_id'        => 'required|string',
+                'surat_pengantar'  => 'required|file|mimes:pdf|max:2048',
+                'cv'               => 'nullable|file|mimes:pdf|max:2048',
+                'linkedin'         => 'nullable|url|max:255',
+                'motivasi'         => 'required|string|max:1000',
+            ]);
+
+            // Simpan file surat pengantar
+            if ($request->hasFile('surat_pengantar')) {
+                $file = $request->file('surat_pengantar');
+
+                Log::info('Processing surat_pengantar file:', [
+                    'name' => $file->getClientOriginalName(),
+                    'size' => $file->getSize(),
+                    'mime' => $file->getMimeType(),
+                    'valid' => $file->isValid(),
+                    'error' => $file->getError()
+                ]);
+
+                if (!$file->isValid()) {
+                    throw new \Exception('File surat pengantar tidak valid: ' . $file->getErrorMessage());
+                }
+
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $validated['surat_pengantar'] = $file->storeAs('surat-pengantar', $filename, 'public');
+
+                Log::info('Surat pengantar stored successfully:', ['path' => $validated['surat_pengantar']]);
+            }
+
+            // Simpan file CV jika ada
+            if ($request->hasFile('cv')) {
+                $cv = $request->file('cv');
+
+                Log::info('Processing CV file:', [
+                    'name' => $cv->getClientOriginalName(),
+                    'size' => $cv->getSize(),
+                    'mime' => $cv->getMimeType(),
+                    'valid' => $cv->isValid(),
+                    'error' => $cv->getError()
+                ]);
+
+                if (!$cv->isValid()) {
+                    throw new \Exception('File CV tidak valid: ' . $cv->getErrorMessage());
+                }
+
+                $cvname = pathinfo($cv->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $cv->getClientOriginalExtension();
+                $validated['cv'] = $cv->storeAs('cv', $cvname, 'public');
+
+                Log::info('CV stored successfully:', ['path' => $validated['cv']]);
+            }
+
+            // Tambahkan status default
+            $validated['status'] = 'Menunggu';
+
+            $user = User::create($validated);
+
+            Log::info('User created successfully:', ['user_id' => $user->id]);
+
+            return redirect()->route('daftar-magang')->with('success', 'Pendaftaran magang berhasil disubmit!');
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            Log::error('Validation error:', [
+                'errors' => $e->errors(),
+                'input' => $request->except(['surat_pengantar', 'cv'])
+            ]);
+
+            $errorMessages = [];
+            foreach ($e->errors() as $field => $messages) {
+                if ($field === 'surat_pengantar') {
+                    $errorMessages[] = 'Surat pengantar: ' . implode(', ', $messages);
+                } elseif ($field === 'cv') {
+                    $errorMessages[] = 'CV: ' . implode(', ', $messages);
+                } else {
+                    $errorMessages[] = ucfirst($field) . ': ' . implode(', ', $messages);
+                }
+            }
+
+            return redirect()->back()
+                ->withErrors($e->errors())
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . implode(' | ', $errorMessages));
+        } catch (\Exception $e) {
+            Log::error('General error in store:', [
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
+
+            return redirect()->back()
+                ->withInput()
+                ->with('error', $e->getMessage());
         }
-
-        // Simpan file CV jika ada
-        if ($request->hasFile('cv')) {
-            $cv = $request->file('cv');
-            $cvname = pathinfo($cv->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $cv->getClientOriginalExtension();
-            $validated['cv'] = $cv->storeAs('cv', $cvname, 'public');
-        }
-
-        // Tambahkan status default
-        $validated['status'] = 'Menunggu';
-
-        User::create($validated);
-
-        return redirect()->route('daftar-magang')->with('success', 'Pendaftaran magang berhasil disubmit!');
     }
 
     /**
@@ -175,33 +327,89 @@ class UserController extends Controller
                 'tanggal_mulai'    => 'required|date',
                 'tanggal_selesai'  => 'required|date|after_or_equal:tanggal_mulai',
                 'bidang_id'        => 'required|integer',
-                'surat_pengantar'  => 'nullable|file|mimes:pdf,doc,docx|max:5120',
-                'cv'               => 'nullable|file|mimes:pdf,doc,docx|max:5120',
+                'surat_pengantar'  => 'nullable|file|mimes:pdf|max:2048',
+                'cv'               => 'nullable|file|mimes:pdf|max:2048',
                 'linkedin'         => 'nullable|url|max:255',
                 'motivasi'         => 'required|string|max:1000',
             ]);
 
             // Handle file uploads
             if ($request->hasFile('surat_pengantar')) {
+                // Security validation for surat_pengantar
+                $file = $request->file('surat_pengantar');
+
+                // Enhanced MIME type validation for security
+                $allowedMimeTypes = ['application/pdf'];
+                if (!in_array($file->getClientMimeType(), $allowedMimeTypes)) {
+                    return redirect()->back()->withErrors(['surat_pengantar' => 'File surat pengantar must be in PDF format only.']);
+                }
+
+                // Additional MIME type check using finfo
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $fileMimeType = finfo_file($finfo, $file->getPathname());
+                finfo_close($finfo);
+
+                if (!in_array($fileMimeType, $allowedMimeTypes)) {
+                    return redirect()->back()->withErrors(['surat_pengantar' => 'File surat pengantar type validation failed. Only PDF files are allowed.']);
+                }
+
+                // File extension validation
+                $extension = strtolower($file->getClientOriginalExtension());
+                if ($extension !== 'pdf') {
+                    return redirect()->back()->withErrors(['surat_pengantar' => 'File surat pengantar must have .pdf extension.']);
+                }
+
+                // File size validation (2MB = 2048KB)
+                if ($file->getSize() > 2048 * 1024) {
+                    return redirect()->back()->withErrors(['surat_pengantar' => 'File surat pengantar must not exceed 2MB.']);
+                }
+
                 // Hapus file lama jika ada
                 if ($user->surat_pengantar && Storage::disk('public')->exists($user->surat_pengantar)) {
                     Storage::disk('public')->delete($user->surat_pengantar);
                 }
 
-                $file = $request->file('surat_pengantar');
                 $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
                 $validated['surat_pengantar'] = $file->storeAs('surat-pengantar', $filename, 'public');
             }
 
             if ($request->hasFile('cv')) {
+                // Security validation for CV
+                $file = $request->file('cv');
+
+                // Enhanced MIME type validation for security
+                $allowedMimeTypes = ['application/pdf'];
+                if (!in_array($file->getClientMimeType(), $allowedMimeTypes)) {
+                    return redirect()->back()->withErrors(['cv' => 'File CV must be in PDF format only.']);
+                }
+
+                // Additional MIME type check using finfo
+                $finfo = finfo_open(FILEINFO_MIME_TYPE);
+                $fileMimeType = finfo_file($finfo, $file->getPathname());
+                finfo_close($finfo);
+
+                if (!in_array($fileMimeType, $allowedMimeTypes)) {
+                    return redirect()->back()->withErrors(['cv' => 'File CV type validation failed. Only PDF files are allowed.']);
+                }
+
+                // File extension validation
+                $extension = strtolower($file->getClientOriginalExtension());
+                if ($extension !== 'pdf') {
+                    return redirect()->back()->withErrors(['cv' => 'File CV must have .pdf extension.']);
+                }
+
+                // File size validation (2MB = 2048KB)
+                if ($file->getSize() > 2048 * 1024) {
+                    return redirect()->back()->withErrors(['cv' => 'File CV must not exceed 2MB.']);
+                }
+
                 // Hapus file lama jika ada
                 if ($user->cv && Storage::disk('public')->exists($user->cv)) {
                     Storage::disk('public')->delete($user->cv);
                 }
 
-                $cv = $request->file('cv');
-                $cvname = pathinfo($cv->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $cv->getClientOriginalExtension();
-                $validated['cv'] = $cv->storeAs('cv', $cvname, 'public');
+                $cvname = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $validated['cv'] = $file->storeAs('cv', $cvname, 'public');
             }
 
             // Reset status ke 'Menunggu' dan hapus alasan penolakan serta token edit

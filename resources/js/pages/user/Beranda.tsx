@@ -23,6 +23,7 @@ interface BerandaContentData {
             kepala: string;
             icon: string;
             color: string;
+            category: string; // Added category field
             tugas: string[];
             magangTasks: string[];
             staffFungsional: string[];
@@ -31,7 +32,7 @@ interface BerandaContentData {
 }
 
 const Beranda = () => {
-    const [selectedBidang, setSelectedBidang] = useState<number | null>(null);
+    const [selectedBidang, setSelectedBidang] = useState<string | null>(null); // Changed from number to string
     const modalContentRef = useRef<HTMLDivElement>(null);
     const [berandaContent, setBerandaContent] = useState<BerandaContentData | null>(null);
     const [loading, setLoading] = useState(true);
@@ -61,34 +62,11 @@ const Beranda = () => {
         fetchBerandaContent();
     }, []);
 
-    // Convert beranda content to the format expected by the rest of the component
-    const bidangData: Record<
-        number,
-        {
-            title: string;
-            kepala: string;
-            icon: string;
-            color: string;
-            description: string;
-            tugas: string[];
-            magangTasks: string[];
-            staffFungsional: string[];
-        }
-    > = {};
-    if (berandaContent) {
-        berandaContent.bidangData.forEach((bidang, index) => {
-            bidangData[index + 1] = {
-                title: bidang.title,
-                kepala: bidang.data.kepala,
-                icon: bidang.data.icon,
-                color: bidang.data.color,
-                description: bidang.description,
-                tugas: bidang.data.tugas,
-                magangTasks: bidang.data.magangTasks,
-                staffFungsional: bidang.data.staffFungsional,
-            };
-        });
-    }
+    // Get bidang data for modal
+    const getSelectedBidangData = () => {
+        if (!selectedBidang || !berandaContent) return null;
+        return berandaContent.bidangData.find((bidang) => bidang.key === selectedBidang);
+    };
 
     // Get struktur organisasi data with category grouping
     const getStrukturData = (key: string) => {
@@ -132,8 +110,8 @@ const Beranda = () => {
     const jabatanFungsionalItems = getStrukturByCategory('jabatan_fungsional');
     const kepalaBidangItems = getStrukturByCategory('kepala_bidang');
 
-    const openModal = (bidangId: number) => {
-        setSelectedBidang(bidangId);
+    const openModal = (bidangKey: string) => {
+        setSelectedBidang(bidangKey);
         document.body.style.overflow = 'hidden';
     };
 
@@ -673,18 +651,32 @@ const Beranda = () => {
                         <div className="mb-16">
                             <h4 className="mb-10 text-center text-2xl font-bold text-gray-800">Bidang Penempatan</h4>
 
+                            {/* Render all bidang in simple grid */}
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-                                {Object.entries(bidangData).map(([bidangId, bidang]) => {
-                                    // Get color index based on bidang ID
-                                    const colorIndex = (parseInt(bidangId) - 1) % 6;
+                                {berandaContent?.bidangData.map((bidang, index) => {
+                                    // Get color based on bidang's stored color or fallback to color index
+                                    const colorIndex = index % 6;
 
-                                    // Define color classes explicitly to ensure they're included in build
+                                    // Define color classes based on stored color or use fallback
                                     let cardClasses = '';
                                     let iconClasses = '';
                                     let badgeClasses = '';
                                     let buttonClasses = '';
 
-                                    switch (colorIndex) {
+                                    // Use stored color if available, otherwise use index-based colors
+                                    const colorMap: Record<string, number> = {
+                                        orange: 0,
+                                        blue: 1,
+                                        purple: 2,
+                                        green: 3,
+                                        red: 4,
+                                        indigo: 5,
+                                        teal: 5,
+                                        yellow: 4,
+                                    };
+                                    const finalColorIndex = colorMap[bidang.data.color] !== undefined ? colorMap[bidang.data.color] : colorIndex;
+
+                                    switch (finalColorIndex) {
                                         case 0: // Orange
                                             cardClasses = 'border-orange-100 bg-gradient-to-br from-white to-orange-50';
                                             iconClasses = 'bg-gradient-to-br from-orange-500 to-orange-600';
@@ -729,34 +721,38 @@ const Beranda = () => {
                                     }
 
                                     return (
-                                        <div key={bidangId} className="mx-auto flex max-w-xs justify-center">
+                                        <div key={bidang.key} className="mx-auto flex max-w-xs justify-center">
                                             <div
                                                 className={`flex min-h-[350px] w-80 cursor-pointer flex-col justify-between rounded-2xl border-2 ${cardClasses} p-6 text-center shadow-lg transition-all duration-300 hover:scale-105 hover:shadow-xl`}
-                                                onClick={() => openModal(parseInt(bidangId))}
+                                                onClick={() => openModal(bidang.key)}
                                             >
                                                 <div className="flex flex-col items-center">
                                                     <div
                                                         className={`mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full ${iconClasses} shadow-md`}
                                                     >
-                                                        <IconDisplay iconName={bidang.icon} className="h-10 w-10 text-white" />
+                                                        <IconDisplay iconName={bidang.data.icon} className="h-10 w-10 text-white" />
                                                     </div>
-                                                    <div className={`mb-2 inline-block rounded-full ${badgeClasses} px-3 py-1 text-xs font-semibold`}>
-                                                        Bidang {bidangId}
-                                                    </div>
+                                                    {bidang.data.category && (
+                                                        <div
+                                                            className={`mb-2 inline-block rounded-full ${badgeClasses} px-3 py-1 text-xs font-semibold`}
+                                                        >
+                                                            {bidang.data.category}
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 <div className="flex flex-1 flex-col justify-center">
                                                     <h4 className="mb-2 line-clamp-2 text-lg font-bold text-gray-800">{bidang.title}</h4>
-                                                    <p className="mb-3 text-sm font-medium text-gray-600">Kepala: {bidang.kepala}</p>
+                                                    <p className="mb-3 text-sm font-medium text-gray-600">Kepala: {bidang.data.kepala}</p>
                                                     <p className="mb-3 line-clamp-2 text-xs text-gray-500">{bidang.description}</p>
                                                     <div className="text-xs text-gray-400">
-                                                        {bidang.tugas.length} tugas • {bidang.magangTasks.length} kegiatan magang
+                                                        {bidang.data.tugas.length} tugas • {bidang.data.magangTasks.length} kegiatan magang
                                                     </div>
                                                 </div>
                                                 <div className="mt-4">
                                                     <div
                                                         className={`inline-flex items-center rounded-full ${buttonClasses} px-4 py-2 text-xs font-semibold transition-all duration-300 hover:scale-105`}
                                                     >
-                                                        <span>Lihat Detail</span>
+                                                        Lihat Detail
                                                         <svg
                                                             className="ml-2 h-3 w-3 transition-transform group-hover:translate-x-1"
                                                             fill="none"
@@ -778,7 +774,7 @@ const Beranda = () => {
             </section>
 
             {/* Modal Detail Bidang */}
-            {selectedBidang && (
+            {selectedBidang && getSelectedBidangData() && (
                 <div
                     className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm"
                     onClick={closeModal}
@@ -799,7 +795,8 @@ const Beranda = () => {
                                     yellow: 'from-yellow-500 to-yellow-600',
                                     indigo: 'from-indigo-500 to-indigo-600',
                                     teal: 'from-teal-500 to-teal-600',
-                                }[bidangData[selectedBidang]?.color] || 'from-blue-500 to-blue-600'
+                                    orange: 'from-orange-500 to-orange-600',
+                                }[getSelectedBidangData()?.data.color || 'blue'] || 'from-blue-500 to-blue-600'
                             } p-8 text-white`}
                         >
                             <button
@@ -810,10 +807,10 @@ const Beranda = () => {
                             </button>
                             <div className="text-center">
                                 <div className="mb-4">
-                                    <IconDisplay iconName={bidangData[selectedBidang]?.icon || ''} className="mx-auto h-16 w-16 text-white" />
+                                    <IconDisplay iconName={getSelectedBidangData()?.data.icon || ''} className="mx-auto h-16 w-16 text-white" />
                                 </div>
-                                <h2 className="text-3xl font-bold">{bidangData[selectedBidang]?.title}</h2>
-                                <p className="mt-2 text-xl opacity-90">Kepala Bidang: {bidangData[selectedBidang]?.kepala}</p>
+                                <h2 className="text-3xl font-bold">{getSelectedBidangData()?.title}</h2>
+                                <p className="mt-2 text-xl opacity-90">Kepala Bidang: {getSelectedBidangData()?.data.kepala}</p>
                             </div>
                         </div>
 
@@ -822,7 +819,7 @@ const Beranda = () => {
                             {/* Deskripsi Bidang */}
                             <div className="mb-8">
                                 <h3 className="mb-4 text-2xl font-bold text-gray-800">Tentang Bidang</h3>
-                                <p className="text-lg leading-relaxed text-gray-600">{bidangData[selectedBidang]?.description}</p>
+                                <p className="text-lg leading-relaxed text-gray-600">{getSelectedBidangData()?.description}</p>
                             </div>
 
                             <div className="grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -833,7 +830,7 @@ const Beranda = () => {
                                         Tugas dan Tanggung Jawab
                                     </h4>
                                     <ul className="space-y-3">
-                                        {bidangData[selectedBidang]?.tugas.map((tugas: string, index: number) => (
+                                        {getSelectedBidangData()?.data.tugas.map((tugas: string, index: number) => (
                                             <li key={index} className="flex items-start">
                                                 <span className="mt-1 mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-600">
                                                     {index + 1}
@@ -851,7 +848,7 @@ const Beranda = () => {
                                         Staff Fungsional
                                     </h4>
                                     <ul className="space-y-3">
-                                        {bidangData[selectedBidang]?.staffFungsional.map((staff: string, index: number) => (
+                                        {getSelectedBidangData()?.data.staffFungsional.map((staff: string, index: number) => (
                                             <li key={index} className="flex items-start">
                                                 <span className="mt-1 mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-yellow-100 text-sm font-semibold text-yellow-600">
                                                     {index + 1}
@@ -869,7 +866,7 @@ const Beranda = () => {
                                         Kegiatan Magang
                                     </h4>
                                     <ul className="space-y-3">
-                                        {bidangData[selectedBidang]?.magangTasks.map((task: string, index: number) => (
+                                        {getSelectedBidangData()?.data.magangTasks.map((task: string, index: number) => (
                                             <li key={index} className="flex items-start">
                                                 <span className="mt-1 mr-3 flex h-6 w-6 items-center justify-center rounded-full bg-green-100 text-sm font-semibold text-green-600">
                                                     {index + 1}

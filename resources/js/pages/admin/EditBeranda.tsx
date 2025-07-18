@@ -39,6 +39,7 @@ interface BidangData {
         kepala: string;
         icon: string;
         color: string;
+        category: string; // Added category field
         tugas: string[];
         magangTasks: string[];
         staffFungsional: string[];
@@ -94,6 +95,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             kepala: '',
             icon: '',
             color: '',
+            category: '', // Added category field
             tugas: [''],
             magangTasks: [''],
             staffFungsional: [''],
@@ -127,6 +129,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             bidangForm.data.kepala !== originalBidangData.data.kepala ||
             bidangForm.data.icon !== originalBidangData.data.icon ||
             bidangForm.data.color !== originalBidangData.data.color ||
+            bidangForm.data.category !== originalBidangData.data.category ||
             JSON.stringify(bidangForm.data.tugas) !== JSON.stringify(originalBidangData.data.tugas) ||
             JSON.stringify(bidangForm.data.magangTasks) !== JSON.stringify(originalBidangData.data.magangTasks) ||
             JSON.stringify(bidangForm.data.staffFungsional) !== JSON.stringify(originalBidangData.data.staffFungsional)
@@ -183,7 +186,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
         if (!searchBidang.trim()) {
             return bidangData;
         }
-        
+
         return bidangData.filter((item) => {
             const searchTerm = searchBidang.toLowerCase();
             return (
@@ -464,6 +467,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 kepala: item.data.kepala,
                 icon: item.data.icon,
                 color: item.data.color,
+                category: item.data.category || '', // Load existing category or empty string
                 tugas: [...item.data.tugas],
                 magangTasks: [...item.data.magangTasks],
                 staffFungsional: [...item.data.staffFungsional],
@@ -501,6 +505,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 kepala: '',
                 icon: 'building2',
                 color: 'blue',
+                category: '', // Empty default category for manual input
                 tugas: [''],
                 magangTasks: [''],
                 staffFungsional: [''],
@@ -738,6 +743,12 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
     const handleSaveBidang = async () => {
         if (!bidangForm.title.trim() || !bidangForm.description.trim() || !bidangForm.data.kepala.trim()) {
             alert('Mohon lengkapi nama bidang, deskripsi, dan nama kepala bidang!');
+            return;
+        }
+
+        // Validasi category wajib diisi
+        if (!bidangForm.data.category.trim()) {
+            alert('Mohon masukkan kategori bidang!');
             return;
         }
 
@@ -1182,8 +1193,9 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                         return configA.categoryOrder - configB.categoryOrder;
                                     }
 
-                                    // Secondary sort by key for items in same category (for consistent ordering)
-                                    return a.key.localeCompare(b.key);
+                                    // Secondary sort by ID for items in same category (for database insertion order)
+                                    // This ensures new items follow the existing ones in chronological order
+                                    return a.id - b.id;
                                 })
                                 .map((item) => {
                                     // Dynamic display configuration based on stored category data first, then key detection
@@ -1326,7 +1338,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                                 const strukturConfig = getItemConfig(strukturItem);
                                                 return strukturConfig.category === 'Kepala Bidang';
                                             })
-                                            .sort((a, b) => a.key.localeCompare(b.key)); // Sort by key for consistent ordering
+                                            .sort((a, b) => a.id - b.id); // Sort by ID for database insertion order (consistent with main sorting)
 
                                         const currentIndex = kepalaBidangItems.findIndex((bidangItem) => bidangItem.id === item.id);
                                         return currentIndex >= 0 ? currentIndex + 1 : null;
@@ -1881,6 +1893,25 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                                 <option value="teal">Teal</option>
                                             </select>
                                         </div>
+
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">
+                                                Kategori Bidang <span className="text-red-500">*</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                required
+                                                value={bidangForm.data.category}
+                                                onChange={(e) =>
+                                                    setBidangForm((prev) => ({
+                                                        ...prev,
+                                                        data: { ...prev.data, category: e.target.value },
+                                                    }))
+                                                }
+                                                placeholder="Contoh: Kesekretariatan, Bidang Keuangan, Bidang Umum, dll."
+                                                className="mt-1 w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-800"
+                                            />
+                                        </div>
                                     </div>
 
                                     <div>
@@ -2033,6 +2064,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                     cropWidth={300}
                     cropHeight={300}
                     title={isEditingExistingPhoto ? 'Edit Foto' : 'Crop Foto Baru'}
+                    circularCrop={true}
                 />
             )}
 

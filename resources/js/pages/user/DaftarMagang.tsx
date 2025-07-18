@@ -491,11 +491,11 @@ export default function DaftarMagang({ bidangs = [], editData, isEdit = false }:
                                 label="Surat Pengantar dari Kampus/Sekolah"
                                 onChange={(file: File | null) => setData('surat_pengantar', file)}
                                 error={errors.surat_pengantar}
-                                accept=".pdf,.doc,.docx"
+                                accept=".pdf"
                                 helpText={
                                     isEdit && editData?.surat_pengantar
-                                        ? `File saat ini: ${editData.surat_pengantar.split('/').pop()} | Format: PDF, DOC, DOCX (Max: 5MB)`
-                                        : 'Format: PDF, DOC, DOCX (Max: 5MB)'
+                                        ? `File saat ini: ${editData.surat_pengantar.split('/').pop()} | Format: PDF saja (Max: 2MB)`
+                                        : 'Format: PDF saja (Max: 2MB)'
                                 }
                                 required={!isEdit}
                             />
@@ -505,11 +505,11 @@ export default function DaftarMagang({ bidangs = [], editData, isEdit = false }:
                                 label="CV (Opsional)"
                                 onChange={(file: File | null) => setData('cv', file)}
                                 error={errors.cv}
-                                accept=".pdf,.doc,.docx"
+                                accept=".pdf"
                                 helpText={
                                     isEdit && editData?.cv
-                                        ? `File saat ini: ${editData.cv.split('/').pop()} | Format: PDF, DOC, DOCX (Max: 5MB)`
-                                        : 'Format: PDF, DOC, DOCX (Max: 5MB)'
+                                        ? `File saat ini: ${editData.cv.split('/').pop()} | Format: PDF saja (Max: 2MB)`
+                                        : 'Format: PDF saja (Max: 2MB)'
                                 }
                             />
 
