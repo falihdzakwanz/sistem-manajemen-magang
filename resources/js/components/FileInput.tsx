@@ -1,4 +1,5 @@
 // components/FileInput.tsx
+import { Upload } from 'lucide-react';
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
 
 export interface FileInputProps {
@@ -89,14 +90,29 @@ const FileInput = forwardRef<FileInputHandle, FileInputProps>(({ label, onChange
                 {label} {required && <span className="text-red-500">*</span>}
             </label>
 
-            <div className="flex items-center space-x-3">
+            {/* Desktop layout - horizontal */}
+            <div className="hidden md:flex md:items-center md:space-x-3">
                 <label
                     htmlFor={`file-${label.replace(/\s+/g, '-').toLowerCase()}`}
-                    className="inline-block cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white hover:bg-blue-700"
+                    className="file-input-button inline-block flex-shrink-0 cursor-pointer rounded-md bg-blue-600 px-4 py-2 text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700"
                 >
                     Choose File
                 </label>
-                <span className="text-sm text-gray-700">{fileName}</span>
+                <span className="min-w-0 flex-1 truncate text-sm text-gray-700">{fileName}</span>
+            </div>
+
+            {/* Mobile layout - vertical */}
+            <div className="space-y-2 md:hidden">
+                <label
+                    htmlFor={`file-${label.replace(/\s+/g, '-').toLowerCase()}`}
+                    className="file-input-button touch-action-manipulation inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-3 text-center text-sm font-semibold text-white transition-colors duration-200 hover:bg-blue-700 active:bg-blue-800"
+                >
+                    <Upload size={16} />
+                    Choose File
+                </label>
+                <div className="flex min-h-[2.5rem] w-full items-center rounded-md border border-gray-200 bg-gray-50 px-3 py-2">
+                    <span className="file-input-mobile text-sm leading-relaxed text-gray-700">{fileName}</span>
+                </div>
             </div>
 
             <input
@@ -109,7 +125,7 @@ const FileInput = forwardRef<FileInputHandle, FileInputProps>(({ label, onChange
                 className="hidden"
             />
 
-            {helpText && <p className="mt-1 text-xs text-gray-500">{helpText}</p>}
+            {helpText && <p className="mt-2 text-xs leading-relaxed text-gray-500">{helpText}</p>}
             {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
         </div>
     );

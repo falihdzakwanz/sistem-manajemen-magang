@@ -657,8 +657,9 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
         <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50">
             {/* ===== HEADER SECTION ===== */}
             <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white shadow-2xl">
-                <div className="container mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
+                <div className="container mx-auto px-4 py-4 lg:px-6">
+                    {/* Desktop Layout */}
+                    <div className="hidden items-center justify-between md:flex">
                         {/* Logo dan Judul */}
                         <div className="flex items-center space-x-4">
                             <button
@@ -679,7 +680,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                         {/* Header Actions */}
                         <div className="flex items-center space-x-4">
                             {/* Welcome Message */}
-                            <div className="hidden items-center space-x-2 rounded-xl bg-white/20 px-4 py-2 backdrop-blur-sm md:flex">
+                            <div className="hidden items-center space-x-2 rounded-xl bg-white/20 px-4 py-2 backdrop-blur-sm lg:flex">
                                 <IconDisplay iconName="smile" className="h-4 w-4 text-white" />
                                 <span className="text-sm">Selamat datang,</span>
                                 <span className="font-medium">{auth?.user?.name || 'Admin'}</span>
@@ -702,7 +703,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                         },
                                     );
                                 }}
-                                className="flex items-center space-x-2 rounded-xl bg-purple-500 px-4 py-2 text-sm font-medium transition-colors hover:bg-purple-600"
+                                className="flex items-center space-x-2 rounded-xl bg-purple-500 px-3 py-2 text-sm font-medium transition-colors hover:bg-purple-600"
                                 title="Update status mahasiswa berdasarkan tanggal"
                             >
                                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -713,7 +714,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                         d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
                                     />
                                 </svg>
-                                <span>Sync Status</span>
+                                <span className="hidden lg:inline">Sync Status</span>
                             </button>
 
                             {/* Edit Beranda Button */}
@@ -721,7 +722,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                 onClick={() => {
                                     router.get('/admin/edit-beranda');
                                 }}
-                                className="flex items-center space-x-2 rounded-xl bg-green-500 px-4 py-2 text-sm font-medium transition-colors hover:bg-green-600"
+                                className="flex items-center space-x-2 rounded-xl bg-green-500 px-3 py-2 text-sm font-medium transition-colors hover:bg-green-600"
                                 title="Edit konten beranda dan struktur organisasi"
                             >
                                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -732,15 +733,115 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                                         d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                                     />
                                 </svg>
-                                <span>Edit Beranda</span>
+                                <span className="hidden lg:inline">Edit Beranda</span>
                             </button>
 
                             {/* Logout Button */}
                             <button
                                 onClick={handleLogout}
-                                className="rounded-xl bg-red-500 px-4 py-2 text-sm font-medium transition-colors hover:bg-red-600"
+                                className="flex items-center space-x-2 rounded-xl bg-red-500 px-3 py-2 text-sm font-medium transition-colors hover:bg-red-600"
+                                title="Logout"
                             >
-                                Logout
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                    />
+                                </svg>
+                                <span className="hidden lg:inline">Logout</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Mobile Layout */}
+                    <div className="md:hidden">
+                        {/* Top Row - Logo dan User Info */}
+                        <div className="mb-3 flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <button
+                                    onClick={() => router.get('/dashboard-admin')}
+                                    className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg transition-all duration-300"
+                                    title="Refresh Dashboard"
+                                >
+                                    <img src="/asset/Logo-Kominfo.png" alt="Logo Kominfo" className="h-8 w-8 object-contain" />
+                                </button>
+                                <div>
+                                    <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-lg font-bold text-transparent">
+                                        Admin Dashboard
+                                    </h1>
+                                    <p className="text-xs font-medium opacity-90">Hi, {auth?.user?.name || 'Admin'}</p>
+                                </div>
+                            </div>
+
+                            {/* Logout Button - Mobile */}
+                            <button
+                                onClick={handleLogout}
+                                className="flex items-center justify-center rounded-xl bg-red-500 p-2 transition-colors hover:bg-red-600"
+                                title="Logout"
+                            >
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                                    />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Bottom Row - Action Buttons */}
+                        <div className="flex items-center justify-center space-x-2">
+                            {/* Manual Update Status Button - Mobile */}
+                            <button
+                                onClick={() => {
+                                    router.post(
+                                        '/dashboard-admin/update-status-manual',
+                                        {},
+                                        {
+                                            preserveScroll: true,
+                                            onSuccess: () => {
+                                                console.log('Status berhasil diupdate otomatis');
+                                            },
+                                            onError: (errors) => {
+                                                console.error('Gagal update status:', errors);
+                                            },
+                                        },
+                                    );
+                                }}
+                                className="flex flex-1 items-center justify-center space-x-2 rounded-xl bg-purple-500 px-3 py-2 text-sm font-medium transition-colors hover:bg-purple-600"
+                                title="Update status mahasiswa berdasarkan tanggal"
+                            >
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                    />
+                                </svg>
+                                <span className="text-xs">Sync</span>
+                            </button>
+
+                            {/* Edit Beranda Button - Mobile */}
+                            <button
+                                onClick={() => {
+                                    router.get('/admin/edit-beranda');
+                                }}
+                                className="flex flex-1 items-center justify-center space-x-2 rounded-xl bg-green-500 px-3 py-2 text-sm font-medium transition-colors hover:bg-green-600"
+                                title="Edit konten beranda dan struktur organisasi"
+                            >
+                                <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                                    />
+                                </svg>
+                                <span className="text-xs">Edit</span>
                             </button>
                         </div>
                     </div>
@@ -850,7 +951,7 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                     </div>
 
                     {/* Tab Navigation untuk Filter Status */}
-                    <div className="flex flex-wrap gap-2 text-white">
+                    <div className="grid grid-cols-2 gap-2 text-white md:flex md:flex-wrap md:gap-2">
                         {[
                             { status: 'Menunggu', count: statistik.menunggu, color: 'orange' },
                             { status: 'Diterima', count: statistik.diterima, color: 'green' },
@@ -861,15 +962,15 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                             <button
                                 key={tab.status}
                                 onClick={() => setActiveTab(tab.status)}
-                                className={`relative flex items-center space-x-2 rounded-xl px-4 py-3 text-sm font-medium duration-200 ${
+                                className={`relative flex items-center justify-center space-x-1 rounded-xl px-2 py-2 text-xs font-medium duration-200 md:space-x-2 md:px-4 md:py-3 md:text-sm ${
                                     activeTab === tab.status
-                                        ? `bg-${tab.color}-500 text-white-700 hover:bg-${tab.color}-600`
-                                        : `bg-${tab.color}-500 text-white-700 hover:bg-${tab.color}-600`
+                                        ? `bg-${tab.color}-500 text-white hover:bg-${tab.color}-600`
+                                        : `bg-${tab.color}-500 text-white hover:bg-${tab.color}-600`
                                 }`}
                             >
-                                <span>{tab.status}</span>
+                                <span className="text-center leading-tight">{tab.status}</span>
                                 <span
-                                    className={`rounded-full px-2 py-1 text-xs font-bold text-white ${
+                                    className={`rounded-full px-1.5 py-0.5 text-xs font-bold text-white md:px-2 md:py-1 ${
                                         activeTab === tab.status ? 'bg-white/20 text-white' : `bg-${tab.color}-200 text-${tab.color}-800`
                                     }`}
                                 >
@@ -883,16 +984,21 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                 {/* ===== DATA TABLE SECTION ===== */}
                 <div className="overflow-hidden rounded-3xl border border-gray-100 bg-white shadow-xl">
                     {/* Table Header */}
-                    <div className="border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50 p-6">
-                        <h3 className="text-xl font-bold text-gray-800">Data Mahasiswa - Status: {activeTab}</h3>
-                        <p className="mt-1 text-sm text-gray-600">
-                            Menampilkan {paginatedData.length} dari {activeTabData.length} mahasiswa dengan status "{activeTab}"
-                            {searchTerm && <span className="ml-1 text-blue-600">(hasil pencarian: "{searchTerm}")</span>}
+                    <div className="border-b border-gray-200 bg-gradient-to-r from-blue-50 to-purple-50 p-4 sm:p-6">
+                        <h3 className="text-lg font-bold text-gray-800 sm:text-xl">Data Mahasiswa - Status: {activeTab}</h3>
+                        <p className="mt-1 text-xs text-gray-600 sm:text-sm">
+                            Menampilkan {startIndex + 1}-{Math.min(endIndex, activeTabData.length)} dari {activeTabData.length} mahasiswa dengan
+                            status "{activeTab}"{searchTerm && <span className="ml-1 text-blue-600">(hasil pencarian: "{searchTerm}")</span>}
+                            {totalPages > 1 && (
+                                <span className="ml-1 text-gray-500">
+                                    (Halaman {currentPage} dari {totalPages})
+                                </span>
+                            )}
                         </p>
                     </div>
 
-                    {/* Table Content */}
-                    <div className="overflow-x-auto">
+                    {/* Desktop Table View */}
+                    <div className="hidden overflow-x-auto lg:block">
                         <table className="w-full">
                             {/* Table Header */}
                             <thead className="bg-gradient-to-r from-blue-600 to-purple-600 text-white">
@@ -1000,103 +1106,170 @@ export default function DashboardAdmin({ mahasiswas = [], bidangs = [], auth }: 
                         </table>
                     </div>
 
+                    {/* Mobile Card View */}
+                    <div className="lg:hidden">
+                        {paginatedData.length > 0 ? (
+                            <div className="divide-y divide-gray-200">
+                                {paginatedData.map((mahasiswa, index) => (
+                                    <div key={mahasiswa.id} className="p-4 transition-colors duration-200 hover:bg-gray-50 sm:p-6">
+                                        <div className="flex items-start justify-between">
+                                            <div className="min-w-0 flex-1">
+                                                {/* Header dengan nomor urut dan nama */}
+                                                <div className="flex items-center space-x-2">
+                                                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-medium text-blue-800">
+                                                        {startIndex + index + 1}
+                                                    </span>
+                                                    <h3 className="truncate text-sm font-semibold text-gray-900 sm:text-base">{mahasiswa.nama}</h3>
+                                                </div>
+
+                                                {/* Informasi utama */}
+                                                <div className="mt-2 space-y-1">
+                                                    <div className="flex items-center text-xs text-gray-600 sm:text-sm">
+                                                        <span className="w-16 font-medium">NIM:</span>
+                                                        <span className="truncate">{mahasiswa.nim}</span>
+                                                    </div>
+                                                    <div className="flex items-center text-xs text-gray-600 sm:text-sm">
+                                                        <span className="w-16 font-medium">Email:</span>
+                                                        <span className="truncate">{mahasiswa.email}</span>
+                                                    </div>
+                                                    <div className="flex items-start text-xs text-gray-600 sm:text-sm">
+                                                        <span className="w-16 flex-shrink-0 font-medium">Kampus:</span>
+                                                        <span className="truncate">{mahasiswa.universitas}</span>
+                                                    </div>
+                                                    <div className="flex items-center text-xs text-gray-600 sm:text-sm">
+                                                        <span className="w-16 font-medium">Jurusan:</span>
+                                                        <span className="truncate">{mahasiswa.jurusan}</span>
+                                                    </div>
+                                                </div>
+
+                                                {/* Bidang dan periode */}
+                                                <div className="mt-3 space-y-2">
+                                                    <div className="flex items-center">
+                                                        <span className="inline-flex rounded-full bg-blue-100 px-2 py-1 text-xs font-medium text-blue-800">
+                                                            {mahasiswa.bidang}
+                                                        </span>
+                                                    </div>
+                                                    <div className="text-xs text-gray-600 sm:text-sm">
+                                                        <div className="font-medium">Periode Magang:</div>
+                                                        <div>
+                                                            {new Date(mahasiswa.tanggal_mulai).toLocaleDateString('id-ID')} -{' '}
+                                                            {new Date(mahasiswa.tanggal_selesai).toLocaleDateString('id-ID')}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Status dan action di sebelah kanan */}
+                                            <div className="ml-4 flex flex-col items-end space-y-2">
+                                                <span
+                                                    className={`inline-flex rounded-full px-2 py-1 text-xs font-medium ${getStatusColor(mahasiswa.status)}`}
+                                                >
+                                                    {mahasiswa.status}
+                                                </span>
+                                                <button
+                                                    onClick={() => openModal(mahasiswa)}
+                                                    className="rounded-lg bg-blue-600 px-3 py-1 text-xs font-medium text-white transition-colors duration-200 hover:bg-blue-700"
+                                                >
+                                                    Detail
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="p-6 text-center text-gray-500 sm:p-12">
+                                <div className="flex flex-col items-center">
+                                    <svg className="mb-4 h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path
+                                            strokeLinecap="round"
+                                            strokeLinejoin="round"
+                                            strokeWidth={2}
+                                            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                                        />
+                                    </svg>
+                                    <p className="text-lg font-medium">Tidak ada data ditemukan</p>
+                                    <p className="text-sm">Coba ubah kata kunci pencarian atau filter status</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
                     {/* ===== PAGINATION SECTION ===== */}
-                    {activeTabData.length > itemsPerPage && (
-                        <div className="border-t border-gray-200 bg-white px-4 py-3 sm:px-6">
-                            <div className="flex items-center justify-between">
-                                {/* Mobile Pagination */}
-                                <div className="flex flex-1 justify-between sm:hidden">
+                    {totalPages > 1 && (
+                        <div className="border-t border-gray-200 bg-white p-4 sm:px-6 sm:py-4">
+                            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-0">
+                                <div className="text-center text-xs text-gray-600 sm:text-left sm:text-sm">
+                                    <span className="hidden sm:inline">
+                                        Menampilkan {startIndex + 1} - {Math.min(endIndex, activeTabData.length)} dari {activeTabData.length}{' '}
+                                        mahasiswa
+                                    </span>
+                                    <span className="sm:hidden">
+                                        Halaman {currentPage} dari {totalPages}
+                                    </span>
+                                </div>
+                                <div className="flex items-center justify-center space-x-1 sm:justify-end sm:space-x-2">
+                                    {/* Previous Button */}
                                     <button
                                         onClick={goToPreviousPage}
                                         disabled={currentPage === 1}
-                                        className="relative inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                        className={`flex items-center rounded-lg px-2 py-2 text-xs font-medium transition-colors duration-200 sm:px-4 sm:text-sm ${
+                                            currentPage === 1
+                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                                        }`}
                                     >
-                                        Previous
+                                        <svg className="mr-1 h-3 w-3 sm:mr-2 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                        <span className="hidden sm:inline">Previous</span>
                                     </button>
+
+                                    {/* Page Numbers */}
+                                    <div className="flex items-center space-x-1">
+                                        {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+                                            let pageNumber;
+                                            if (totalPages <= 5) {
+                                                pageNumber = i + 1;
+                                            } else if (currentPage <= 3) {
+                                                pageNumber = i + 1;
+                                            } else if (currentPage >= totalPages - 2) {
+                                                pageNumber = totalPages - 4 + i;
+                                            } else {
+                                                pageNumber = currentPage - 2 + i;
+                                            }
+
+                                            return (
+                                                <button
+                                                    key={pageNumber}
+                                                    onClick={() => goToPage(pageNumber)}
+                                                    className={`h-8 w-8 rounded-lg text-xs font-medium transition-colors duration-200 sm:h-10 sm:w-10 sm:text-sm ${
+                                                        currentPage === pageNumber
+                                                            ? 'bg-blue-600 text-white'
+                                                            : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                                                    }`}
+                                                >
+                                                    {pageNumber}
+                                                </button>
+                                            );
+                                        })}
+                                    </div>
+
+                                    {/* Next Button */}
                                     <button
                                         onClick={goToNextPage}
                                         disabled={currentPage === totalPages}
-                                        className="relative ml-3 inline-flex items-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-50"
+                                        className={`flex items-center rounded-lg px-2 py-2 text-xs font-medium transition-colors duration-200 sm:px-4 sm:text-sm ${
+                                            currentPage === totalPages
+                                                ? 'cursor-not-allowed bg-gray-100 text-gray-400'
+                                                : 'bg-blue-600 text-white hover:bg-blue-700'
+                                        }`}
                                     >
-                                        Next
+                                        <span className="hidden sm:inline">Next</span>
+                                        <svg className="ml-1 h-3 w-3 sm:ml-2 sm:h-4 sm:w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                                        </svg>
                                     </button>
-                                </div>
-
-                                {/* Desktop Pagination */}
-                                <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
-                                    {/* Pagination Info */}
-                                    <div>
-                                        <p className="text-sm text-gray-700">
-                                            Showing <span className="font-medium">{startIndex + 1}</span> to{' '}
-                                            <span className="font-medium">{Math.min(endIndex, activeTabData.length)}</span> of{' '}
-                                            <span className="font-medium">{activeTabData.length}</span> results
-                                        </p>
-                                    </div>
-
-                                    {/* Pagination Controls */}
-                                    <div>
-                                        <nav className="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
-                                            {/* Previous Button */}
-                                            <button
-                                                onClick={goToPreviousPage}
-                                                disabled={currentPage === 1}
-                                                className="relative inline-flex items-center rounded-l-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
-                                            >
-                                                <span className="sr-only">Previous</span>
-                                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-
-                                            {/* Page Numbers */}
-                                            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                                                let pageNumber;
-                                                if (totalPages <= 5) {
-                                                    pageNumber = i + 1;
-                                                } else if (currentPage <= 3) {
-                                                    pageNumber = i + 1;
-                                                } else if (currentPage >= totalPages - 2) {
-                                                    pageNumber = totalPages - 4 + i;
-                                                } else {
-                                                    pageNumber = currentPage - 2 + i;
-                                                }
-
-                                                return (
-                                                    <button
-                                                        key={pageNumber}
-                                                        onClick={() => goToPage(pageNumber)}
-                                                        className={`relative inline-flex items-center px-4 py-2 text-sm font-semibold ${
-                                                            currentPage === pageNumber
-                                                                ? 'z-10 bg-blue-600 text-white focus:z-20 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
-                                                                : 'text-gray-900 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0'
-                                                        }`}
-                                                    >
-                                                        {pageNumber}
-                                                    </button>
-                                                );
-                                            })}
-
-                                            {/* Next Button */}
-                                            <button
-                                                onClick={goToNextPage}
-                                                disabled={currentPage === totalPages}
-                                                className="relative inline-flex items-center rounded-r-md px-2 py-2 text-gray-400 ring-1 ring-gray-300 ring-inset hover:bg-gray-50 focus:z-20 focus:outline-offset-0 disabled:cursor-not-allowed disabled:opacity-50"
-                                            >
-                                                <span className="sr-only">Next</span>
-                                                <svg className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                    <path
-                                                        fillRule="evenodd"
-                                                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                                                        clipRule="evenodd"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </nav>
-                                    </div>
                                 </div>
                             </div>
                         </div>

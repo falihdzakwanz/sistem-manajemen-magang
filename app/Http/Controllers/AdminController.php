@@ -98,20 +98,20 @@ class AdminController extends Controller
             $oldStatus = $user->status;
 
             // Validasi status transition berdasarkan aturan bisnis
-            $this->validateStatusTransition($oldStatus, $request->status);
+            $this->validateStatusTransition($oldStatus, $request->input('status'));
 
-            $updateData = ['status' => $request->status];
+            $updateData = ['status' => $request->input('status')];
 
             // Jika status ditolak, simpan alasan penolakan dan buat token edit
-            if ($request->status === 'Ditolak' && $request->reject_reason) {
-                $updateData['reject_reason'] = $request->reject_reason;
+            if ($request->input('status') === 'Ditolak' && $request->input('reject_reason')) {
+                $updateData['reject_reason'] = $request->input('reject_reason');
                 // Buat token edit yang valid selama 30 hari
                 $updateData['edit_token'] = \Illuminate\Support\Str::random(60);
                 $updateData['edit_token_expires_at'] = now()->addDays(30);
             }
 
             // Jika status bukan ditolak, hapus alasan penolakan dan token edit
-            if ($request->status !== 'Ditolak') {
+            if ($request->input('status') !== 'Ditolak') {
                 $updateData['reject_reason'] = null;
                 $updateData['edit_token'] = null;
                 $updateData['edit_token_expires_at'] = null;
@@ -120,14 +120,14 @@ class AdminController extends Controller
             $user->update($updateData);
 
             // Kirim email notifikasi jika status berubah dari Menunggu ke Diterima atau Ditolak
-            if ($oldStatus === 'Menunggu' && in_array($request->status, ['Diterima', 'Ditolak'])) {
+            if ($oldStatus === 'Menunggu' && in_array($request->input('status'), ['Diterima', 'Ditolak'])) {
                 try {
                     // Refresh user data untuk memastikan token sudah tersimpan
                     $user->refresh();
-                    $rejectReason = $request->status === 'Ditolak' ? $request->reject_reason : null;
-                    Mail::to($user->email)->send(new StatusMagangNotification($user, $request->status, $rejectReason));
+                    $rejectReason = $request->input('status') === 'Ditolak' ? $request->input('reject_reason') : null;
+                    Mail::to($user->email)->send(new StatusMagangNotification($user, $request->input('status'), $rejectReason));
 
-                    $emailMessage = $request->status === 'Diterima'
+                    $emailMessage = $request->input('status') === 'Diterima'
                         ? 'Status berhasil diupdate dan email pemberitahuan telah dikirim ke mahasiswa'
                         : 'Status berhasil diupdate dan email pemberitahuan penolakan telah dikirim ke mahasiswa';
 
@@ -156,7 +156,7 @@ class AdminController extends Controller
             $currentStatus = $user->status;
 
             // Validasi status transition berdasarkan aturan bisnis
-            $this->validateStatusTransition($currentStatus, $request->status);
+            $this->validateStatusTransition($currentStatus, $request->input('status'));
 
             $request->validate([
                 'nama' => 'required|string|max:255',
@@ -176,39 +176,39 @@ class AdminController extends Controller
             $oldStatus = $user->status;
 
             $updateData = [
-                'nama' => $request->nama,
-                'nim' => $request->nim,
-                'universitas' => $request->universitas,
-                'jurusan' => $request->jurusan,
-                'email' => $request->email,
-                'telepon' => $request->telepon,
-                'tanggal_mulai' => $request->tanggal_mulai,
-                'tanggal_selesai' => $request->tanggal_selesai,
-                'status' => $request->status,
-                'bidang_id' => $request->bidang_id,
-                'motivasi' => $request->motivasi,
-                'linkedin' => $request->linkedin,
+                'nama' => $request->input('nama'),
+                'nim' => $request->input('nim'),
+                'universitas' => $request->input('universitas'),
+                'jurusan' => $request->input('jurusan'),
+                'email' => $request->input('email'),
+                'telepon' => $request->input('telepon'),
+                'tanggal_mulai' => $request->input('tanggal_mulai'),
+                'tanggal_selesai' => $request->input('tanggal_selesai'),
+                'status' => $request->input('status'),
+                'bidang_id' => $request->input('bidang_id'),
+                'motivasi' => $request->input('motivasi'),
+                'linkedin' => $request->input('linkedin'),
             ];
 
             // Jika status ditolak, simpan alasan penolakan jika ada
-            if ($request->status === 'Ditolak' && $request->reject_reason) {
-                $updateData['reject_reason'] = $request->reject_reason;
+            if ($request->input('status') === 'Ditolak' && $request->input('reject_reason')) {
+                $updateData['reject_reason'] = $request->input('reject_reason');
             }
 
             // Jika status bukan ditolak, hapus alasan penolakan jika ada
-            if ($request->status !== 'Ditolak') {
+            if ($request->input('status') !== 'Ditolak') {
                 $updateData['reject_reason'] = null;
             }
 
             $user->update($updateData);
 
             // Kirim email notifikasi jika status berubah dari Menunggu ke Diterima atau Ditolak
-            if ($oldStatus === 'Menunggu' && in_array($request->status, ['Diterima', 'Ditolak'])) {
+            if ($oldStatus === 'Menunggu' && in_array($request->input('status'), ['Diterima', 'Ditolak'])) {
                 try {
-                    $rejectReason = $request->status === 'Ditolak' ? $request->reject_reason : null;
-                    Mail::to($user->email)->send(new StatusMagangNotification($user, $request->status, $rejectReason));
+                    $rejectReason = $request->input('status') === 'Ditolak' ? $request->input('reject_reason') : null;
+                    Mail::to($user->email)->send(new StatusMagangNotification($user, $request->input('status'), $rejectReason));
 
-                    $emailMessage = $request->status === 'Diterima'
+                    $emailMessage = $request->input('status') === 'Diterima'
                         ? 'Data mahasiswa berhasil diupdate dan email pemberitahuan telah dikirim'
                         : 'Data mahasiswa berhasil diupdate dan email pemberitahuan penolakan telah dikirim';
 

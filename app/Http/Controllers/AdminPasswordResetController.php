@@ -21,7 +21,14 @@ class AdminPasswordResetController extends Controller
      */
     public function showForgotPasswordForm(): Response
     {
-        return Inertia::render('admin/ForgotPassword');
+        // Ambil semua admin untuk dropdown
+        $admins = Admin::select('id', 'name', 'username', 'email')
+            ->orderBy('name')
+            ->get();
+
+        return Inertia::render('admin/ForgotPassword', [
+            'admins' => $admins
+        ]);
     }
 
     /**
@@ -29,15 +36,13 @@ class AdminPasswordResetController extends Controller
      */
     public function sendResetLinkEmail(Request $request): RedirectResponse
     {
-        // Ambil email admin yang terdaftar (untuk keamanan, tidak dari input user)
-        $admin = Admin::first();
+        // Validasi admin_id yang dipilih
+        $request->validate([
+            'admin_id' => 'required|exists:users,id'
+        ]);
 
-        if (!$admin) {
-            return redirect()->back()->with(
-                'error',
-                '❌ Admin tidak ditemukan dalam sistem.'
-            );
-        }
+        // Ambil admin yang dipilih berdasarkan admin_id
+        $admin = Admin::findOrFail($request->input('admin_id'));
 
         // Generate token
         $token = Str::random(64);
@@ -57,13 +62,13 @@ class AdminPasswordResetController extends Controller
             Mail::to($admin->email)->send(new AdminPasswordResetMail($token, $admin->email));
 
             return redirect()->back()->with(
-                'success',
-                '✅ Link reset password & username telah dikirim ke email admin yang terdaftar. Silakan cek email dan ikuti instruksi yang diberikan.'
+                'status',
+                "✅ Link reset password & username telah dikirim ke email {$admin->name} ({$admin->email}). Silakan cek email dan ikuti instruksi yang diberikan."
             );
         } catch (\Exception $e) {
             return redirect()->back()->with(
                 'error',
-                '❌ Gagal mengirim email reset password. Silakan coba lagi atau hubungi administrator.'
+                "❌ Gagal mengirim email reset password ke {$admin->name}. Silakan coba lagi atau hubungi administrator."
             );
         }
     }
@@ -131,12 +136,27 @@ class AdminPasswordResetController extends Controller
      */
     public function resetPassword(Request $request): RedirectResponse
     {
+        // First validate basic required fields
         $request->validate([
             'token' => 'required',
             'email' => 'required|email|exists:users,email',
-            'username' => 'required|string|min:3|max:50|unique:users,username,' . Admin::where('email', $request->email)->first()->id,
             'password' => 'required|string|min:8|confirmed',
             'password_confirmation' => 'required'
+        ]);
+
+        // Get the email and admin for username validation
+        $email = $request->input('email');
+        $existingAdmin = Admin::where('email', $email)->first();
+
+        // Validate username separately with proper admin id
+        $request->validate([
+            'username' => [
+                'required',
+                'string',
+                'min:3',
+                'max:50',
+                'unique:users,username,' . ($existingAdmin ? $existingAdmin->getKey() : 'NULL')
+            ]
         ], [
             'email.required' => 'Email wajib diisi',
             'email.email' => 'Format email tidak valid',
@@ -153,7 +173,7 @@ class AdminPasswordResetController extends Controller
 
         // Check if token exists and is valid
         $resetToken = DB::table('admin_password_reset_tokens')
-            ->where('email', $request->email)
+            ->where('email', $request->input('email'))
             ->first();
 
         if (!$resetToken) {
@@ -167,7 +187,7 @@ class AdminPasswordResetController extends Controller
         $tokenAge = Carbon::parse($resetToken->created_at)->diffInMinutes(Carbon::now());
         if ($tokenAge > 60) {
             // Delete expired token
-            DB::table('admin_password_reset_tokens')->where('email', $request->email)->delete();
+            DB::table('admin_password_reset_tokens')->where('email', $request->input('email'))->delete();
 
             return redirect()->route('login')->with(
                 'error',
@@ -176,7 +196,7 @@ class AdminPasswordResetController extends Controller
         }
 
         // Verify token
-        if (!Hash::check($request->token, $resetToken->token)) {
+        if (!Hash::check($request->input('token'), $resetToken->token)) {
             return redirect()->route('login')->with(
                 'error',
                 'Token reset password tidak valid.'
@@ -184,13 +204,13 @@ class AdminPasswordResetController extends Controller
         }
 
         // Update admin password and username
-        $admin = Admin::where('email', $request->email)->first();
-        $admin->username = $request->username;
-        $admin->password = Hash::make($request->password);
+        $admin = Admin::where('email', $request->input('email'))->first();
+        $admin->username = $request->input('username');
+        $admin->password = Hash::make($request->input('password'));
         $admin->save();
 
         // Delete the used token
-        DB::table('admin_password_reset_tokens')->where('email', $request->email)->delete();
+        DB::table('admin_password_reset_tokens')->where('email', $request->input('email'))->delete();
 
         return redirect()->route('login')->with(
             'success',

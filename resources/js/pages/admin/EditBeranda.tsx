@@ -902,8 +902,9 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
         >
             {/* Header */}
             <header className="sticky top-0 z-50 bg-gradient-to-r from-blue-600 via-blue-700 to-purple-700 text-white shadow-2xl">
-                <div className="container mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
+                <div className="container mx-auto px-4 py-4 lg:px-6">
+                    {/* Desktop Layout */}
+                    <div className="hidden items-center justify-between md:flex">
                         <div className="flex items-center space-x-4">
                             <button
                                 onClick={() => router.get('/dashboard-admin')}
@@ -922,7 +923,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
 
                         <div className="flex items-center space-x-4">
                             {/* Statistics */}
-                            <div className="hidden items-center space-x-4 text-sm md:flex">
+                            <div className="hidden items-center space-x-4 text-sm lg:flex">
                                 <div className="rounded-lg bg-white/10 px-3 py-2 backdrop-blur-sm">
                                     <span className="opacity-75">Struktur:</span>
                                     <span className="ml-1 font-semibold">{strukturOrganisasi.length}</span>
@@ -939,22 +940,71 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
 
                             <button
                                 onClick={handleBack}
-                                className="flex items-center space-x-2 rounded-xl bg-white/10 px-4 py-2 text-sm font-medium backdrop-blur-sm transition-colors hover:bg-white/20"
+                                className="flex items-center space-x-2 rounded-xl bg-white/10 px-3 py-2 text-sm font-medium backdrop-blur-sm transition-colors hover:bg-white/20"
                             >
                                 <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                                 </svg>
-                                <span>Kembali</span>
+                                <span className="hidden lg:inline">Kembali</span>
                             </button>
+                        </div>
+                    </div>
+
+                    {/* Mobile Layout */}
+                    <div className="md:hidden">
+                        {/* Top Row - Logo, Title dan Back Button */}
+                        <div className="mb-3 flex items-center justify-between">
+                            <div className="flex items-center space-x-3">
+                                <button
+                                    onClick={() => router.get('/dashboard-admin')}
+                                    className="flex h-12 w-12 cursor-pointer items-center justify-center rounded-xl bg-gradient-to-br from-white to-blue-50 shadow-lg transition-all duration-300"
+                                    title="Kembali ke Dashboard Admin"
+                                >
+                                    <img src="/asset/Logo-Kominfo.png" alt="Logo Kominfo" className="h-8 w-8 object-contain" />
+                                </button>
+                                <div>
+                                    <h1 className="bg-gradient-to-r from-white to-blue-100 bg-clip-text text-lg font-bold text-transparent">
+                                        Edit Beranda
+                                    </h1>
+                                    <p className="text-xs font-medium opacity-90">Kelola konten beranda</p>
+                                </div>
+                            </div>
+
+                            {/* Back Button - Mobile */}
+                            <button
+                                onClick={handleBack}
+                                className="flex items-center justify-center rounded-xl bg-white/10 p-2 backdrop-blur-sm transition-colors hover:bg-white/20"
+                                title="Kembali"
+                            >
+                                <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                                </svg>
+                            </button>
+                        </div>
+
+                        {/* Statistics Row - Mobile */}
+                        <div className="flex items-center justify-center space-x-2">
+                            <div className="flex-1 rounded-lg bg-white/10 px-2 py-2 text-center backdrop-blur-sm">
+                                <div className="text-xs opacity-75">Struktur</div>
+                                <div className="text-sm font-semibold">{strukturOrganisasi.length}</div>
+                            </div>
+                            <div className="flex-1 rounded-lg bg-white/10 px-2 py-2 text-center backdrop-blur-sm">
+                                <div className="text-xs opacity-75">Bidang</div>
+                                <div className="text-sm font-semibold">{bidangData.length}</div>
+                            </div>
+                            <div className="flex-1 rounded-lg bg-white/10 px-2 py-2 text-center backdrop-blur-sm">
+                                <div className="text-xs opacity-75">Status</div>
+                                <div className="text-sm font-semibold text-green-300">Sinkron</div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </header>
 
             {/* Main Content */}
-            <div className="container mx-auto px-6 py-8">
+            <div className="container mx-auto px-4 py-6 lg:px-6 lg:py-8">
                 {/* Info Banner */}
-                <div className="mb-8 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-6">
+                <div className="mb-6 rounded-2xl border border-blue-200 bg-gradient-to-r from-blue-50 to-indigo-50 p-4 lg:mb-8 lg:p-6">
                     <div className="flex items-start space-x-4">
                         <div className="flex-shrink-0">
                             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-100">
@@ -1005,10 +1055,10 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 </div>
 
                 {/* Tab Navigation */}
-                <div className="mb-8 flex space-x-4">
+                <div className="mb-6 flex flex-col space-y-2 lg:mb-8 lg:flex-row lg:space-y-0 lg:space-x-4">
                     <button
                         onClick={() => setActiveTab('struktur')}
-                        className={`flex items-center space-x-2 rounded-xl px-6 py-3 font-medium transition-colors ${
+                        className={`flex items-center justify-center space-x-2 rounded-xl px-4 py-3 font-medium transition-colors lg:justify-start lg:px-6 ${
                             activeTab === 'struktur'
                                 ? 'bg-blue-500 text-white shadow-lg'
                                 : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-100'
@@ -1022,7 +1072,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                     </button>
                     <button
                         onClick={() => setActiveTab('bidang')}
-                        className={`flex items-center space-x-2 rounded-xl px-6 py-3 font-medium transition-colors ${
+                        className={`flex items-center justify-center space-x-2 rounded-xl px-4 py-3 font-medium transition-colors lg:justify-start lg:px-6 ${
                             activeTab === 'bidang'
                                 ? 'bg-blue-500 text-white shadow-lg'
                                 : 'border border-gray-200 bg-white text-gray-700 hover:bg-gray-100'
@@ -1042,21 +1092,21 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                         {/* Header Section with Add Button, Filter, and Delete All */}
                         <div className="mb-6 space-y-4">
                             {/* Action Buttons Row */}
-                            <div className="flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex flex-col gap-4 space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
                                 <button
                                     onClick={openAddStruktur}
-                                    className="flex items-center space-x-2 rounded-xl bg-green-500 px-6 py-3 font-medium text-white shadow-lg transition-colors hover:bg-green-600"
+                                    className="flex items-center justify-center space-x-2 rounded-xl bg-green-500 px-4 py-3 font-medium text-white shadow-lg transition-colors hover:bg-green-600 lg:px-6"
                                 >
                                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    <span>Tambah Struktur Organisasi</span>
+                                    <span className="text-sm lg:text-base">Tambah Struktur Organisasi</span>
                                 </button>
 
                                 <button
                                     onClick={handleDeleteAll}
                                     disabled={strukturOrganisasi.length === 0}
-                                    className="flex items-center space-x-2 rounded-xl bg-red-500 px-6 py-3 font-medium text-white shadow-lg transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300"
+                                    className="flex items-center justify-center space-x-2 rounded-xl bg-red-500 px-4 py-3 font-medium text-white shadow-lg transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300 lg:px-6"
                                 >
                                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
@@ -1066,19 +1116,19 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                         />
                                     </svg>
-                                    <span>Hapus Semua Data</span>
+                                    <span className="text-sm lg:text-base">Hapus Semua Data</span>
                                 </button>
                             </div>
 
                             {/* Filter Section */}
-                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-                                <div className="flex flex-wrap items-center justify-between gap-4">
-                                    <div className="flex items-center space-x-3">
-                                        <span className="font-medium text-gray-700">Filter Kategori:</span>
+                            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-lg lg:p-6">
+                                <div className="flex flex-col gap-4 space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+                                    <div className="flex flex-col space-y-2 lg:flex-row lg:items-center lg:space-y-0 lg:space-x-3">
+                                        <span className="text-sm font-medium text-gray-700 lg:text-base">Filter Kategori:</span>
                                         <select
                                             value={filterCategory}
                                             onChange={(e) => setFilterCategory(e.target.value)}
-                                            className="rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none lg:w-auto lg:px-4"
                                         >
                                             <option value="semua">Semua Kategori ({getCategoryCounts().semua})</option>
                                             <option value="pimpinan">Pimpinan ({getCategoryCounts().pimpinan})</option>
@@ -1090,14 +1140,14 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                         </select>
                                     </div>
 
-                                    <div className="text-sm text-gray-600">
+                                    <div className="text-center text-sm text-gray-600 lg:text-right">
                                         Menampilkan {getFilteredStrukturOrganisasi().length} dari {strukturOrganisasi.length} data
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+                        <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:gap-6 xl:grid-cols-3">
                             {getFilteredStrukturOrganisasi()
                                 .sort((a, b) => {
                                     // Define category order based on organizational hierarchy
@@ -1481,21 +1531,21 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                         {/* Header Section with Add Button, Search, and Delete All */}
                         <div className="mb-6 space-y-4">
                             {/* Action Buttons Row */}
-                            <div className="flex flex-wrap items-center justify-between gap-4">
+                            <div className="flex flex-col gap-4 space-y-3 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
                                 <button
                                     onClick={openAddBidang}
-                                    className="flex items-center space-x-2 rounded-xl bg-green-500 px-6 py-3 font-medium text-white shadow-lg transition-colors hover:bg-green-600"
+                                    className="flex items-center justify-center space-x-2 rounded-xl bg-green-500 px-4 py-3 font-medium text-white shadow-lg transition-colors hover:bg-green-600 lg:px-6"
                                 >
                                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                                     </svg>
-                                    <span>Tambah Data Bidang</span>
+                                    <span className="text-sm lg:text-base">Tambah Data Bidang</span>
                                 </button>
 
                                 <button
                                     onClick={handleDeleteAllBidang}
                                     disabled={bidangData.length === 0}
-                                    className="flex items-center space-x-2 rounded-xl bg-red-500 px-6 py-3 font-medium text-white shadow-lg transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300"
+                                    className="flex items-center justify-center space-x-2 rounded-xl bg-red-500 px-4 py-3 font-medium text-white shadow-lg transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-300 lg:px-6"
                                 >
                                     <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path
@@ -1505,22 +1555,22 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                             d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                         />
                                     </svg>
-                                    <span>Hapus Semua Data</span>
+                                    <span className="text-sm lg:text-base">Hapus Semua Data</span>
                                 </button>
                             </div>
 
                             {/* Search Section */}
-                            <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-                                <div className="flex flex-wrap items-center justify-between gap-4">
-                                    <div className="flex items-center space-x-3">
-                                        <span className="font-medium text-gray-700">Pencarian:</span>
-                                        <div className="relative">
+                            <div className="rounded-xl border border-gray-200 bg-white p-4 shadow-lg lg:p-6">
+                                <div className="flex flex-col gap-4 space-y-4 lg:flex-row lg:items-center lg:justify-between lg:space-y-0">
+                                    <div className="flex w-full flex-col space-y-2 lg:w-auto lg:flex-row lg:items-center lg:space-y-0 lg:space-x-3">
+                                        <span className="text-sm font-medium text-gray-700 lg:text-base">Pencarian:</span>
+                                        <div className="relative flex-1 lg:flex-initial">
                                             <input
                                                 type="text"
                                                 value={searchBidang}
                                                 onChange={(e) => setSearchBidang(e.target.value)}
                                                 placeholder="Cari berdasarkan nama, deskripsi, kepala bidang..."
-                                                className="w-96 rounded-lg border border-gray-300 bg-white px-4 py-2 pl-10 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none"
+                                                className="w-full rounded-lg border border-gray-300 bg-white px-4 py-2 pl-10 text-sm font-medium text-gray-700 shadow-sm transition-colors hover:border-gray-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 focus:outline-none lg:w-96"
                                             />
                                             <svg
                                                 className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400"
@@ -1539,21 +1589,21 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                         {searchBidang && (
                                             <button
                                                 onClick={() => setSearchBidang('')}
-                                                className="rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200"
+                                                className="w-full rounded-lg bg-gray-100 px-3 py-2 text-xs font-medium text-gray-600 transition-colors hover:bg-gray-200 lg:w-auto"
                                             >
                                                 Hapus Filter
                                             </button>
                                         )}
                                     </div>
 
-                                    <div className="text-sm text-gray-600">
+                                    <div className="text-center text-sm text-gray-600 lg:text-right">
                                         Menampilkan {getFilteredBidangData().length} dari {bidangData.length} data
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                        <div className="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-6">
                             {getFilteredBidangData().map((item) => {
                                 // Color mapping untuk background berdasarkan data.color
                                 const getColorConfig = (color: string) => {
@@ -1677,7 +1727,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             {/* Modal Edit */}
             {showModal && (
                 <div
-                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-2 lg:p-4"
                     style={{
                         overscrollBehavior: 'contain',
                         scrollbarWidth: 'none',
@@ -1691,11 +1741,11 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                 .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
                 `}
                     </style>
-                    <div className="hide-scrollbar max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-3xl bg-white">
+                    <div className="hide-scrollbar max-h-[95vh] w-full max-w-xs overflow-y-auto rounded-2xl bg-white sm:max-w-lg lg:max-h-[90vh] lg:max-w-4xl lg:rounded-3xl">
                         {/* Modal Header */}
-                        <div className="border-b border-gray-200 p-6">
+                        <div className="border-b border-gray-200 p-4 lg:p-6">
                             <div className="flex items-center justify-between">
-                                <h3 className="text-xl font-bold text-gray-800">
+                                <h3 className="text-lg font-bold text-gray-800 lg:text-xl">
                                     {activeTab === 'struktur'
                                         ? editingItem
                                             ? 'Edit Struktur Organisasi'
@@ -1704,14 +1754,14 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                           ? 'Edit Data Bidang'
                                           : 'Tambah Data Bidang'}
                                 </h3>
-                                <button onClick={handleCancelEdit} className="text-2xl text-gray-500 hover:text-gray-700">
+                                <button onClick={handleCancelEdit} className="p-1 text-2xl text-gray-500 hover:text-gray-700">
                                     ×
                                 </button>
                             </div>
                         </div>
 
                         {/* Modal Content */}
-                        <div className="p-6">
+                        <div className="p-4 lg:p-6">
                             {activeTab === 'struktur' ? (
                                 /* Struktur Organisasi Form */
                                 <div className="space-y-6">
@@ -1775,17 +1825,95 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                         <div className="mt-2 space-y-4">
                                             {photoPreview && (
                                                 <div className="space-y-4">
-                                                    <div className="flex items-center space-x-4">
-                                                        <img
-                                                            src={photoPreview}
-                                                            alt="Preview"
-                                                            className="h-24 w-24 rounded-full border-2 border-gray-200 object-cover"
-                                                        />
-                                                        <div className="flex space-x-2">
-                                                            {(originalImageUrl || originalImageFile) && (
+                                                    {/* Mobile Layout - Stacked */}
+                                                    <div className="block sm:hidden">
+                                                        <div className="flex flex-col items-center space-y-4">
+                                                            <img
+                                                                src={photoPreview}
+                                                                alt="Preview"
+                                                                className="h-20 w-20 rounded-full border-2 border-gray-200 object-cover"
+                                                            />
+                                                            <div className="flex w-full flex-col space-y-2">
+                                                                {(originalImageUrl || originalImageFile) && (
+                                                                    <button
+                                                                        onClick={handleEditPhoto}
+                                                                        className="inline-flex w-full items-center justify-center rounded-xl bg-green-500 px-3 py-2 text-sm text-white hover:bg-green-600 disabled:opacity-50"
+                                                                        disabled={loading}
+                                                                    >
+                                                                        <svg
+                                                                            className="mr-1 h-4 w-4"
+                                                                            fill="none"
+                                                                            stroke="currentColor"
+                                                                            viewBox="0 0 24 24"
+                                                                        >
+                                                                            <path
+                                                                                strokeLinecap="round"
+                                                                                strokeLinejoin="round"
+                                                                                strokeWidth={2}
+                                                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                                            />
+                                                                        </svg>
+                                                                        Edit Foto
+                                                                    </button>
+                                                                )}
                                                                 <button
-                                                                    onClick={handleEditPhoto}
-                                                                    className="inline-flex items-center rounded-xl bg-green-500 px-6 py-2 text-white hover:bg-green-600 disabled:opacity-50"
+                                                                    onClick={handleDeletePhoto}
+                                                                    className="inline-flex w-full items-center justify-center rounded-xl bg-red-500 px-3 py-2 text-sm text-white hover:bg-red-600 disabled:opacity-50"
+                                                                    disabled={loading}
+                                                                >
+                                                                    <svg
+                                                                        className="mr-1 h-4 w-4"
+                                                                        fill="none"
+                                                                        stroke="currentColor"
+                                                                        viewBox="0 0 24 24"
+                                                                    >
+                                                                        <path
+                                                                            strokeLinecap="round"
+                                                                            strokeLinejoin="round"
+                                                                            strokeWidth={2}
+                                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                                        />
+                                                                    </svg>
+                                                                    Hapus Foto
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    {/* Desktop Layout - Side by Side */}
+                                                    <div className="hidden sm:block">
+                                                        <div className="flex items-center space-x-4">
+                                                            <img
+                                                                src={photoPreview}
+                                                                alt="Preview"
+                                                                className="h-24 w-24 rounded-full border-2 border-gray-200 object-cover"
+                                                            />
+                                                            <div className="flex flex-wrap gap-2">
+                                                                {(originalImageUrl || originalImageFile) && (
+                                                                    <button
+                                                                        onClick={handleEditPhoto}
+                                                                        className="inline-flex items-center rounded-xl bg-green-500 px-4 py-2 text-sm text-white hover:bg-green-600 disabled:opacity-50 lg:px-6"
+                                                                        disabled={loading}
+                                                                    >
+                                                                        <svg
+                                                                            className="mr-2 h-4 w-4"
+                                                                            fill="none"
+                                                                            stroke="currentColor"
+                                                                            viewBox="0 0 24 24"
+                                                                        >
+                                                                            <path
+                                                                                strokeLinecap="round"
+                                                                                strokeLinejoin="round"
+                                                                                strokeWidth={2}
+                                                                                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                                            />
+                                                                        </svg>
+                                                                        Edit Foto
+                                                                    </button>
+                                                                )}
+                                                                <button
+                                                                    onClick={handleDeletePhoto}
+                                                                    className="inline-flex items-center rounded-xl bg-red-500 px-4 py-2 text-sm text-white hover:bg-red-600 disabled:opacity-50 lg:px-6"
                                                                     disabled={loading}
                                                                 >
                                                                     <svg
@@ -1798,27 +1926,12 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                                                             strokeLinecap="round"
                                                                             strokeLinejoin="round"
                                                                             strokeWidth={2}
-                                                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                                            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                                                                         />
                                                                     </svg>
-                                                                    Edit Foto
+                                                                    Hapus Foto
                                                                 </button>
-                                                            )}
-                                                            <button
-                                                                onClick={handleDeletePhoto}
-                                                                className="inline-flex items-center rounded-xl bg-red-500 px-6 py-2 text-white hover:bg-red-600 disabled:opacity-50"
-                                                                disabled={loading}
-                                                            >
-                                                                <svg className="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                                    <path
-                                                                        strokeLinecap="round"
-                                                                        strokeLinejoin="round"
-                                                                        strokeWidth={2}
-                                                                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                                                                    />
-                                                                </svg>
-                                                                Hapus Foto
-                                                            </button>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                     <div className="mt-2 text-sm text-gray-500">
@@ -1841,8 +1954,8 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                                 </div>
                                             )}
                                             <div>
-                                                <label className="inline-flex cursor-pointer items-center rounded-xl bg-blue-500 px-6 py-2 text-white hover:bg-blue-600 disabled:opacity-50">
-                                                    <svg className="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <label className="inline-flex w-full cursor-pointer items-center justify-center rounded-xl bg-blue-500 px-4 py-2 text-sm text-white hover:bg-blue-600 disabled:opacity-50 sm:w-auto sm:px-6 sm:text-base">
+                                                    <svg className="mr-2 h-4 w-4 sm:h-5 sm:w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                         <path
                                                             strokeLinecap="round"
                                                             strokeLinejoin="round"
@@ -2062,18 +2175,18 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                         </div>
 
                         {/* Modal Footer */}
-                        <div className="border-t border-gray-200 p-6">
-                            <div className="flex justify-end space-x-4">
+                        <div className="border-t border-gray-200 p-4 lg:p-6">
+                            <div className="flex flex-col-reverse justify-end space-y-2 space-y-reverse lg:flex-row lg:space-y-0 lg:space-x-4">
                                 <button
                                     onClick={handleCancelEdit}
-                                    className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 hover:bg-gray-400"
+                                    className="w-full rounded-xl bg-gray-300 px-4 py-2 text-gray-700 hover:bg-gray-400 lg:w-auto lg:px-6"
                                     disabled={loading}
                                 >
                                     Batal
                                 </button>
                                 <button
                                     onClick={activeTab === 'struktur' ? handleSaveStruktur : handleSaveBidang}
-                                    className={`rounded-xl px-6 py-2 text-white ${
+                                    className={`w-full rounded-xl px-4 py-2 text-white lg:w-auto lg:px-6 ${
                                         loading ||
                                         (activeTab === 'struktur' && !hasStrukturChanges()) ||
                                         (activeTab === 'bidang' && !hasBidangChanges())
@@ -2118,7 +2231,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             {/* Delete Item Confirmation Modal */}
             {showDeleteItemModal && itemToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                    <div className="w-full max-w-xs rounded-2xl bg-white p-4 shadow-2xl sm:max-w-md lg:p-6">
                         <div className="mb-4 text-center">
                             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
                                 <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2131,7 +2244,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                 </svg>
                             </div>
                             <h3 className="mb-2 text-lg font-bold text-gray-900">Konfirmasi Hapus Data</h3>
-                            <p className="text-gray-600">
+                            <p className="text-sm text-gray-600 lg:text-base">
                                 Apakah Anda yakin ingin menghapus data <strong>"{itemToDelete.title}"</strong>?
                             </p>
                             <p className="mt-2 text-sm text-red-600">
@@ -2139,20 +2252,20 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                             </p>
                         </div>
 
-                        <div className="flex justify-end space-x-4">
+                        <div className="flex flex-col justify-end space-y-2 lg:flex-row lg:space-y-0 lg:space-x-4">
                             <button
                                 onClick={() => {
                                     setShowDeleteItemModal(false);
                                     setItemToDelete(null);
                                 }}
-                                className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
+                                className="w-full rounded-xl bg-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-400 lg:w-auto lg:px-6"
                                 disabled={loading}
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={confirmDeleteItem}
-                                className="rounded-xl bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                className="w-full rounded-xl bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400 lg:w-auto lg:px-6"
                                 disabled={loading}
                             >
                                 {loading ? 'Menghapus...' : 'Ya, Hapus'}
@@ -2165,7 +2278,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             {/* Delete All Confirmation Modal */}
             {showDeleteAllModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                    <div className="w-full max-w-xs rounded-2xl bg-white p-4 shadow-2xl sm:max-w-md lg:p-6">
                         <div className="mb-4 text-center">
                             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
                                 <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2187,17 +2300,17 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                             </p>
                         </div>
 
-                        <div className="flex justify-end space-x-4">
+                        <div className="flex flex-col justify-end space-y-2 lg:flex-row lg:space-y-0 lg:space-x-4">
                             <button
                                 onClick={() => setShowDeleteAllModal(false)}
-                                className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
+                                className="w-full rounded-xl bg-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-400 lg:w-auto lg:px-6"
                                 disabled={loading}
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={confirmDeleteAll}
-                                className="rounded-xl bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                className="w-full rounded-xl bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400 lg:w-auto lg:px-6"
                                 disabled={loading}
                             >
                                 {loading ? 'Menghapus...' : 'Ya, Hapus Semua'}
@@ -2210,7 +2323,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             {/* Delete Single Bidang Confirmation Modal */}
             {showDeleteBidangModal && bidangToDelete && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                    <div className="w-full max-w-xs rounded-2xl bg-white p-4 shadow-2xl sm:max-w-md lg:p-6">
                         <div className="mb-4 text-center">
                             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
                                 <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2223,26 +2336,26 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                 </svg>
                             </div>
                             <h3 className="mb-2 text-lg font-bold text-gray-900">Konfirmasi Hapus Data Bidang</h3>
-                            <p className="text-gray-600">
+                            <p className="text-sm text-gray-600 lg:text-base">
                                 Apakah Anda yakin ingin menghapus data bidang <strong>"{bidangToDelete.title}"</strong>?
                             </p>
                             <p className="mt-2 text-sm text-red-600">Tindakan ini tidak dapat dibatalkan!</p>
                         </div>
 
-                        <div className="flex justify-end space-x-4">
+                        <div className="flex flex-col justify-end space-y-2 lg:flex-row lg:space-y-0 lg:space-x-4">
                             <button
                                 onClick={() => {
                                     setShowDeleteBidangModal(false);
                                     setBidangToDelete(null);
                                 }}
-                                className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
+                                className="w-full rounded-xl bg-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-400 lg:w-auto lg:px-6"
                                 disabled={loading}
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={confirmDeleteBidang}
-                                className="rounded-xl bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                className="w-full rounded-xl bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400 lg:w-auto lg:px-6"
                                 disabled={loading}
                             >
                                 {loading ? 'Menghapus...' : 'Ya, Hapus'}
@@ -2255,7 +2368,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
             {/* Delete All Bidang Confirmation Modal */}
             {showDeleteAllBidangModal && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
-                    <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+                    <div className="w-full max-w-xs rounded-2xl bg-white p-4 shadow-2xl sm:max-w-md lg:p-6">
                         <div className="mb-4 text-center">
                             <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100">
                                 <svg className="h-8 w-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -2268,7 +2381,7 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                                 </svg>
                             </div>
                             <h3 className="mb-2 text-lg font-bold text-gray-900">Konfirmasi Hapus Semua Data Bidang</h3>
-                            <p className="text-gray-600">
+                            <p className="text-sm text-gray-600 lg:text-base">
                                 Apakah Anda yakin ingin menghapus <strong>SEMUA</strong> data bidang?
                             </p>
                             <p className="mt-2 text-sm text-red-600">
@@ -2277,17 +2390,17 @@ export default function EditBeranda({ strukturOrganisasi = [], bidangData = [] }
                             </p>
                         </div>
 
-                        <div className="flex justify-end space-x-4">
+                        <div className="flex flex-col justify-end space-y-2 lg:flex-row lg:space-y-0 lg:space-x-4">
                             <button
                                 onClick={() => setShowDeleteAllBidangModal(false)}
-                                className="rounded-xl bg-gray-300 px-6 py-2 text-gray-700 transition-colors hover:bg-gray-400"
+                                className="w-full rounded-xl bg-gray-300 px-4 py-2 text-gray-700 transition-colors hover:bg-gray-400 lg:w-auto lg:px-6"
                                 disabled={loading}
                             >
                                 Batal
                             </button>
                             <button
                                 onClick={confirmDeleteAllBidang}
-                                className="rounded-xl bg-red-500 px-6 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400"
+                                className="w-full rounded-xl bg-red-500 px-4 py-2 text-white transition-colors hover:bg-red-600 disabled:cursor-not-allowed disabled:bg-gray-400 lg:w-auto lg:px-6"
                                 disabled={loading}
                             >
                                 {loading ? 'Menghapus...' : 'Ya, Hapus Semua'}

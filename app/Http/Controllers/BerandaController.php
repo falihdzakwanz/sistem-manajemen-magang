@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\BerandaContent;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 use Inertia\Inertia;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\JsonResponse;
@@ -63,6 +64,22 @@ class BerandaController extends Controller
 
         // Add temporary photo info to struktur organisasi
         return $strukturOrganisasi->map(function ($item) use ($request) {
+            // Fix photo URLs for VestaCP hosting environment
+            $item->photo_url = $item->photo_url && !Str::startsWith($item->photo_url, 'http')
+                ? asset(ltrim($item->photo_url, '/'))
+                : $item->photo_url;
+
+            $item->original_photo_url = $item->original_photo_url && !Str::startsWith($item->original_photo_url, 'http')
+                ? asset(ltrim($item->original_photo_url, '/'))
+                : $item->original_photo_url;
+
+            // Log URL transformation for debugging
+            Log::info('BerandaController getStrukturOrganisasiWithTempPhoto - URL processing', [
+                'key' => $item->key,
+                'photo_url_processed' => $item->photo_url,
+                'original_photo_url_processed' => $item->original_photo_url
+            ]);
+
             $tempPhotoKey = self::SESSION_TEMP_PHOTO_PREFIX . $item->key;
             if ($request->session()->has($tempPhotoKey)) {
                 $tempPhoto = $request->session()->get($tempPhotoKey);
@@ -98,6 +115,27 @@ class BerandaController extends Controller
     public function getBerandaContent(): JsonResponse
     {
         $strukturOrganisasi = BerandaContent::where('content_type', self::CONTENT_TYPE_STRUKTUR_ORGANISASI)->get();
+
+        // Fix photo URLs for VestaCP hosting environment
+        $strukturOrganisasi = $strukturOrganisasi->map(function ($item) {
+            $item->photo_url = $item->photo_url && !Str::startsWith($item->photo_url, 'http')
+                ? asset(ltrim($item->photo_url, '/'))
+                : $item->photo_url;
+
+            $item->original_photo_url = $item->original_photo_url && !Str::startsWith($item->original_photo_url, 'http')
+                ? asset(ltrim($item->original_photo_url, '/'))
+                : $item->original_photo_url;
+
+            // Log URL transformation for debugging
+            Log::info('BerandaController getBerandaContent - URL processing', [
+                'key' => $item->key,
+                'photo_url_processed' => $item->photo_url,
+                'original_photo_url_processed' => $item->original_photo_url
+            ]);
+
+            return $item;
+        });
+
         $bidangData = $this->getBidangDataSorted();
 
         return response()->json([
@@ -121,12 +159,12 @@ class BerandaController extends Controller
             $request->session()->regenerate();
 
             // Get existing content untuk referensi
-            $existingContent = BerandaContent::getByKey($request->key);
+            $existingContent = BerandaContent::getByKey($request->input('key'));
             $isNewItem = !$existingContent;
 
             $data = $this->prepareStrukturOrganisasiData($request, $existingContent);
 
-            BerandaContent::updateOrCreateByKey($request->key, $data);
+            BerandaContent::updateOrCreateByKey($request->input('key'), $data);
 
             // Provide appropriate success message
             if ($isNewItem) {
@@ -179,17 +217,17 @@ class BerandaController extends Controller
     {
         $data = [
             'content_type' => self::CONTENT_TYPE_STRUKTUR_ORGANISASI,
-            'key' => $request->key,
-            'title' => $request->title,
-            'description' => $request->description,
+            'key' => $request->input('key'),
+            'title' => $request->input('title'),
+            'description' => $request->input('description'),
         ];
 
         // Add category information to data field for structured storage
-        if ($request->has('category') && $request->category) {
+        if ($request->has('category') && $request->input('category')) {
             // Merge with existing data if available
             $existingData = $existingContent && $existingContent->data ? $existingContent->data : [];
             $data['data'] = array_merge($existingData, [
-                'category' => $request->category
+                'category' => $request->input('category')
             ]);
         } else if ($existingContent && $existingContent->data) {
             // Preserve existing data if no category provided
@@ -199,7 +237,7 @@ class BerandaController extends Controller
         // Handle photo upload
         if ($request->hasFile('photo')) {
             $data = array_merge($data, $this->handlePhotoUpload($request, $existingContent));
-        } elseif ($request->delete_photo) {
+        } elseif ($request->input('delete_photo')) {
             $this->handlePhotoDeletion($existingContent);
             $data['photo_url'] = null;
             $data['original_photo_url'] = null;
@@ -224,7 +262,7 @@ class BerandaController extends Controller
     private function handlePhotoUpload(Request $request, ?BerandaContent $existingContent): array
     {
         $photo = $request->file('photo');
-        $photoName = time() . '_' . $request->key . '.' . $photo->getClientOriginalExtension();
+        $photoName = time() . '_' . $request->input('key') . '.' . $photo->getClientOriginalExtension();
         $photoPath = $photo->storeAs(self::PHOTO_STORAGE_PATH, $photoName, 'public');
 
         $data = ['photo_url' => '/storage/' . $photoPath];
@@ -232,7 +270,7 @@ class BerandaController extends Controller
         // Handle original photo
         if ($request->hasFile('original_photo')) {
             $originalPhoto = $request->file('original_photo');
-            $originalPhotoName = time() . '_original_' . $request->key . '.' . $originalPhoto->getClientOriginalExtension();
+            $originalPhotoName = time() . '_original_' . $request->input('key') . '.' . $originalPhoto->getClientOriginalExtension();
             $originalPhotoPath = $originalPhoto->storeAs(self::PHOTO_STORAGE_PATH, $originalPhotoName, 'public');
             $data['original_photo_url'] = '/storage/' . $originalPhotoPath;
         } else {
@@ -336,24 +374,27 @@ class BerandaController extends Controller
             $request->session()->regenerate();
 
             // Check if this is a new item or update
-            $existingContent = BerandaContent::getByKey($request->key);
+            $existingContent = BerandaContent::getByKey($request->input('key'));
             $isNewItem = !$existingContent;
 
             $data = [
                 'content_type' => self::CONTENT_TYPE_BIDANG,
-                'key' => $request->key,
-                'title' => $request->title,
-                'description' => $request->description,
-                'data' => $request->data
+                'key' => $request->input('key'),
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'data' => $request->input('data')
             ];
 
-            BerandaContent::updateOrCreateByKey($request->key, $data);
+            BerandaContent::updateOrCreateByKey($request->input('key'), $data);
+
+            // Sinkronisasi dengan tabel bidangs untuk dropdown DaftarMagang
+            $this->syncBidangToDropdown($request->input('key'), $request->input('title'), $request->input('description'));
 
             // Provide appropriate success message
             if ($isNewItem) {
-                return redirect()->back()->with('success', '🎉 Data bidang berhasil ditambahkan! 🔄 Data telah tersinkronisasi dengan halaman beranda user. 📱 Perubahan dapat langsung dilihat di halaman beranda.');
+                return redirect()->back()->with('success', '🎉 Data bidang berhasil ditambahkan! 🔄 Data telah tersinkronisasi dengan halaman beranda user dan dropdown pendaftaran magang. 📱 Perubahan dapat langsung dilihat di halaman beranda dan form pendaftaran.');
             } else {
-                return redirect()->back()->with('success', '✅ Data bidang berhasil diperbarui! 🔄 Data telah tersinkronisasi dengan halaman beranda user. 📱 Perubahan dapat langsung dilihat di halaman beranda.');
+                return redirect()->back()->with('success', '✅ Data bidang berhasil diperbarui! 🔄 Data telah tersinkronisasi dengan halaman beranda user dan dropdown pendaftaran magang. 📱 Perubahan dapat langsung dilihat di halaman beranda dan form pendaftaran.');
             }
         } catch (ValidationException $e) {
             return redirect()->back()->withErrors($e->errors())->withInput();
@@ -456,12 +497,12 @@ class BerandaController extends Controller
     private function processTempPhotoUpload(Request $request): array
     {
         $photo = $request->file('photo');
-        $photoName = 'temp_' . time() . '_' . $request->key . '.' . $photo->getClientOriginalExtension();
+        $photoName = 'temp_' . time() . '_' . $request->input('key') . '.' . $photo->getClientOriginalExtension();
         $photoPath = $photo->storeAs(self::TEMP_PHOTO_STORAGE_PATH, $photoName, 'public');
         $photoUrl = '/storage/' . $photoPath;
 
         // Simpan info foto sementara di session
-        $request->session()->put(self::SESSION_TEMP_PHOTO_PREFIX . $request->key, [
+        $request->session()->put(self::SESSION_TEMP_PHOTO_PREFIX . $request->input('key'), [
             'path' => $photoPath,
             'url' => $photoUrl,
             'uploaded_at' => now()
@@ -484,12 +525,12 @@ class BerandaController extends Controller
     private function processTempOriginalPhoto(Request $request): void
     {
         $originalPhoto = $request->file('original_photo');
-        $originalPhotoName = 'temp_original_' . time() . '_' . $request->key . '.' . $originalPhoto->getClientOriginalExtension();
+        $originalPhotoName = 'temp_original_' . time() . '_' . $request->input('key') . '.' . $originalPhoto->getClientOriginalExtension();
         $originalPhotoPath = $originalPhoto->storeAs(self::TEMP_PHOTO_STORAGE_PATH, $originalPhotoName, 'public');
         $originalPhotoUrl = '/storage/' . $originalPhotoPath;
 
         // Simpan info original foto sementara di session
-        $request->session()->put(self::SESSION_TEMP_ORIGINAL_PHOTO_PREFIX . $request->key, [
+        $request->session()->put(self::SESSION_TEMP_ORIGINAL_PHOTO_PREFIX . $request->input('key'), [
             'path' => $originalPhotoPath,
             'url' => $originalPhotoUrl,
             'uploaded_at' => now()
@@ -507,7 +548,7 @@ class BerandaController extends Controller
         try {
             $this->validateDeletePhotoRequest($request);
 
-            $key = $request->key;
+            $key = $request->input('key');
             $deleted = false;
             $message = '';
 
@@ -650,7 +691,7 @@ class BerandaController extends Controller
             // Extend session lifetime dan keep session data
             $request->session()->save();
 
-            $key = $request->key;
+            $key = $request->input('key');
             $result = $this->resetTempPhotosByKey($request, $key);
 
             return response()->json([
@@ -897,7 +938,10 @@ class BerandaController extends Controller
             // Delete the database record
             $content->delete();
 
-            return redirect()->back()->with('success', '✅ Data bidang berhasil dihapus! 🔄 Perubahan telah tersinkronisasi dengan halaman beranda user.');
+            // Sync with bidang dropdown
+            $this->removeBidangFromDropdown($key);
+
+            return redirect()->back()->with('success', '✅ Data bidang berhasil dihapus! 🔄 Perubahan telah tersinkronisasi dengan halaman beranda user dan dropdown pendaftaran magang.');
         } catch (Exception $e) {
             Log::error('Error deleting bidang: ' . $e->getMessage(), [
                 'key' => $key,
@@ -926,16 +970,106 @@ class BerandaController extends Controller
 
             // Delete all records
             foreach ($items as $item) {
+                // Hapus dari tabel bidangs juga
+                $this->removeBidangFromDropdown($item->key);
+
                 $item->delete();
                 $deletedCount++;
             }
 
-            return redirect()->back()->with('success', "✅ Berhasil menghapus {$deletedCount} data bidang! 🔄 Perubahan telah tersinkronisasi dengan halaman beranda user.");
+            return redirect()->back()->with('success', "✅ Berhasil menghapus {$deletedCount} data bidang! 🔄 Perubahan telah tersinkronisasi dengan halaman beranda user dan dropdown pendaftaran magang.");
         } catch (Exception $e) {
             Log::error('Error deleting all bidang: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString()
             ]);
             return redirect()->back()->withErrors(['error' => 'Terjadi kesalahan sistem. Silakan coba lagi.']);
+        }
+    }
+
+    /**
+     * Sinkronisasi bidang dari BerandaContent ke tabel bidangs untuk dropdown DaftarMagang
+     * 
+     * @param string $key
+     * @param string $title
+     * @param string $description
+     * @return void
+     */
+    private function syncBidangToDropdown(string $key, string $title, string $description): void
+    {
+        try {
+            // Ambil data lengkap dari beranda_contents untuk mendapatkan kepala bidang
+            $berandaContent = BerandaContent::where('key', $key)->first();
+            $kepalaBidang = 'Belum Ditentukan';
+
+            if ($berandaContent && $berandaContent->data && isset($berandaContent->data['kepala'])) {
+                $kepalaBidang = $berandaContent->data['kepala'];
+            }
+
+            // Import model Bidang
+            $bidang = \App\Models\Bidang::where('key', $key)->first();
+
+            if ($bidang) {
+                // Update existing bidang
+                $bidang->update([
+                    'nama_bidang' => $title,
+                    'kepala_bidang' => $kepalaBidang,
+                    'deskripsi' => $description,
+                    'updated_at' => now(),
+                ]);
+
+                Log::info('Bidang updated in dropdown table', [
+                    'key' => $key,
+                    'nama_bidang' => $title,
+                    'kepala_bidang' => $kepalaBidang
+                ]);
+            } else {
+                // Create new bidang
+                \App\Models\Bidang::create([
+                    'key' => $key,
+                    'nama_bidang' => $title,
+                    'kepala_bidang' => $kepalaBidang,
+                    'deskripsi' => $description,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+
+                Log::info('New bidang created in dropdown table', [
+                    'key' => $key,
+                    'nama_bidang' => $title
+                ]);
+            }
+        } catch (Exception $e) {
+            Log::error('Error syncing bidang to dropdown: ' . $e->getMessage(), [
+                'key' => $key,
+                'title' => $title,
+                'trace' => $e->getTraceAsString()
+            ]);
+        }
+    }
+
+    /**
+     * Hapus bidang dari tabel bidangs
+     * 
+     * @param string $key
+     * @return void
+     */
+    private function removeBidangFromDropdown(string $key): void
+    {
+        try {
+            $bidang = \App\Models\Bidang::where('key', $key)->first();
+
+            if ($bidang) {
+                $bidang->delete();
+
+                Log::info('Bidang removed from dropdown table', [
+                    'key' => $key
+                ]);
+            }
+        } catch (Exception $e) {
+            Log::error('Error removing bidang from dropdown: ' . $e->getMessage(), [
+                'key' => $key,
+                'trace' => $e->getTraceAsString()
+            ]);
         }
     }
 }

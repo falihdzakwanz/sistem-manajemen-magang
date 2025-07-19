@@ -5,6 +5,213 @@ import React, { useEffect, useRef } from 'react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// CSS custom untuk responsivitas toast di mobile
+const mobileToastStyles = `
+    .mobile-responsive-toast {
+        z-index: 9999;
+    }
+    
+    @media (max-width: 768px) {
+        .mobile-responsive-toast {
+            position: fixed !important;
+            top: 4.5rem !important;
+            left: 0.75rem !important;
+            right: 0.75rem !important;
+            width: auto !important;
+            max-width: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .mobile-responsive-toast .Toastify__toast {
+            border-radius: 0.75rem !important;
+            font-size: 0.875rem !important;
+            padding: 1rem !important;
+            margin-bottom: 0.75rem !important;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            word-wrap: break-word !important;
+            line-height: 1.5 !important;
+            animation: slideInRight 0.3s ease-out !important;
+            cursor: pointer !important;
+            touch-action: manipulation !important;
+            user-select: none !important;
+        }
+        
+        .mobile-responsive-toast .Toastify__toast-body {
+            font-size: 0.875rem !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            line-height: 1.5 !important;
+        }
+        
+        .mobile-responsive-toast .Toastify__close-button {
+            font-size: 1.25rem !important;
+            opacity: 0.8 !important;
+            padding: 0.5rem !important;
+            background: rgba(0, 0, 0, 0.1) !important;
+            border-radius: 50% !important;
+            width: 2rem !important;
+            height: 2rem !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            margin-left: 0.5rem !important;
+            touch-action: manipulation !important;
+        }
+        
+        .mobile-responsive-toast .Toastify__close-button:hover {
+            background: rgba(0, 0, 0, 0.2) !important;
+            opacity: 1 !important;
+        }
+        
+        .mobile-responsive-toast .Toastify__progress-bar {
+            height: 4px !important;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6) !important;
+            animation: progress-bar-fill 2.5s linear !important;
+        }
+        
+        /* Tambahan untuk memastikan toast bisa di-tap untuk close */
+        .mobile-responsive-toast .Toastify__toast:active {
+            transform: scale(0.98) !important;
+            transition: transform 0.1s ease !important;
+        }
+        
+        /* Animasi keluar yang lebih smooth */
+        .mobile-responsive-toast .Toastify__toast--slide-out-right {
+            animation: slideOutRight 0.3s ease-in !important;
+        }
+        
+        /* Pastikan toast tertutup dengan baik */
+        .mobile-responsive-toast .Toastify__toast.Toastify__toast--closing {
+            animation: slideOutRight 0.3s ease-in forwards !important;
+        }
+        
+        /* Memaksa auto close setelah progress bar selesai */
+        .mobile-responsive-toast .Toastify__toast.Toastify__toast--progress-done {
+            animation: slideOutRight 0.3s ease-in forwards !important;
+        }
+        
+        /* Progress bar animation */
+        @keyframes progress-bar-fill {
+            0% { width: 100%; }
+            100% { width: 0%; }
+        }
+        
+        /* File input responsive styles */
+        .file-input-mobile {
+            word-break: break-all;
+            overflow-wrap: break-word;
+            max-width: 100%;
+            line-height: 1.4;
+        }
+        
+        .file-input-button {
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        
+        /* Additional mobile file input styles */
+        @media (max-width: 768px) {
+            .file-input-container {
+                display: flex;
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .file-input-display {
+                background-color: #f9fafb;
+                border: 1px solid #d1d5db;
+                border-radius: 0.375rem;
+                padding: 0.75rem;
+                min-height: 2.5rem;
+                display: flex;
+                align-items: center;
+                word-break: break-all;
+                overflow-wrap: break-word;
+            }
+            
+            .file-input-button {
+                width: 100%;
+                padding: 0.75rem 1rem;
+                font-size: 0.875rem;
+                font-weight: 600;
+                text-align: center;
+                border-radius: 0.375rem;
+                background-color: #2563eb;
+                color: white;
+                border: none;
+                cursor: pointer;
+                transition: background-color 0.2s ease-in-out;
+                touch-action: manipulation;
+                -webkit-appearance: none;
+                appearance: none;
+            }
+            
+            .file-input-button:hover,
+            .file-input-button:focus {
+                background-color: #1d4ed8;
+            }
+            
+            .file-input-button:active {
+                background-color: #1e40af;
+                transform: translateY(1px);
+            }
+        }
+    }
+    
+    @media (min-width: 769px) {
+        .mobile-responsive-toast {
+            top: 1.5rem !important;
+            right: 1.5rem !important;
+            left: auto !important;
+            max-width: 28rem !important;
+        }
+        
+        .mobile-responsive-toast .Toastify__toast {
+            font-size: 0.9rem !important;
+            padding: 1rem 1.25rem !important;
+            border-radius: 0.5rem !important;
+        }
+        
+        .mobile-responsive-toast .Toastify__close-button {
+            font-size: 1rem !important;
+            width: 1.5rem !important;
+            height: 1.5rem !important;
+        }
+    }
+    
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+    
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+`;
+
+// Inject styles
+if (typeof document !== 'undefined') {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = mobileToastStyles;
+    document.head.appendChild(styleElement);
+}
+
 interface Bidang {
     id: number;
     nama_bidang: string;
@@ -57,7 +264,68 @@ export default function DaftarMagang({ bidangs = [], editData, isEdit = false }:
     const { flash } = usePage().props as { flash?: { success?: string } };
     const [processing, setProcessing] = React.useState(false);
 
-    // Debug: log data yang diterima (bisa dihapus setelah testing)
+    // Custom toast configuration for mobile
+    const showToast = (message: string, type: 'success' | 'error' | 'info' = 'success') => {
+        // Force dismiss any existing toasts first
+        toast.dismiss();
+
+        const toastId = toast[type](message, {
+            position: 'top-right',
+            autoClose: 2500,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            pauseOnFocusLoss: false,
+            draggable: false,
+            progress: undefined,
+            theme: 'light',
+            className: 'mobile-toast-item',
+            progressClassName: 'mobile-toast-progress',
+            onOpen: () => {
+                // DOM manipulation approach - force close setelah 2.5 detik
+                setTimeout(() => {
+                    const toastElements = document.querySelectorAll('.Toastify__toast');
+                    toastElements.forEach((element) => {
+                        const htmlElement = element as HTMLElement;
+                        htmlElement.classList.add('Toastify__toast--closing');
+                        htmlElement.style.animation = 'slideOutRight 0.3s ease-in forwards';
+
+                        setTimeout(() => {
+                            if (htmlElement.parentNode) {
+                                htmlElement.parentNode.removeChild(htmlElement);
+                            }
+                        }, 300);
+                    });
+                    toast.dismiss();
+                }, 2600);
+            },
+            onClose: () => {
+                // Cleanup
+                setTimeout(() => {
+                    toast.dismiss();
+                }, 100);
+            },
+        });
+
+        // Multiple backup mechanisms
+        setTimeout(() => {
+            toast.dismiss(toastId);
+        }, 2700);
+
+        setTimeout(() => {
+            toast.dismiss();
+            // Force DOM cleanup
+            const remainingToasts = document.querySelectorAll('.Toastify__toast');
+            remainingToasts.forEach((element) => {
+                const htmlElement = element as HTMLElement;
+                if (htmlElement.parentNode) {
+                    htmlElement.parentNode.removeChild(htmlElement);
+                }
+            });
+        }, 3000);
+
+        return toastId;
+    }; // Debug: log data yang diterima (bisa dihapus setelah testing)
     useEffect(() => {
         if (isEdit && editData) {
             console.log('Edit Mode - Data yang diterima:', editData);
@@ -71,7 +339,7 @@ export default function DaftarMagang({ bidangs = [], editData, isEdit = false }:
 
     useEffect(() => {
         if (flash?.success) {
-            toast.success(flash.success);
+            showToast(flash.success, 'success');
         }
     }, [flash]);
 
@@ -123,10 +391,11 @@ export default function DaftarMagang({ bidangs = [], editData, isEdit = false }:
             onSuccess: () => {
                 setProcessing(false);
                 console.log('Update berhasil untuk user:', editData?.id);
-                toast.success(
+                showToast(
                     isEdit
                         ? 'Data berhasil diperbaiki dan akan direview ulang!'
                         : 'Pendaftaran magang berhasil disubmit! Kami akan menghubungi Anda segera.',
+                    'success',
                 );
                 if (!isEdit) {
                     reset();
@@ -139,7 +408,7 @@ export default function DaftarMagang({ bidangs = [], editData, isEdit = false }:
                 console.error('Error submitting form:', errors);
                 // Tampilkan error pertama yang ditemukan
                 const firstError = Object.values(errors)[0];
-                toast.error(firstError ? String(firstError) : 'Terjadi kesalahan saat mengirim data. Silakan coba lagi.');
+                showToast(firstError ? String(firstError) : 'Terjadi kesalahan saat mengirim data. Silakan coba lagi.', 'error');
             },
             onFinish: () => {
                 setProcessing(false);
@@ -551,10 +820,14 @@ export default function DaftarMagang({ bidangs = [], editData, isEdit = false }:
                 newestOnTop
                 closeOnClick
                 rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
+                pauseOnFocusLoss={false}
+                draggable={false}
+                pauseOnHover={false}
                 theme="light"
+                className="mobile-responsive-toast"
+                limit={3}
+                stacked={false}
+                toastClassName="mobile-toast-item"
             />
         </Layout>
     );
